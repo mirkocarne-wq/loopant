@@ -16,9 +16,15 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Driver TX | TMC2209 in stealthChop, STEP/DIR/EN + UART | StallGuard per rilevare blocchi, silenzioso |
 | MCU antenna | ESP32 DevKit 38 pin, nella scatola all'antenna | Molti GPIO, ESP-NOW |
 | Controllo casa | Waveshare ESP32-S3-Touch-LCD-7B (7", 1024×600) con LVGL | Schermo grande, touch capacitivo; sostituisce il 5" |
-| Collegamento | ESP-NOW cifrato (PMK/LMK), MAC fissi in NVS, canale fisso, nessun router | Semplice, senza infrastruttura |
+| Collegamento | ESP-NOW cifrato (PMK/LMK), MAC fissi in NVS, canale fisso (quello del router di casa se il pannello usa il WiFi) | Semplice; il WiFi serve solo per indici solari e ora |
 | Alimentazione | 24 V 2,5 A in casa, convertitore 24→5 V all'antenna | Corrente sufficiente; alimentatore lontano dalla radio |
 | Isolamento albero RX | Barra ABS 8 mm tra due giunti metallici | Albero e telaio del variabile portano RF |
+| Schermate del pannello | Sintonia, Memorie, Propagazione, Decoder, Diagnostica, Impostazioni (+ Calibrazione da Impostazioni, screensaver) | Mockup approvato il 20/11/2026 |
+| Temi del pannello | Notte, Giorno, Fosfori verdi, Fosfori ambra; STOP rosso in tutti | Leggibilità e gusto; lo STOP deve riconoscersi sempre |
+| Numeri sul pannello | Display a 7 segmenti con segmenti spenti visibili | Aspetto da strumento, ottima leggibilità |
+| Screensaver | Selezionabile: Orologio, Frequenza, Grey line, Spento | Richiesta dell'utente |
+| Decoder sul pannello | CW e RTTY (RTTY con baud, shift, mark, stop, Reverse, UOS, AFC impostabili) | Richiesta dell'utente; fattibile sull'ESP32-S3 |
+| Propagazione | Grey line e alba/tramonto calcolati in locale; indici solari via WiFi | La grey line non richiede Internet |
 
 ## Scartate
 | Alternativa | Motivo |
@@ -28,3 +34,4 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Variabile a lamelle 1000 pF in TX | Spaziatura circa 1 mm: inadatto a circa 3,3–4,7 kV di picco |
 | Tubo prolunga doccia Leroy Merlin (ottone, circa 24 mm) | Scartato per il condensatore TX |
 | diymore ESP32-S3 3,5" come unità antenna | Pochi GPIO, schermo inutile all'antenna |
+| Calibrazione come scheda del pannello | Si usa di rado: spostata dentro Impostazioni |

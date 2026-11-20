@@ -4,7 +4,13 @@ Scheda: **Waveshare ESP32-S3-Touch-LCD-7B** (7", 1024×600, touch capacitivo).
 Fonti: [documentazione Waveshare](https://docs.waveshare.com/ESP32-S3-Touch-LCD-7B), wiki Waveshare
 ed esempi ufficiali (repository `waveshareteam/ESP32-S3-Touch-LCD-7B`, licenza Apache 2.0).
 
-Legenda: **[P]** = già deciso nel progetto; **[N]** = proposta nuova, da confermare.
+**Mockup approvato** (20/11/2026): canvas "Pannello MagLoop 7B" su claude.ai
+(<https://claude.ai/artifact/99tPobvTpdkJt4b83kAaNP>, privato: visibile solo al proprietario).
+
+Legenda: **[D]** = deciso (anche tramite il mockup); **[N]** = proposta tecnica, da confermare.
+I valori mostrati nel mockup (posizioni, eventi, indici solari) sono **di esempio**.
+
+Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione](09-propagazione.md).
 
 ## A. Dati della scheda (da documentazione Waveshare)
 | Voce | Valore |
@@ -20,65 +26,147 @@ Legenda: **[P]** = già deciso nel progetto; **[N]** = proposta nuova, da confer
 | Altre interfacce | CAN (TJA1051, GPIO 19/20), RS485 (TX 16 / RX 15), SD (MOSI 11, SCK 12, MISO 13), connettori I2C, UART, sensore |
 | Batteria | Li-ion 3,7 V opzionale, connettore PH2.0, caricatore integrato |
 | Alimentazione | 5 V da USB-C, circa 350 mA |
+| RTC / ingresso audio | **Non indicati** nella documentazione |
 | Software Waveshare | Arduino core ESP32 **3.x** (3.0.7 / 3.1.1), LVGL 8.4 (anche 9.x), driver `esp_lcd` RGB con doppio framebuffer in PSRAM |
 
-## B. Requisiti funzionali
-| ID | Requisito | |
-|---|---|---|
-| F1 | Inserire la frequenza da tastierino numerico, **in kHz** con un decimale | [P] |
-| F2 | Pulsanti **40 m** e **20 m** che propongono una frequenza della banda | [P] |
-| F3 | **TUNE**: invia la frequenza all'antenna, che va in risonanza | [P] |
-| F4 | **STOP**: ferma subito il motore | [P] |
-| F5 | **ZERO**: azzeramento sui finecorsa | [P] |
-| F6 | Mostrare lo **stato**: fermo / in movimento / azzeramento / errore (con il motivo) | [P] |
-| F7 | Mostrare la **posizione** del motore | [P] |
-| F8 | Mostrare la frequenza su cui è accordata l'antenna, distinta da quella che si sta digitando | [N] |
-| F9 | Rifiutare le frequenze fuori banda prima dell'invio (7,000–7,200 e 14,000–14,350 MHz) | [N] |
-| F10 | Ricordare l'ultima frequenza usata per ogni banda e riproporla con il pulsante della banda | [N] |
-| F11 | Passi ±: pulsanti di regolazione fine (es. ±1 kHz, ±5 kHz) che riaccordano subito | [N] |
-| F12 | **Pagina calibrazione**: jog del motore (±10 / ±100 / ±1000 passi), "salva punto" alla frequenza indicata, elenco e cancellazione dei punti per banda | [N] |
-| F13 | Pagina **impostazioni**: MAC dell'antenna, luminosità, spegnimento dello schermo dopo N minuti | [N] |
+## B. Struttura delle schermate [D]
+```
+┌───────────────────────────────────────────────────────────────────────┐
+│ NOMINATIVO  LOCATOR        14:32 UTC   ● Antenna   FERMO     [ STOP ] │  barra in alto (sempre)
+├───────────────────────────────────────────────────────────────────────┤
+│                         schermata attiva                              │
+├───────────────────────────────────────────────────────────────────────┤
+│ Sintonia │ Memorie │ Propagazione │ Decoder │ Diagnostica │ Impostaz. │  schede (sempre)
+└───────────────────────────────────────────────────────────────────────┘
+```
+- **Barra in alto** (64 px): nominativo e locator, orologio, stato del collegamento, stato dell'antenna, **STOP**.
+- **Schede in basso** (72 px): sei schede con icona e nome.
+- **Calibrazione** non ha una scheda: si apre da Impostazioni → "Calibrazione antenna".
+- **Screensaver** dopo un tempo impostabile; un tocco riporta alla Sintonia.
 
-## C. Collegamento con l'antenna
-| ID | Requisito | |
-|---|---|---|
-| C1 | ESP-NOW, MAC fissi salvati in NVS, stesso canale WiFi, nessun router | [P] |
-| C2 | Cifratura con chiavi PMK/LMK | [P] |
-| C3 | Heartbeat ogni secondo | [P] |
-| C4 | Indicatore di collegamento (OK / perso dopo 3 s senza risposte) | [N] |
-| C5 | Comandi `GOTO`, `STOP`, `ZERO`, `STATO`; risposta con posizione, stato e numero di sequenza | [P] |
-| C6 | Ripetere il comando se non arriva la risposta (max 3 tentativi) | [N] |
-| C7 | Pairing con pulsante (scambio dei MAC in broadcast) | [P] opzionale |
+## C. Requisiti per schermata
 
-## D. Sicurezza in TX
+### C1. Sintonia
 | ID | Requisito | |
 |---|---|---|
-| S1 | Lo STOP è sempre visibile e raggiungibile da ogni pagina | [N] |
-| S2 | Promemoria a schermo: non accordare con RF ad alta potenza (circa 5 W per la ricerca del ROS) | [P] |
-| S3 | Con il collegamento perso, TUNE disabilitato e avviso evidente | [N] |
+| S1 | Frequenza da tastierino in **kHz** con un decimale, su **display a 7 segmenti** (5 cifre intere, posizioni vuote "spente") | [D] |
+| S2 | Frequenza su cui è accordata l'antenna, distinta da quella che si sta digitando; posizione del motore | [D] |
+| S3 | Segmento del band plan IARU Regione 1 per la frequenza digitata (CW, digitale, tutti i modi, radiofari; "FT8" vicino a 7 074 / 14 074) | [D] (band plan da verificare) |
+| S4 | Pulsanti **40 m** / **20 m** (propongono l'ultima frequenza usata nella banda) | [D] |
+| S5 | Tasti di passo **±1** e **±5 kHz** | [D] |
+| S6 | **TUNE** invia la frequenza; disattivato se fuori banda (7 000–7 200, 14 000–14 350 kHz), con avviso | [D] |
 
-## E. Requisiti non funzionali
+### C2. Memorie
 | ID | Requisito | |
 |---|---|---|
-| N1 | Interfaccia in italiano, caratteri grandi e leggibili a distanza (frequenza ≥ 48 px) | [N] |
-| N2 | Tasti grandi, usabili con il dito (≥ 80 px) | [N] |
+| M1 | Memorie predefinite per 40 e 20 m: FT8, FT4, WSPR, QRP CW, QRP SSB (frequenze da verificare) | [D] |
+| M2 | Memorie personali con un nome; "Nuova memoria" | [D] |
+| M3 | Filtri Tutte / 40 m / 20 m / Mie; etichetta colorata per modo | [D] |
+| M4 | Un tocco su una memoria accorda l'antenna | [D] |
+
+### C3. Propagazione — vedi [09-propagazione.md](09-propagazione.md)
+| ID | Requisito | |
+|---|---|---|
+| P1 | Mappa del mondo con notte, **grey line**, punto subsolare, stazione e alcune città, calcolata dall'ora UTC (senza Internet) | [D] |
+| P2 | Alba e tramonto alla stazione (UTC), tempo al prossimo passaggio della grey line, fascia giorno/notte sulle 24 ore | [D] |
+| P3 | Indici solari SFI, SSN, A, K e stima delle bande 40/20 m giorno/notte, **via WiFi** | [D] |
+
+### C4. Decoder CW / RTTY — vedi [08-decoder.md](08-decoder.md)
+| ID | Requisito | |
+|---|---|---|
+| D1 | Selettore di modo **CW / RTTY**; testo decodificato grande; Pulisci | [D] |
+| D2 | CW: velocità WPM (automatica), tono, livello con soglia, ultimi elementi ricevuti, filtro 100 / 250 / 500 Hz | [D] |
+| D3 | RTTY **impostabile**: 45,45 / 50 / 75 baud; shift 170 / 425 / 850 Hz; tono di mark regolabile (±1 / ±10 Hz), space calcolato; bit di stop 1 / 1,5 / 2; **Reverse**, **UOS**, **AFC**; indicatore di sintonia mark/space | [D] |
+
+### C5. Diagnostica
+| ID | Requisito | |
+|---|---|---|
+| G1 | Collegamento: stato, segnale (dBm), pacchetti persi, ultima risposta | [D] |
+| G2 | Motore: posizione, driver, finecorsa MIN/MAX, ultimo azzeramento | [D] |
+| G3 | Contatori: movimenti, azzeramenti, tempo di accensione, versione dell'antenna (TX/RX) | [D] |
+| G4 | Ultimi eventi con ora e tipo (accordata, zero, errore) | [D] |
+| G5 | Riquadro Potenza e ROS, attivo quando ci sarà il wattmetro | [D] |
+
+### C6. Impostazioni
+| ID | Requisito | |
+|---|---|---|
+| I1 | **Nominativo** e **locator** (mostrati nella barra in alto e nello screensaver; il locator dà la posizione per la propagazione) | [D] |
+| I2 | **Tema**: scelta con miniature (sezione D) | [D] |
+| I3 | Antenna: MAC, canale, **Pairing**, accesso a **Calibrazione antenna** | [D] |
+| I4 | **Screensaver**: stile Orologio / Frequenza / Grey line / Spento; parte dopo Mai / 5 / 15 / 30 min; anteprima | [D] |
+| I5 | Luminosità; ora nella barra UTC / locale / entrambe | [D] |
+
+### C7. Calibrazione (da Impostazioni)
+| ID | Requisito | |
+|---|---|---|
+| K1 | Scelta banda 40 / 20 m; posizione del motore su display a 7 segmenti | [D] |
+| K2 | Jog ±10 / ±100 / ±1000 passi; frequenza del dip letta sul NanoVNA; **Salva punto** | [D] |
+| K3 | Grafico posizione ↔ frequenza e tabella dei punti con eliminazione | [D] |
+
+### C8. Screensaver
+| ID | Requisito | |
+|---|---|---|
+| V1 | **Orologio**: nominativo, orologio UTC grande, ora locale e data, frequenza accordata | [D] |
+| V2 | **Frequenza**: frequenza accordata molto grande, banda e segmento, orologio piccolo | [D] |
+| V3 | **Grey line**: mappa a tutto schermo con nominativo, alba/tramonto, frequenza e orologio | [D] |
+| V4 | Un tocco riporta alla Sintonia | [D] |
+
+## D. Temi [D]
+| Tema | Aspetto |
+|---|---|
+| **Notte** (predefinito) | Fondo quasi nero, testo chiaro, **ambra** per numeri importanti e TUNE |
+| **Giorno** | Fondo chiaro ad alto contrasto, ambra scura |
+| **Fosfori verdi** | Monocromatico verde da monitor a fosfori, font a spaziatura fissa, bagliore e righe di scansione |
+| **Fosfori ambra** | Come il precedente, in ambra |
+
+- **Lo STOP è rosso in tutti i temi** (sicurezza).
+- Numeri su **display a 7 segmenti** in ogni tema, con i segmenti spenti appena visibili.
+- Contrasto del testo ≥ 4,5:1; i colori di stato si distinguono anche per luminosità.
+- Font: Montserrat (integrato in LVGL) per Notte/Giorno; per i fosfori un font monospazio (nel mockup IBM Plex Mono)
+  e per le cifre un font a 7 segmenti (es. DSEG7), entrambi da convertire con `lv_font_conv`. [N]
+
+## E. Collegamento con l'antenna
+| ID | Requisito | |
+|---|---|---|
+| E1 | ESP-NOW, MAC fissi salvati in NVS, stesso canale WiFi | [D] |
+| E2 | Cifratura con chiavi PMK/LMK | [D] |
+| E3 | Heartbeat ogni secondo; indicatore di collegamento (perso dopo 3 s senza risposte) | [D] |
+| E4 | Comandi `GOTO`, `STOP`, `ZERO`, `STATO`, `JOG`, `CAL_SALVA`, `CAL_CANCELLA` (protocollo in [04](04-protocollo-espnow.md)) | [D] |
+| E5 | Ripetere il comando se non arriva la risposta (max 3 tentativi) | [N] |
+| E6 | Pairing con pulsante (scambio dei MAC in broadcast) | [D] |
+| E7 | Con il WiFi attivo (indici solari) il canale ESP-NOW è quello del router di casa, anche sull'antenna | [D] |
+
+## F. Sicurezza
+| ID | Requisito | |
+|---|---|---|
+| F1 | STOP sempre visibile e raggiungibile da ogni schermata | [D] |
+| F2 | Con il collegamento perso, TUNE disattivato e avviso evidente | [D] |
+| F3 | In TX non accordare con RF ad alta potenza (circa 5 W per la ricerca del ROS): promemoria a schermo | [D] |
+
+## G. Requisiti non funzionali
+| ID | Requisito | |
+|---|---|---|
+| N1 | Interfaccia in italiano; frequenza principale ≥ 84 px, testo ≥ 13 px | [D] |
+| N2 | Tasti ≥ 44 px, quelli principali 54–80 px | [D] |
 | N3 | Nessun disturbo HF dal pannello vicino alla radio: da verificare in ascolto; eventuale ferrite sul cavo USB | [N] |
-| N4 | Si alimenta dalla USB-C a 5 V; batteria non necessaria | [N] |
+| N4 | Alimentazione dalla USB-C a 5 V | [N] |
 | N5 | Console seriale con gli stessi comandi, per prove senza touch | [N] |
-| N6 | Base software: Arduino core ESP32 3.x + LVGL 8.4, partendo dai driver degli esempi Waveshare | [N] |
+| N6 | Base software: Arduino core ESP32 3.x + LVGL 8.4, partendo dai driver degli esempi Waveshare (Apache 2.0, citando la fonte) | [N] |
+| N7 | Impostazioni (nominativo, tema, screensaver, memorie, decoder) salvate in NVS | [N] |
 
-## F. Sviluppi futuri
+## H. Sviluppi futuri
 | ID | Requisito | |
 |---|---|---|
-| X1 | CI-V (Icom IC-7300 MK2) / CAT (Yaesu): "segui la radio", con riaccordo automatico al cambio di frequenza | [P] |
-| X2 | Visualizzazione di potenza e ROS dal wattmetro (AD8307 + ADS1115) con allarmi | [P] |
+| X1 | CI-V (Icom IC-7300 MK2) / CAT (Yaesu): "segui la radio" | [D] |
+| X2 | Potenza e ROS dal wattmetro (AD8307 + ADS1115) con allarmi | [D] |
 | X3 | Grafico del ROS durante la ricerca del picco | [N] |
 
-## G. Domande aperte
+## I. Domande aperte
 1. **UART per il CI-V**: il connettore UART condivide la seriale con il CH343 (selettore sulla scheda) e
-   l'RS485 usa GPIO 15/16. Quale usare per il CI-V? Da verificare sullo schema elettrico.
-2. **Toolchain**: gli esempi Waveshare richiedono il core Arduino 3.x. La piattaforma PlatformIO ufficiale
-   provata qui (espressif32 7.1.3) ha ancora il core 2.0.17. Scelte possibili: Arduino IDE 2,
-   PlatformIO con la piattaforma pioarduino, oppure ESP-IDF.
-3. Schermo sempre acceso o spegnimento automatico?
-4. Pannello fisso alla parete/scrivania o anche a batteria?
+   l'RS485 usa GPIO 15/16. Quale usare? Da verificare sullo schema elettrico.
+2. **Ingresso audio per il decoder**: la scheda non ne documenta uno (vedi [08](08-decoder.md)).
+3. **Ora esatta**: nessun RTC documentato. Fonti possibili: NTP via WiFi (già necessario per gli indici solari),
+   impostazione manuale, in futuro CI-V dalla radio.
+4. **Toolchain**: serve il core Arduino 3.x; la piattaforma PlatformIO ufficiale `espressif32` provata qui
+   (7.1.3) ha ancora il core 2.0.17. Scelte: Arduino IDE 2, PlatformIO con pioarduino, oppure ESP-IDF.
+5. Alimentazione: solo USB o anche batteria?

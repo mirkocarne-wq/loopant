@@ -23,8 +23,9 @@ docs/archivio/     documento originale del 20/11/2026 (non aggiornato)
 firmware/lib/Comune/   codice condiviso: protocollo ESP-NOW, bande, collegamento, chiavi
 firmware/antenna/      firmware unità antenna (ESP32 DevKit 38 pin), PlatformIO, ambienti tx e rx
 ```
-Il firmware del **pannello in casa** (Waveshare ESP32-S3-Touch-LCD-7B) non è ancora scritto:
-prima vanno confermati i requisiti in `docs/software/03-unita-controllo.md`.
+Il firmware del **pannello in casa** (Waveshare ESP32-S3-Touch-LCD-7B) non è ancora scritto.
+Requisiti e mockup sono approvati: `docs/software/03-unita-controllo.md` (schermate, temi, screensaver),
+`08-decoder.md` (CW/RTTY) e `09-propagazione.md` (grey line, indici solari).
 
 ## Build
 ```bash

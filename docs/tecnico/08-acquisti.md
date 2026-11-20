@@ -19,6 +19,7 @@
 - [ ] ESP32 DevKit 38 pin, **TMC2209**, microswitch finecorsa
 - [ ] Waveshare ESP32-S3-Touch-LCD-7B (7", 1024×600, touch)
 - [ ] Per il TX: wattmetro (AD8307 ×2, ADS1115, accoppiatore)
+- [ ] Interfaccia audio radio → pannello per il decoder (modulo ADC I2S o partitore, trasformatore 1:1): da scegliere
 
 ### Alimentazione e cablaggio
 - [ ] Convertitore 24→5 V (ingresso fino a 36–40 V), fusibile, elettrolitico, ferriti

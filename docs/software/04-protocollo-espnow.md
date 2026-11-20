@@ -5,7 +5,8 @@ Definizione: `firmware/lib/Comune/src/protocollo.h`.
 ## Collegamento
 - Un solo peer per unità, con **MAC fisso salvato in NVS** (impostabile dalla console con `mac AA:BB:CC:DD:EE:FF`).
   All'accensione ogni unità stampa il proprio MAC.
-- **Stesso canale WiFi** su entrambe (`CANALE_WIFI`), nessun router.
+- **Stesso canale WiFi** su entrambe (`CANALE_WIFI`). Se il pannello si collega al WiFi di casa
+  (indici solari, ora), il canale è quello del router e va impostato uguale sull'antenna.
 - **Cifratura** con chiavi PMK/LMK in `segreti.h` (non versionato; copiare `segreti.esempio.h` e cambiare le chiavi).
 - Sono accettati solo pacchetti dal peer configurato.
 
