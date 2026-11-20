@@ -1,0 +1,7 @@
+{
+  "name": "Comune",
+  "version": "0.1.0",
+  "description": "Codice condiviso loopant: protocollo ESP-NOW, bande, collegamento",
+  "frameworks": "arduino",
+  "platforms": "espressif32"
+}

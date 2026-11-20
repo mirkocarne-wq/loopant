@@ -1,0 +1,67 @@
+// Configurazione dell'unità antenna: pin, meccanica, velocità, tempi.
+// Pinout: docs/tecnico/06-elettronica.md. I valori "da verificare" vanno confermati sul banco.
+#pragma once
+#include <stdint.h>
+
+#ifndef VERSIONE_TX
+#define VERSIONE_TX 1  // 1 = TX (NEMA11 + TMC2209), 0 = RX (SERVO42D STEP/DIR/EN)
+#endif
+
+namespace cfg {
+
+// --- Pin (ESP32 DevKit 38 pin; evitare 0, 2, 12, 15; analogici solo ADC1 32-39) ---
+constexpr int PIN_STEP = 18;
+constexpr int PIN_DIR = 19;
+constexpr int PIN_EN = 21;     // attivo basso (TMC2209 e SERVO42D)
+constexpr int PIN_TMC_TX = 25;  // UART TMC2209 (con resistenza da 1 kΩ verso PDN_UART)
+constexpr int PIN_TMC_RX = 26;
+constexpr int PIN_FC_MIN = 27;  // finecorsa lato zero
+constexpr int PIN_FC_MAX = 14;  // finecorsa lato opposto
+constexpr bool FC_ATTIVO_BASSO = true;  // microswitch verso massa, pull-up + RC 100 nF
+
+// --- Collegamento ---
+constexpr uint8_t CANALE_WIFI = 1;
+constexpr uint32_t TIMEOUT_HEARTBEAT_MS = 3000;  // 3 heartbeat persi
+
+#if VERSIONE_TX
+// --- TX: NEMA11 + vite T6x1 (1 mm/giro), corsa 150 mm ---
+constexpr uint16_t MICROPASSI = 16;
+constexpr int32_t PASSI_PER_GIRO = 200 * MICROPASSI;  // 3200
+constexpr int32_t PASSI_PER_MM = PASSI_PER_GIRO;      // vite da 1 mm/giro
+constexpr int32_t CORSA_PASSI = 150 * PASSI_PER_MM;   // 480000
+
+constexpr float R_SENSE = 0.11f;      // tipico dei moduli TMC2209: da verificare
+constexpr uint8_t TMC_INDIRIZZO = 0;  // MS1/MS2 a massa
+constexpr uint16_t CORRENTE_MA = 500;  // RMS, da verificare sulla scheda del NEMA11 (0,5-1 A)
+constexpr uint16_t SOGLIA_BLOCCO = 0;  // SG_RESULT minimo; 0 = StallGuard disabilitato (da tarare)
+
+constexpr uint32_t VELOCITA_HZ = 5 * PASSI_PER_GIRO;              // 300 giri/min
+constexpr uint32_t VELOCITA_AZZERAMENTO_HZ = 3 * PASSI_PER_GIRO;  // ricerca veloce
+constexpr uint32_t VELOCITA_LENTA_HZ = PASSI_PER_GIRO / 4;        // riavvicinamento lento
+constexpr uint32_t ACCELERAZIONE = 4 * PASSI_PER_GIRO;            // passi/s²
+
+constexpr int32_t STACCO_PASSI = 1 * PASSI_PER_MM;               // 1 mm dal finecorsa
+constexpr int32_t RECUPERO_GIOCO_PASSI = PASSI_PER_MM / 2;       // 0,5 mm oltre il target
+#else
+// --- RX: SERVO42D (micropassi impostati sul driver) + riduttore 20:1 sul variabile ---
+// Rotazione utile del variabile circa 180°: da misurare.
+constexpr uint16_t MICROPASSI = 16;                         // come impostato sul SERVO42D
+constexpr int32_t PASSI_PER_GIRO = 200 * MICROPASSI * 20;   // per giro dell'albero del variabile
+constexpr int32_t CORSA_PASSI = PASSI_PER_GIRO / 2;         // 180°: da misurare
+
+constexpr uint32_t VELOCITA_HZ = 2 * 200 * MICROPASSI;  // 2 giri/s del motore
+constexpr uint32_t VELOCITA_AZZERAMENTO_HZ = VELOCITA_HZ;
+constexpr uint32_t VELOCITA_LENTA_HZ = 200 * MICROPASSI / 4;
+constexpr uint32_t ACCELERAZIONE = 4 * 200 * MICROPASSI;
+
+constexpr int32_t STACCO_PASSI = PASSI_PER_GIRO / 180;          // circa 2°
+constexpr int32_t RECUPERO_GIOCO_PASSI = PASSI_PER_GIRO / 360;  // circa 1°, > gioco di 0,5°
+#endif
+
+// Limiti software del target
+constexpr int32_t POS_MIN = STACCO_PASSI + RECUPERO_GIOCO_PASSI;
+constexpr int32_t POS_MAX = CORSA_PASSI - STACCO_PASSI;
+// Oltre questa distanza senza trovare il finecorsa l'azzeramento fallisce
+constexpr int32_t AZZERAMENTO_MAX_PASSI = CORSA_PASSI + CORSA_PASSI / 10;
+
+}  // namespace cfg

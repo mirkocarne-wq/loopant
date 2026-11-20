@@ -1,0 +1,6 @@
+# PlatformIO
+.pio/
+.vscode/
+
+# Chiavi ESP-NOW reali
+firmware/lib/Comune/src/segreti.h
