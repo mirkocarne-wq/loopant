@@ -6,9 +6,11 @@
 #include "../config.h"
 #include "../display7.h"
 #include "../impostazioni.h"
+#include "../ora.h"
 #include "../tema.h"
 #include "comuni.h"
 #include "pagine.h"
+#include "screensaver.h"
 
 namespace ui {
 namespace {
@@ -34,6 +36,7 @@ lv_obj_t* schede[NUM_SCHEDE];
 uint8_t attiva = 0;
 
 lv_obj_t* orologio;
+lv_obj_t* etichettaOra;
 lv_obj_t* puntoAntenna;
 lv_obj_t* testoAntenna;
 lv_obj_t* chipStato;
@@ -70,7 +73,7 @@ void creaBarra(lv_obj_t* scr) {
   lv_obj_set_flex_align(ora, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_END, LV_FLEX_ALIGN_END);
   orologio = display7::crea(ora, 26, t.text, t.segOffText);
   display7::testo(orologio, "--:--");
-  etichetta(ora, "UTC", &font_14, t.text2);
+  etichettaOra = etichetta(ora, "UTC", &font_14, t.text2);
 
   lv_obj_t* ant = contenitore(barra, LV_FLEX_FLOW_ROW, 8);
   lv_obj_set_flex_align(ant, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -95,13 +98,24 @@ void creaBarra(lv_obj_t* scr) {
 void aggiornaBarra(const link_antenna::Stato& s) {
   const Tema& t = tema::corrente();
 
-  time_t adesso = time(nullptr);
-  if (adesso > 1700000000) {  // ora impostata
-    struct tm utc;
-    gmtime_r(&adesso, &utc);
-    char buf[8];
-    snprintf(buf, sizeof(buf), "%02d:%02d", utc.tm_hour, utc.tm_min);
-    display7::testo(orologio, buf);
+  if (ora::valida()) {
+    char utc[8], loc[8];
+    ora::hhmmUtc(utc, sizeof(utc));
+    ora::hhmmLocale(loc, sizeof(loc));
+    switch (impostazioni::get().modoOra) {
+      case 1:
+        display7::testo(orologio, loc);
+        lv_label_set_text(etichettaOra, "locale");
+        break;
+      case 2:
+        display7::testo(orologio, utc);
+        lv_label_set_text_fmt(etichettaOra, "UTC · %s loc.", loc);
+        break;
+      default:
+        display7::testo(orologio, utc);
+        lv_label_set_text(etichettaOra, "UTC");
+        break;
+    }
   }
 
   lv_obj_set_style_bg_color(puntoAntenna, s.collegato ? t.ok : t.danger, 0);
@@ -220,10 +234,13 @@ void costruisci() {
 void aggiornaTutto(lv_timer_t*) {
   if (daRicostruire) {
     daRicostruire = false;
+    screensaver::chiudi();
     tema::imposta(impostazioni::get().tema);
     costruisci();
   }
   link_antenna::Stato s = link_antenna::stato();
+  screensaver::aggiorna(s);
+  if (screensaver::attivo()) return;  // schermo coperto: niente aggiornamenti
   aggiornaBarra(s);
   PAGINE[attiva].aggiorna(s);
 }

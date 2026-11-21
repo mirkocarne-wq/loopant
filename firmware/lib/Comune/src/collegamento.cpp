@@ -52,7 +52,7 @@ bool Collegamento::inizia(const uint8_t peer[6], const uint8_t pmk[16], const ui
 
   esp_now_peer_info_t info = {};
   memcpy(info.peer_addr, peer, 6);
-  info.channel = canale;
+  info.channel = 0;  // canale attuale: con il WiFi di casa attivo è quello del router
   info.ifidx = WIFI_IF_STA;
   info.encrypt = true;
   memcpy(info.lmk, lmk, 16);

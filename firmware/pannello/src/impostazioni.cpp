@@ -8,7 +8,8 @@
 namespace impostazioni {
 namespace {
 
-constexpr uint8_t VERSIONE = 1;
+// Versione 2: schermo, ora, rete e decoder. Con una versione diversa si torna ai valori predefiniti.
+constexpr uint8_t VERSIONE = 2;
 Impostazioni imp;
 Preferences nvs;
 
@@ -20,7 +21,18 @@ void predefinite() {
   imp.ultima20_hz = cfg::PROPOSTA_20M_HZ;
   imp.screensaver = 0;
   imp.attesa_min = 15;
-  imp.luminosita = 70;
+  imp.luminosita = 80;
+  imp.modoOra = 0;
+  imp.fuso = 1;
+  imp.decModo = 0;
+  imp.cwTono = 700;
+  imp.cwFiltro = 250;
+  imp.cwWpm = 0;
+  imp.rttyBaud = 0;
+  imp.rttyShift = 170;
+  imp.rttyMark = 2125;
+  imp.rttyStop = 1;
+  imp.rttyOpzioni = RTTY_UOS | RTTY_AFC;
 }
 
 }  // namespace
@@ -33,6 +45,8 @@ void carica() {
   }
   imp.nominativo[sizeof(imp.nominativo) - 1] = 0;
   imp.locator[sizeof(imp.locator) - 1] = 0;
+  imp.wifiSsid[sizeof(imp.wifiSsid) - 1] = 0;
+  imp.wifiPassword[sizeof(imp.wifiPassword) - 1] = 0;
 }
 
 void salva() { nvs.putBytes("imp", &imp, sizeof(imp)); }

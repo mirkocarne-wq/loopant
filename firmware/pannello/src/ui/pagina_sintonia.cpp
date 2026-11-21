@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 
+#include "../bandplan.h"
 #include "../display7.h"
 #include "../impostazioni.h"
 #include "../tema.h"
@@ -40,19 +41,6 @@ uint32_t frequenzaHz() {
   return khz > 0 ? (uint32_t)(khz * 1000.0 + 0.5) : 0;
 }
 
-const char* segmento(uint32_t hz) {
-  // Band plan IARU Regione 1 semplificato: da verificare
-  uint32_t k = hz / 1000;
-  bool ft8 = (hz >= 7072000 && hz <= 7076000) || (hz >= 14072000 && hz <= 14076000);
-  if (k >= 7000 && k < 7040) return "CW";
-  if (k >= 7040 && k < 7050) return "Digitale a banda stretta";
-  if (k >= 7050 && k <= 7200) return ft8 ? "Tutti i modi · FT8" : "Tutti i modi";
-  if (k >= 14000 && k < 14070) return "CW";
-  if (k >= 14070 && k < 14099) return ft8 ? "Digitale a banda stretta · FT8" : "Digitale a banda stretta";
-  if (k >= 14099 && k < 14101) return "Radiofari";
-  if (k >= 14101 && k <= 14350) return "Tutti i modi";
-  return "";
-}
 
 // "7074,0" -> "_7 074,0" (5 cifre intere, le vuote spente)
 void testoDisplay(char* out, size_t n) {
@@ -93,7 +81,7 @@ void aggiornaIngresso() {
   bande::Banda b = bande::di(hz);
   bool valida = b != bande::Banda::NESSUNA;
   if (valida) {
-    lv_label_set_text_fmt(chipBanda, "%s · %s", bande::info(b)->nome, segmento(hz));
+    lv_label_set_text_fmt(chipBanda, "%s · %s", bande::info(b)->nome, bandplan::segmento(hz));
     ui::coloriChip(chipBanda, t.surface2, t.text);
   } else {
     lv_label_set_text(chipBanda, "Fuori banda: 7 000–7 200 o 14 000–14 350 kHz");

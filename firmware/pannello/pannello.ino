@@ -13,6 +13,9 @@
 #include "src/eventi.h"
 #include "src/impostazioni.h"
 #include "src/link_antenna.h"
+#include "src/ora.h"
+#include "src/rete.h"
+#include "src/schermo.h"
 #include "src/tema.h"
 #include "src/ui/ui.h"
 #include "src/waveshare/lvgl_port.h"
@@ -20,15 +23,18 @@
 void setup() {
   Serial.begin(115200);
   impostazioni::carica();
+  ora::applicaFuso();
   tema::inizia();
 
   // Schermo, touch e LVGL come negli esempi Waveshare
   esp_lcd_touch_handle_t touch = touch_gt911_init();
   esp_lcd_panel_handle_t schermo = waveshare_esp32_s3_rgb_lcd_init();
   wavesahre_rgb_lcd_bl_on();
+  schermo::luminosita(impostazioni::get().luminosita);
   ESP_ERROR_CHECK(lvgl_port_init(schermo, touch));
 
   link_antenna::inizia(impostazioni::get().peer);
+  rete::inizia();
 
   if (lvgl_port_lock(-1)) {
     ui::inizia();

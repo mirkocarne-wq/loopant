@@ -4,11 +4,11 @@
 #include <collegamento.h>
 #include <ctype.h>
 #include <string.h>
-#include <sys/time.h>
-#include <time.h>
 
 #include "impostazioni.h"
 #include "link_antenna.h"
+#include "ora.h"
+#include "rete.h"
 #include "tema.h"
 #include "ui/ui.h"
 
@@ -31,7 +31,7 @@ void aiuto() {
   Serial.println(
       "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calcanc <kHz> | stato |\n"
       "         mac <AA:BB:CC:DD:EE:FF> | call <nominativo> | loc <locator> | tema <0-3> |\n"
-      "         ora <AAAA-MM-GG HH:MM> (UTC) | aiuto");
+      "         ora <AAAA-MM-GG HH:MM> (UTC) | wifi <ssid> <password> | rete | aiuto");
 }
 
 void stato() {
@@ -44,19 +44,13 @@ void stato() {
                   proto::nomeErrore(s.r.errore), (long)s.r.posizione, s.r.freq_hz / 1000.0);
 }
 
-void impostaOra(const char* data, const char* ora) {
-  struct tm tm = {};
-  if (!data || !ora || sscanf(data, "%d-%d-%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday) != 3 ||
-      sscanf(ora, "%d:%d", &tm.tm_hour, &tm.tm_min) != 2) {
+void impostaOra(const char* data, const char* hm) {
+  int a, m, g, h, mi;
+  if (!data || !hm || sscanf(data, "%d-%d-%d", &a, &m, &g) != 3 || sscanf(hm, "%d:%d", &h, &mi) != 2 ||
+      !ora::impostaUtc(a, m, g, h, mi)) {
     Serial.println("Formato: ora AAAA-MM-GG HH:MM (UTC)");
     return;
   }
-  tm.tm_year -= 1900;
-  tm.tm_mon -= 1;
-  setenv("TZ", "UTC0", 1);
-  tzset();
-  struct timeval tv = {mktime(&tm), 0};
-  settimeofday(&tv, nullptr);
   Serial.println("Ora impostata (UTC)");
 }
 
@@ -95,6 +89,19 @@ void esegui(char* riga) {
     ui::richiediRicostruzione();
     Serial.printf("Tema: %s\n", tema::di(imp.tema).nome);
   } else if (!strcmp(cmd, "ora")) impostaOra(a1, a2);
+  else if (!strcmp(cmd, "wifi") && a1) {
+    strncpy(imp.wifiSsid, a1, sizeof(imp.wifiSsid) - 1);
+    imp.wifiSsid[sizeof(imp.wifiSsid) - 1] = 0;
+    strncpy(imp.wifiPassword, a2 ? a2 : "", sizeof(imp.wifiPassword) - 1);
+    imp.wifiPassword[sizeof(imp.wifiPassword) - 1] = 0;
+    impostazioni::salva();
+    rete::riavvia();
+    Serial.println("WiFi salvato: connessione in corso");
+  } else if (!strcmp(cmd, "rete")) {
+    char t[96];
+    rete::stato(t, sizeof(t));
+    Serial.println(t);
+  }
   else aiuto();
 }
 
