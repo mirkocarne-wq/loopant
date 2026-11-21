@@ -11,10 +11,11 @@ Definizione: `firmware/lib/Comune/src/protocollo.h`.
 - Sono accettati solo pacchetti dal peer configurato.
 
 ## Messaggi
-Tutti i messaggi iniziano con `versione` (attualmente **2**) e `tipo`. Le due unità devono avere la stessa versione:
+Tutti i messaggi iniziano con `versione` (attualmente **3**) e `tipo`. Le due unità devono avere la stessa versione:
 i messaggi con versione diversa vengono ignorati.
 
 Versione 2 (21/11/2026): campo `flag` nella risposta, comandi `CAL_LEGGI` e `CAL_ELIMINA`, messaggio `RISPOSTA_CAL`.
+Versione 3 (21/11/2026): comando `IMPOSTA` (driver del motore STEP/DIR o CAN), flag `CAN`, errore `MOTORE_CAN`.
 
 ### Comando (controllo → antenna)
 | Campo | Tipo | Note |
@@ -37,6 +38,7 @@ Versione 2 (21/11/2026): campo `flag` nella risposta, comandi `CAL_LEGGI` e `CAL
 | `CAL_CANCELLA` | 8 | Cancella la tabella della banda di `freq_hz` |
 | `CAL_LEGGI` | 9 | Chiede il punto numero `valore` (da 0) della banda di `freq_hz`; risposta `RISPOSTA_CAL` |
 | `CAL_ELIMINA` | 10 | Elimina il punto più vicino a `freq_hz` (entro 1 kHz) |
+| `IMPOSTA` | 11 | Imposta il parametro `freq_hz` al valore `valore`: 1 = driver del motore (0 STEP/DIR, 1 CAN), 2 = indirizzo CAN del SERVO42D (1-2047), 3 = velocità del bus (125/250/500/1000 kbit/s). Solo antenna RX |
 
 ### Risposta (antenna → controllo)
 | Campo | Tipo | Note |
@@ -45,11 +47,11 @@ Versione 2 (21/11/2026): campo `flag` nella risposta, comandi `CAL_LEGGI` e `CAL
 | seq | uint16 | numero di sequenza dell'antenna |
 | seq_comando | uint16 | `seq` del comando a cui risponde (0 = invio spontaneo) |
 | stato | uint8 | `NON_AZZERATA`, `FERMO`, `IN_MOVIMENTO`, `AZZERAMENTO`, `ERRORE` |
-| errore | uint8 | `NESSUNO`, `FINECORSA`, `BLOCCO`, `FUORI_BANDA`, `NON_CALIBRATA`, `HEARTBEAT`, `AZZERAMENTO_FALLITO`, `COMANDO_NON_VALIDO` |
+| errore | uint8 | `NESSUNO`, `FINECORSA`, `BLOCCO`, `FUORI_BANDA`, `NON_CALIBRATA`, `HEARTBEAT`, `AZZERAMENTO_FALLITO`, `COMANDO_NON_VALIDO`, `MOTORE_CAN` (il SERVO42D non risponde) |
 | banda | uint8 | 40, 20 oppure 0 |
 | posizione | int32 | passi dallo zero |
 | freq_hz | uint32 | ultima frequenza richiesta (0 se sconosciuta) |
-| flag | uint8 | bit 0 finecorsa MIN, bit 1 finecorsa MAX, bit 2 driver abilitato, bit 3 antenna TX, bit 4 posizione nota |
+| flag | uint8 | bit 0 finecorsa MIN, bit 1 finecorsa MAX, bit 2 driver abilitato, bit 3 antenna TX, bit 4 posizione nota, bit 5 motore via CAN |
 
 ### Punto di calibrazione (antenna → controllo, risposta a `CAL_LEGGI`)
 | Campo | Tipo | Note |
@@ -64,6 +66,10 @@ Versione 2 (21/11/2026): campo `flag` nella risposta, comandi `CAL_LEGGI` e `CAL
 Il pannello legge la tabella chiedendo i punti uno alla volta, da 0 a totale - 1.
 
 L'antenna risponde a ogni comando e invia una risposta spontanea quando cambia stato.
+
+## Coda dei comandi
+Il pannello tiene un solo comando in attesa di risposta; i comandi inviati nel frattempo vanno in una coda
+(fino a 6) e partono uno alla volta. L'heartbeat non passa dalla coda.
 
 ## Heartbeat
 - Il controllo invia `HEARTBEAT` ogni 1 s; ogni comando vale come heartbeat.

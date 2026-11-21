@@ -23,7 +23,7 @@ for f in "$PANNELLO"/src/font/*.c; do gcc $FLAGS -c "$f" -o "$COSTRUZIONE/font/$
 SORGENTI=(
   "$QUI/simulatore.cpp"
   "$PANNELLO"/src/ui/*.cpp
-  "$PANNELLO"/src/{display7,icona,tema,mappa,sole,locator,eventi,memorie,impostazioni,ora,indici}.cpp
+  "$PANNELLO"/src/{display7,icona,motore_antenna,tema,mappa,sole,locator,eventi,memorie,impostazioni,ora,indici}.cpp
 )
 g++ -std=c++17 -O1 -DLV_CONF_INCLUDE_SIMPLE -DIRAM_ATTR= -I"$QUI/stub" -I"$PANNELLO/src" -I"$PANNELLO" \
   -I"$PANNELLO/../lib/Comune/src" -I"$LVGL" "${SORGENTI[@]}" \

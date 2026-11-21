@@ -15,6 +15,7 @@
 #include "impostazioni.h"
 #include "link_antenna.h"
 #include "memorie.h"
+#include "motore_antenna.h"
 #include "ora.h"
 #include "rete.h"
 #include "schermo.h"
@@ -242,6 +243,20 @@ int main(int argc, char** argv) {
         ui::richiediRicostruzione();
         avanza(300);
       }
+    }
+    if (tm == 0) {  // sezione Antenna con l'antenna RX e il motore via CAN
+      uint8_t flag = statoFinto.r.flag;
+      statoFinto.r.flag = proto::FLAG_CAN | proto::FLAG_AZZERATA;
+      motore_antenna::scelte().modo = 1;
+      ui::richiediRicostruzione();
+      avanza(300);
+      ui::vaiA(ui::IMPOSTAZIONI);
+      pag_impostazioni::mostraAntenna();
+      salva("notte-6d-impostazioni-motore");
+      statoFinto.r.flag = flag;
+      motore_antenna::scelte().modo = 0;
+      ui::richiediRicostruzione();
+      avanza(300);
     }
     if (tm == 0) {  // finestra "Reti WiFi" e password
       ui::vaiA(ui::IMPOSTAZIONI);

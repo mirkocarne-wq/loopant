@@ -21,9 +21,19 @@ constexpr int PIN_FC_MAX = 14;  // finecorsa lato opposto
 constexpr bool FC_ATTIVO_BASSO = true;  // microswitch verso massa, pull-up + RC 100 nF
 
 // CAN verso il SERVO42D (versione RX, alternativa a STEP/DIR): transceiver Waveshare SN65HVD230.
-// Non ancora usato dal firmware.
+// Il driver (STEP/DIR o CAN) si sceglie dal pannello e resta salvato in NVS.
 constexpr int PIN_CAN_TX = 22;  // -> CTX del transceiver
 constexpr int PIN_CAN_RX = 23;  // -> CRX del transceiver
+constexpr uint16_t CAN_ID_PREDEFINITO = 1;      // indirizzo del SERVO42D (menu del driver)
+constexpr uint16_t CAN_KBIT_PREDEFINITO = 500;  // deve essere uguale a quello del SERVO42D
+// Comandi del SERVO42D (protocollo da verificare sul manuale ufficiale V1.0.3)
+constexpr uint8_t SERVO_MODO_CAN = 5;       // SR_vFOC: comandi dal bus
+constexpr uint8_t SERVO_MODO_IMPULSI = 2;   // CR_vFOC: STEP/DIR
+constexpr uint8_t SERVO_ACCELERAZIONE = 2;  // 0-255 (0 = senza rampa)
+constexpr uint8_t SERVO_HOME_LIVELLO = 0;   // finecorsa attivo basso (da verificare)
+constexpr uint8_t SERVO_HOME_VERSO = 1;     // 0 = CW, 1 = CCW verso il finecorsa (da verificare)
+constexpr uint16_t SERVO_HOME_RPM = 60;
+constexpr uint32_t SERVO_TIMEOUT_MS = 250;  // attesa della risposta prima di ripetere
 
 // --- Collegamento ---
 constexpr uint8_t CANALE_WIFI = 1;

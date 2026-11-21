@@ -21,7 +21,9 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 ## Firmware
 - [x] Unità antenna: prima versione scritta (PlatformIO, compila TX e RX), da provare sul banco.
 - [ ] Taratura sul banco: corrente NEMA11, R_SENSE, soglia StallGuard, passi della versione RX.
-- [ ] Prova del SERVO42D via CAN (SN65HVD230, GPIO 22/23; resistenza da 120 Ω a bordo e velocità del bus da verificare) e via STEP/DIR.
+- [x] Doppio driver del motore RX (STEP/DIR o CAN) scelto dal pannello: scritto, compila (protocollo v3).
+- [ ] Prova del SERVO42D via CAN (SN65HVD230, GPIO 22/23; 120 Ω a bordo e velocità del bus da verificare) e via STEP/DIR.
+- [ ] Protocollo CAN del SERVO42D: verificare sul manuale ufficiale CRC e comandi 0xFE, 0x91, 0xF1, 0x31, 0x8C; parametri di azzeramento nel menu del driver.
 - [ ] Prova del collegamento ESP-NOW con heartbeat e cifratura tra le due schede.
 - [x] Requisiti e mockup del pannello 7B approvati (docs/software/03-unita-controllo.md).
 - [x] Firmware del pannello 7B, prima versione: driver, collegamento, barra, schede, Sintonia, temi, Impostazioni di base (compila).

@@ -6,7 +6,20 @@ Hardware: vedi [tecnico/06-elettronica.md](../tecnico/06-elettronica.md). Codice
 | Ambiente PlatformIO | Versione | Motore | Driver |
 |---|---|---|---|
 | `tx` (predefinito) | TX 100 W | NEMA11, attuatore lineare T6×1, corsa 150 mm | TMC2209 (STEP/DIR/EN + UART) |
-| `rx` | RX | NEMA17 + riduttore 20:1 sul variabile | SERVO42D in modo STEP/DIR/EN |
+| `rx` | RX | NEMA17 + riduttore 20:1 sul variabile | SERVO42D in STEP/DIR/EN **oppure** via CAN, a scelta dal pannello |
+
+## Driver del motore (antenna RX)
+Si sceglie dal pannello (Impostazioni → Antenna) o dalla console (`motore stepdir|can`); la scelta resta in NVS.
+| Driver | Comandi | Finecorsa e azzeramento | Codice |
+|---|---|---|---|
+| STEP/DIR | impulsi con FastAccelStepper | microswitch sui GPIO 27/14, azzeramento fatto dal firmware | `motore_stepdir.cpp` |
+| CAN | SERVO42D via SN65HVD230 (GPIO 22/23) | finecorsa collegati al SERVO42D, azzeramento con il suo comando 0x91 (parametri dal menu del driver) | `motore_can.cpp` |
+
+- Le posizioni sono in impulsi con gli stessi micropassi in entrambi i modi: la tabella di calibrazione resta valida.
+- Dopo un cambio di driver la posizione non è più nota: serve un nuovo azzeramento.
+- Nel cambio il firmware mette il SERVO42D nel modo giusto via CAN (SR_vFOC per il CAN, CR_vFOC per STEP/DIR).
+- Protocollo CAN ricavato da una libreria della comunità (MKSServoCAN): **da verificare sul manuale ufficiale**
+  (CRC, codici 0xFE/0x91/0xF1/0x31, risposte attive con 0x8C, parametri di azzeramento 0x90).
 
 ## Regole di movimento
 1. **Arrivo sempre dallo stesso verso** (verso crescente, lato opposto al finecorsa MIN).

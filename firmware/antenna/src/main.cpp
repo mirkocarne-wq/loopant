@@ -56,7 +56,8 @@ void inviaRisposta(uint16_t seqComando) {
   r.freq_hz = freqCorrente;
   r.flag = (movimento::finecorsaMin() ? proto::FLAG_FC_MIN : 0) |
            (movimento::finecorsaMax() ? proto::FLAG_FC_MAX : 0) |
-           (movimento::inMovimento() ? proto::FLAG_DRIVER : 0) |
+           (movimento::driverAbilitato() ? proto::FLAG_DRIVER : 0) |
+           (movimento::modo() == movimento::Modo::CAN ? proto::FLAG_CAN : 0) |
            (VERSIONE_TX ? proto::FLAG_VERSIONE_TX : 0) |
            (movimento::azzerato() ? proto::FLAG_AZZERATA : 0);
   radio.invia(&r, sizeof(r));
@@ -165,6 +166,25 @@ void esegui(const proto::Comando& c, bool daRadio) {
       if (!calibrazione::eliminaPunto(c.freq_hz)) erroreComando = proto::Errore::COMANDO_NON_VALIDO;
       break;
 
+    case proto::Tipo::IMPOSTA: {
+      cancellaErrori();
+      bool ok = false;
+      switch ((proto::Parametro)c.freq_hz) {
+        case proto::Parametro::MODO_MOTORE:
+          ok = movimento::impostaModo(c.valore == 1 ? movimento::Modo::CAN : movimento::Modo::STEP_DIR);
+          if (ok) targetInSospeso = false;  // con l'altro driver serve un nuovo azzeramento
+          break;
+        case proto::Parametro::CAN_ID:
+          ok = movimento::impostaCan((uint16_t)c.valore, movimento::canKbit());
+          break;
+        case proto::Parametro::CAN_KBIT:
+          ok = movimento::impostaCan(movimento::canId(), (uint16_t)c.valore);
+          break;
+      }
+      if (!ok) erroreComando = proto::Errore::COMANDO_NON_VALIDO;
+      break;
+    }
+
     case proto::Tipo::STATO:
     case proto::Tipo::HEARTBEAT:
     default:
@@ -210,12 +230,17 @@ void stampaStato() {
                 proto::nomeStato(statoAttuale()), proto::nomeErrore(erroreAttuale()),
                 (long)movimento::posizione(), freqCorrente / 1000.0, movimento::finecorsaMin(),
                 movimento::finecorsaMax());
+  if (movimento::modo() == movimento::Modo::CAN)
+    Serial.printf("Motore: CAN (SERVO42D indirizzo %u, %u kbit/s)\n", movimento::canId(), movimento::canKbit());
+  else
+    Serial.println("Motore: STEP/DIR");
 }
 
 void aiuto() {
   Serial.println(
       "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calelim <kHz> | calcanc <kHz> |\n"
-      "         tabella | stato | mac <AA:BB:CC:DD:EE:FF> | aiuto");
+      "         tabella | stato | mac <AA:BB:CC:DD:EE:FF> |\n"
+      "         motore stepdir|can | canid <1-2047> | cankbit <125|250|500|1000> (solo RX) | aiuto");
 }
 
 void eseguiRiga(char* riga) {
@@ -241,6 +266,18 @@ void eseguiRiga(char* riga) {
   } else if (!strcmp(cmd, "calcanc") && arg) {
     c.tipo = proto::Tipo::CAL_CANCELLA;
     c.freq_hz = leggiFrequenza(arg);
+  } else if (!strcmp(cmd, "motore") && arg) {
+    c.tipo = proto::Tipo::IMPOSTA;
+    c.freq_hz = (uint32_t)proto::Parametro::MODO_MOTORE;
+    c.valore = !strcmp(arg, "can") ? 1 : 0;
+  } else if (!strcmp(cmd, "canid") && arg) {
+    c.tipo = proto::Tipo::IMPOSTA;
+    c.freq_hz = (uint32_t)proto::Parametro::CAN_ID;
+    c.valore = atol(arg);
+  } else if (!strcmp(cmd, "cankbit") && arg) {
+    c.tipo = proto::Tipo::IMPOSTA;
+    c.freq_hz = (uint32_t)proto::Parametro::CAN_KBIT;
+    c.valore = atol(arg);
   } else if (!strcmp(cmd, "calelim") && arg) {
     c.tipo = proto::Tipo::CAL_ELIMINA;
     c.freq_hz = leggiFrequenza(arg);

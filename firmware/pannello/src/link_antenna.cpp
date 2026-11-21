@@ -29,6 +29,11 @@ int8_t rssi = 0;
 uint32_t ripetuti = 0, inviati = 0, ricevuti = 0;
 
 Tabella tab = {};
+
+// comandi in coda mentre se ne attende la risposta di un altro
+constexpr uint8_t MAX_CODA = 6;
+proto::Comando coda[MAX_CODA];
+uint8_t nCoda = 0;
 bool letturaInCorso = false;
 uint8_t prossimoIndice = 0;
 bool chiediProssimo = false;
@@ -87,6 +92,11 @@ void invia(proto::Tipo tipo, uint32_t freq_hz, int32_t valore) {
   c.freq_hz = freq_hz;
   c.valore = valore;
   portENTER_CRITICAL(&mux);
+  if (tipo != proto::Tipo::HEARTBEAT && inAttesa) {  // in coda: parte dopo la risposta al comando in corso
+    if (nCoda < MAX_CODA) coda[nCoda++] = c;
+    portEXIT_CRITICAL(&mux);
+    return;
+  }
   c.seq = prossimaSeq();
   if (tipo != proto::Tipo::HEARTBEAT) {
     attesa = c;
@@ -145,7 +155,15 @@ void aggiorna() {
       letturaInCorso = false;  // lettura della tabella interrotta
     }
   }
-  if (chiediProssimo && !inAttesa) {
+  bool daCoda = false;
+  proto::Comando prossimoInCoda;
+  if (!inAttesa && nCoda) {
+    prossimoInCoda = coda[0];
+    for (uint8_t i = 1; i < nCoda; i++) coda[i - 1] = coda[i];
+    nCoda--;
+    daCoda = true;
+  }
+  if (chiediProssimo && !inAttesa && !daCoda) {
     chiediProssimo = false;
     prossimo = true;
   }
@@ -153,6 +171,7 @@ void aggiorna() {
   bande::Banda banda = tab.banda;
   portEXIT_CRITICAL(&mux);
   if (ripeti) trasmetti(c);
+  if (daCoda) invia(prossimoInCoda.tipo, prossimoInCoda.freq_hz, prossimoInCoda.valore);
   if (prossimo) invia(proto::Tipo::CAL_LEGGI, freqDiBanda(banda), indice);
 
   if (ora - ultimoInvio >= cfg::HEARTBEAT_MS) invia(proto::Tipo::HEARTBEAT);

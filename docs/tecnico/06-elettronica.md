@@ -61,7 +61,8 @@ I valori sono in `firmware/antenna/include/config.h`.
 - La scheda Waveshare ha a bordo una resistenza da 120 Ω (da verificare sulla scheda). Con un solo slave e
   cavo corto basta quella: non aggiungere altri terminatori.
 - Velocità del bus: deve essere uguale a quella impostata nel menu del SERVO42D (500 kbit/s di solito; da verificare).
-- Il firmware per ora pilota il SERVO42D in STEP/DIR/EN; il controllo via CAN è da scrivere e provare.
+- Il firmware supporta entrambi i modi (STEP/DIR o CAN), scelti dal pannello. In CAN i finecorsa vanno collegati al
+  SERVO42D e l'azzeramento lo fa il driver con i parametri impostati nel suo menu (livello, verso, velocità): da provare.
 - Il manuale non indica isolamento dell'interfaccia: considerarla **non isolata**.
   Con l'ESP32 nella scatola il cavo CAN è corto e non serve isolatore.
 - Con un cavo lungo in futuro: transceiver isolato (ISO1050 con DC-DC, 3,3 V).

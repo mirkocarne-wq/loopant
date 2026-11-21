@@ -14,6 +14,7 @@
 #include "src/eventi.h"
 #include "src/impostazioni.h"
 #include "src/link_antenna.h"
+#include "src/motore_antenna.h"
 #include "src/ora.h"
 #include "src/rete.h"
 #include "src/schermo.h"
@@ -24,6 +25,7 @@
 void setup() {
   Serial.begin(115200);
   impostazioni::carica();
+  motore_antenna::carica();
   ora::applicaFuso();
   tema::inizia();
 

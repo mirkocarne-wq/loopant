@@ -7,6 +7,7 @@
 #include <initializer_list>
 
 #include "../impostazioni.h"
+#include "../motore_antenna.h"
 #include "../ora.h"
 #include "../rete.h"
 #include "../schermo.h"
@@ -26,6 +27,10 @@ lv_obj_t* campoSsid;
 lv_obj_t* campoPassword;
 lv_obj_t* testoRete;
 lv_obj_t* testoLuce;
+lv_obj_t* boxCan;
+lv_obj_t* testoCanId;
+lv_obj_t* statoMotore;
+lv_obj_t* sezioneAntenna;
 
 // Finestra "Reti WiFi"
 lv_obj_t* finestra = nullptr;
@@ -53,7 +58,7 @@ struct Gruppo {
   lv_obj_t* pulsanti[4];
   void (*cambiato)();
 };
-Gruppo gruppi[6];
+Gruppo gruppi[8];
 uint8_t numGruppi = 0;
 
 void evidenzia(Gruppo& g) {
@@ -198,6 +203,29 @@ void scegliTema(lv_event_t* e) {
 }
 
 void apriCalibrazione(lv_event_t*) { ui::vaiA(ui::CALIBRAZIONE); }
+
+// --- Driver del motore dell'antenna RX --------------------------------------------------------
+
+void mostraCan() {
+  if (motore_antenna::scelte().modo == 1) lv_obj_clear_flag(boxCan, LV_OBJ_FLAG_HIDDEN);
+  else lv_obj_add_flag(boxCan, LV_OBJ_FLAG_HIDDEN);
+}
+
+void modoCambiato() {
+  mostraCan();
+  if (motore_antenna::scelte().modo == 1) motore_antenna::inviaCan();  // prima indirizzo e velocità
+  motore_antenna::inviaModo();
+}
+
+void kbitCambiato() { motore_antenna::inviaCan(); }
+
+void premiCanId(lv_event_t* e) {
+  motore_antenna::Scelte& m = motore_antenna::scelte();
+  int v = m.canId + (int)(intptr_t)lv_event_get_user_data(e);
+  m.canId = (uint16_t)(v < 1 ? 1 : v > 2047 ? 2047 : v);
+  lv_label_set_text_fmt(testoCanId, "%u", m.canId);
+  motore_antenna::inviaCan();
+}
 void anteprima(lv_event_t*) { screensaver::anteprima(); }
 void fusoCambiato() { ora::applicaFuso(); }
 void aggiornaIndici(lv_event_t*) { rete::aggiornaIndiciOra(); }
@@ -481,6 +509,7 @@ void crea(lv_obj_t* c) {
 
   // Antenna
   lv_obj_t* an = sezione(sx, "ANTENNA");
+  sezioneAntenna = an;
   char mac[18];
   Collegamento::scriviMac(imp.peer, mac);
   lv_obj_t* l = ui::etichetta(an, "", &font_16, t.text);
@@ -490,6 +519,36 @@ void crea(lv_obj_t* c) {
   Collegamento::scriviMac(mio, mac);
   l = ui::etichetta(an, "", &font_14, t.text2);
   lv_label_set_text_fmt(l, "MAC di questo pannello: %s\nIl MAC dell'antenna si imposta dalla console: mac AA:BB:…", mac);
+  static const char* const MODI_MOTORE[] = {"STEP/DIR", "CAN"};
+  static const uint8_t V_MODI_MOTORE[] = {0, 1};
+  static const char* const KBIT[] = {"125", "250", "500", "1000"};
+  static const uint8_t V_KBIT[] = {0, 1, 2, 3};
+  motore_antenna::Scelte& mot = motore_antenna::scelte();
+  ui::etichetta(an, "Driver del motore (solo antenna RX con SERVO42D)", &font_14, t.text2);
+  gruppo(an, MODI_MOTORE, V_MODI_MOTORE, 2, &mot.modo, modoCambiato);
+  boxCan = ui::contenitore(an, LV_FLEX_FLOW_COLUMN, 6);
+  lv_obj_set_width(boxCan, LV_PCT(100));
+  lv_obj_t* rid = ui::contenitore(boxCan, LV_FLEX_FLOW_ROW, 8);
+  lv_obj_set_width(rid, LV_PCT(100));
+  lv_obj_set_flex_align(rid, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+  lv_obj_t* lid = ui::etichetta(rid, "Indirizzo CAN del SERVO42D", &font_14, t.text2);
+  lv_obj_set_flex_grow(lid, 1);
+  lv_obj_t* meno = ui::pulsante(rid, "−", &font_20, ui::Stile::NORMALE);
+  lv_obj_set_size(meno, 52, 44);
+  lv_obj_add_event_cb(meno, premiCanId, LV_EVENT_CLICKED, (void*)(intptr_t)-1);
+  testoCanId = ui::etichetta(rid, "", &font_20, t.text);
+  lv_obj_set_width(testoCanId, 60);
+  lv_obj_set_style_text_align(testoCanId, LV_TEXT_ALIGN_CENTER, 0);
+  lv_label_set_text_fmt(testoCanId, "%u", mot.canId);
+  lv_obj_t* piu = ui::pulsante(rid, "+", &font_20, ui::Stile::NORMALE);
+  lv_obj_set_size(piu, 52, 44);
+  lv_obj_add_event_cb(piu, premiCanId, LV_EVENT_CLICKED, (void*)(intptr_t)1);
+  ui::etichetta(boxCan, "Velocità del bus (kbit/s), uguale a quella del SERVO42D", &font_14, t.text2);
+  gruppo(boxCan, KBIT, V_KBIT, 4, &mot.kbitIdx, kbitCambiato);
+  statoMotore = ui::etichetta(an, "", &font_14, t.text2);
+  lv_label_set_long_mode(statoMotore, LV_LABEL_LONG_WRAP);
+  lv_obj_set_width(statoMotore, LV_PCT(100));
+  mostraCan();
   lv_obj_t* cal = ui::pulsante(an, "Calibrazione antenna  " LV_SYMBOL_RIGHT, &font_18, ui::Stile::NORMALE);
   lv_obj_set_size(cal, LV_PCT(100), 52);
   lv_obj_add_event_cb(cal, apriCalibrazione, LV_EVENT_CLICKED, nullptr);
@@ -561,8 +620,19 @@ void crea(lv_obj_t* c) {
   creaTastiera();
 }
 
-void aggiorna(const link_antenna::Stato&) {
+void aggiorna(const link_antenna::Stato& s) {
   char buf[96];
+  if (!s.collegato) {
+    lv_label_set_text(statoMotore, "Antenna non collegata: la scelta verrà inviata quando risponde.");
+  } else if (s.r.flag & proto::FLAG_VERSIONE_TX) {
+    lv_label_set_text(statoMotore, "Antenna TX: il motore usa sempre STEP/DIR (TMC2209).");
+  } else {
+    bool can = s.r.flag & proto::FLAG_CAN;
+    bool uguale = can == (motore_antenna::scelte().modo == 1);
+    snprintf(buf, sizeof(buf), "Antenna RX · motore via %s%s", can ? "CAN" : "STEP/DIR",
+             uguale ? "" : " · cambio non applicato (motore in movimento?)");
+    lv_label_set_text(statoMotore, buf);
+  }
   rete::stato(buf, sizeof(buf));
   lv_label_set_text(testoRete, buf);
 
@@ -582,6 +652,8 @@ void aggiorna(const link_antenna::Stato&) {
 }
 
 void mostraReti() { apriReti(nullptr); }
+
+void mostraAntenna() { lv_obj_scroll_to_view(sezioneAntenna, LV_ANIM_OFF); }
 
 void scegliRete(uint8_t indice) {
   lv_event_t e = {};
