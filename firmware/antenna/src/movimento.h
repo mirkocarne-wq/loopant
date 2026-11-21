@@ -11,6 +11,7 @@ namespace movimento {
 void inizia();
 void aggiorna();  // da chiamare a ogni giro del loop
 
+// Posizioni in passi con lo 0 al parcheggio dopo l'azzeramento (posMin sopra il finecorsa): da 0 alla corsa utile.
 // false se non azzerato. Con recupero (normale) arriva sempre dal verso crescente; senza, va diretto
 // (ritocco fine della manopola: niente andata e ritorno, il prossimo GOTO riallinea).
 bool vaiA(int32_t pos, bool recupero = true);

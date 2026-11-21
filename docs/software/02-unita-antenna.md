@@ -71,7 +71,8 @@ Segue il tipo di antenna (decisione del 21/11/2026): non c'è una scelta separat
    sotto il target e poi risale. Così il gioco è sempre preso dalla stessa parte.
 2. **Azzeramento sul finecorsa MIN a ogni cambio banda**, e all'accensione al primo comando. Dopo lo zero l'antenna
    sale alla posizione minima ammessa (`posMin` = stacco + recupero del gioco: 532 passi sull'RX), arrivando dal
-   basso: da lì jog e ritocco partono senza salti (sotto `posMin` i target vengono alzati a `posMin`).
+   basso, e ci resta fino al primo TUNE. **Quella posizione vale 0**: fuori dai driver (risposte al pannello,
+   calibrazione, display) le posizioni contano dal parcheggio; i driver contano dal finecorsa (`movimento.cpp`).
    Sequenza: ricerca veloce → stacco → riavvicinamento lento → zero → stacco finale.
 3. **Driver disabilitato dopo ogni movimento** (motore libero, nessun rumore HF).
 4. **Limiti software**: il target viene limitato tra `POS_MIN` e `POS_MAX`.

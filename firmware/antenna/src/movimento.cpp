@@ -16,6 +16,9 @@ Preferences nvs;
 
 bool can() { return !tipo_antenna::tx(); }  // TX: STEP/DIR (TMC2209); RX: CAN (SERVO42D)
 
+// I driver contano dal finecorsa; fuori da qui lo 0 è il parcheggio dopo l'azzeramento (posMin dal finecorsa).
+int32_t origine() { return tipo_antenna::meccanica().posMin(); }
+
 bool kbitValido(uint16_t k) { return k == 125 || k == 250 || k == 500 || k == 1000; }
 
 void salva() {
@@ -45,13 +48,16 @@ void aggiorna() {
   else stepdir::aggiorna();
 }
 
-bool vaiA(int32_t pos, bool recupero) { return can() ? can42d::vaiA(pos, recupero) : stepdir::vaiA(pos, recupero); }
+bool vaiA(int32_t pos, bool recupero) {
+  pos += origine();
+  return can() ? can42d::vaiA(pos, recupero) : stepdir::vaiA(pos, recupero);
+}
 void azzera() { can() ? can42d::azzera() : stepdir::azzera(); }
 void ferma() { can() ? can42d::ferma() : stepdir::ferma(); }
 bool inMovimento() { return can() ? can42d::inMovimento() : stepdir::inMovimento(); }
 bool inAzzeramento() { return can() ? can42d::inAzzeramento() : stepdir::inAzzeramento(); }
 bool azzerato() { return can() ? can42d::azzerato() : stepdir::azzerato(); }
-int32_t posizione() { return can() ? can42d::posizione() : stepdir::posizione(); }
+int32_t posizione() { return (can() ? can42d::posizione() : stepdir::posizione()) - origine(); }
 bool finecorsaMin() { return can() ? can42d::finecorsaMin() : stepdir::finecorsaMin(); }
 bool finecorsaMax() { return can() ? can42d::finecorsaMax() : stepdir::finecorsaMax(); }
 bool driverAbilitato() { return can() ? can42d::driverAbilitato() : stepdir::driverAbilitato(); }

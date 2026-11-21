@@ -64,7 +64,8 @@ struct Meccanica {
   int32_t staccoPassi;             // distanza dal finecorsa dopo l'azzeramento
   int32_t recuperoGiocoPassi;      // oltre il target, per arrivare sempre dal verso crescente
 
-  // Limiti software del target
+  // Limiti software del target, contati dal finecorsa. posMin è anche il parcheggio dopo lo zero, che fuori da
+  // movimento.cpp vale 0 (le posizioni pubbliche contano da lì).
   constexpr int32_t posMin() const { return staccoPassi + recuperoGiocoPassi; }
   constexpr int32_t posMax() const { return corsaPassi - staccoPassi; }
   // Oltre questa distanza senza trovare il finecorsa l'azzeramento fallisce
