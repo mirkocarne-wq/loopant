@@ -72,6 +72,12 @@ Tabella tabella() {
   t.versione = 1;
   return t;
 }
+Richiesta richiestaFinta = {};
+Richiesta richiestaAssociazione() { return richiestaFinta; }
+void rispondiAssociazione(bool conferma) {
+  printf("  [associazione] %s\n", conferma ? "conferma" : "rifiuto");
+  richiestaFinta.presente = false;
+}
 }  // namespace link_antenna
 
 // --- Rete, schermo e decoder finti ---------------------------------------------------------------
@@ -331,6 +337,14 @@ int main(int argc, char** argv) {
       statoFinto.r.flag = flag;
       motore_antenna::scelte().modo = 0;
       ui::richiediRicostruzione();
+      avanza(300);
+    }
+    if (tm == 0) {  // finestra "Antenna trovata" (BOOT premuto sull'antenna); MAC di esempio
+      link_antenna::richiestaFinta = {true, {0x24, 0x6F, 0x28, 0xAA, 0xBB, 0xCC}, true, -48};
+      ui::vaiA(ui::SINTONIA);
+      avanza(600);
+      salva("notte-1b-associazione");
+      link_antenna::rispondiAssociazione(false);
       avanza(300);
     }
     if (tm == 0) {  // QRZ: ricerca, logbook, logbook senza abbonamento

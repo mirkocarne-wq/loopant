@@ -19,11 +19,21 @@ non aspetta l'I2C.
 - All'accensione, per 4 s: MAC dell'unità, canale ESP-NOW, pannello impostato o no.
 - Fascia gialla: `LOOPANT TX`/`RX` e collegamento (dBm dell'ultimo messaggio, `SCOLLEGATO`, `NO MAC`).
 - Zona blu: frequenza in kHz a cifre grandi, stato, posizione in passi e `MOTORE ON` mentre il driver è abilitato;
-  in errore il motivo al posto della posizione. Senza MAC del pannello mostra il MAC dell'unità da inserire.
+  in errore il motivo al posto della posizione. Senza pannello associato: «tieni BOOT per 3 s» e il MAC dell'unità.
+- Durante l'associazione: `ASSOCIAZIONE` con il canale in prova, poi l'esito per 5 s.
 - Si spegne dopo `OLED_SPEGNI_S` (120 s) senza cambi di stato né comandi e si riaccende al primo cambio.
 
+## Associazione con il pannello (pulsante BOOT)
+- BOOT (GPIO 0) premuto **3 s**, a motore fermo: l'antenna cerca il pannello su tutti i canali e aspetta la conferma
+  sul pannello (finestra «Antenna trovata»). Salva in NVS il MAC del pannello e il canale, senza riavvio.
+- Pressione breve: annulla la ricerca; a riposo riaccende il display.
+- Con l'antenna già associata il pannello conferma da solo: serve a ritrovare il canale se il router lo cambia.
+- Dalla console: `associa`. Dettagli del protocollo in [04-protocollo-espnow.md](04-protocollo-espnow.md).
+- Non tenere premuto BOOT mentre la scheda si accende: entra in modalità di programmazione.
+
 ## Canale ESP-NOW
-Predefinito `CANALE_WIFI` (1) in `config.h`; dalla console `canale <1-13>` lo salva in NVS (riavviare).
+Predefinito `CANALE_WIFI` (1) in `config.h`. L'associazione salva quello del pannello; dalla console
+`canale <1-13>` lo imposta a mano (salvato in NVS, riavviare).
 Se il pannello è collegato al WiFi di casa deve essere il canale del router (oggi il 3).
 
 ## Driver del motore (antenna RX)

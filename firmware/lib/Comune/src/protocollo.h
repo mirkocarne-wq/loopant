@@ -7,7 +7,8 @@ namespace proto {
 
 // Versione 2: flag nella risposta, lettura ed eliminazione dei punti di calibrazione.
 // Versione 3: comando IMPOSTA (driver del motore STEP/DIR o CAN), flag FLAG_CAN, errore MOTORE_CAN.
-constexpr uint8_t VERSIONE = 3;
+// Versione 4: associazione con il pulsante BOOT dell'antenna (pacchetti Associa in broadcast).
+constexpr uint8_t VERSIONE = 4;
 
 enum class Tipo : uint8_t {
   GOTO = 1,          // vai alla frequenza freq_hz
@@ -23,6 +24,11 @@ enum class Tipo : uint8_t {
   IMPOSTA = 11,      // imposta il parametro freq_hz (Parametro) al valore 'valore'
   RISPOSTA = 0x80,      // antenna -> controllo: stato
   RISPOSTA_CAL = 0x81,  // antenna -> controllo: un punto di calibrazione
+  // Associazione (struttura Associa, in chiaro e in broadcast)
+  ASSOCIA_RICHIESTA = 0x90,  // antenna -> tutti: cerco un pannello (BOOT premuto 3 s)
+  ASSOCIA_ATTESA = 0x91,     // pannello -> antenna: ti vedo, aspetto la conferma dell'utente
+  ASSOCIA_CONFERMA = 0x92,   // pannello -> antenna: associata; il pannello è il mittente
+  ASSOCIA_RIFIUTO = 0x93,    // pannello -> antenna: l'utente ha rifiutato
 };
 
 // Bit di Risposta::flag
@@ -79,6 +85,20 @@ struct __attribute__((packed)) Risposta {
   int32_t posizione;
   uint32_t freq_hz;
   uint8_t flag;   // FLAG_*
+};
+
+// Associazione: l'antenna cerca il pannello canale per canale; il pannello chiede conferma all'utente
+// (o conferma da solo se è già l'antenna associata) e risponde sul suo canale. Si scambiano solo i MAC:
+// le chiavi PMK/LMK restano nel firmware, quindi senza chiavi giuste i comandi non passano comunque.
+constexpr uint32_t MAGIA_ASSOCIA = 0x504F4F4C;  // "LOOP"
+
+struct __attribute__((packed)) Associa {
+  uint8_t versione;
+  Tipo tipo;                // ASSOCIA_*
+  uint32_t magia;           // MAGIA_ASSOCIA
+  uint8_t destinatario[6];  // risposte del pannello: MAC dell'antenna; richiesta: zeri
+  uint8_t canale;           // canale su cui è stato inviato
+  uint8_t flag;             // richiesta: FLAG_VERSIONE_TX
 };
 
 // Risposta a CAL_LEGGI. totale = 0: banda senza punti (indice e valori non significativi).

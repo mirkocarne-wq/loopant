@@ -10,7 +10,7 @@ USCITA="${2:-$QUI/schermate}"
 COSTRUZIONE="${TMPDIR:-/tmp}/loopant-simulatore"
 mkdir -p "$COSTRUZIONE/lvgl" "$COSTRUZIONE/font" "$USCITA"
 
-FLAGS="-O1 -DLV_CONF_INCLUDE_SIMPLE -DIRAM_ATTR= -I$PANNELLO -I$LVGL -w"
+FLAGS="-O1 -DLV_CONF_INCLUDE_SIMPLE -DIRAM_ATTR= -I$QUI/stub -I$PANNELLO -I$LVGL -w"
 # LVGL (compilato una volta sola)
 if [[ ! -f "$COSTRUZIONE/lvgl/.fatto" ]]; then
   find "$LVGL/src" -name '*.c' | while read -r f; do

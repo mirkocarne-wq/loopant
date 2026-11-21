@@ -9,7 +9,7 @@ dei pixel a 21 MHz, vedi sotto), touch, colori, luminosità e ricerca delle reti
 | Parte | Stato |
 |---|---|
 | Schermo RGB, touch GT911, LVGL (driver Waveshare) | scritto |
-| Collegamento ESP-NOW con l'antenna (protocollo v2): heartbeat, ripetizioni, stato | scritto |
+| Collegamento ESP-NOW con l'antenna (protocollo v4): heartbeat, ripetizioni, stato | provato con l'antenna |
 | Barra in alto (nominativo, orologio UTC/locale, antenna, stato, STOP) e schede | scritto |
 | Sintonia | scritta |
 | Memorie: predefinite e personali (NVS), filtri, nuova, elimina | scritta |
@@ -23,6 +23,7 @@ dei pixel a 21 MHz, vedi sotto), touch, colori, luminosità e ricerca delle reti
 | QRZ.com: ricerca nominativi (con o senza abbonamento), i miei QSO | scritta; HTTPS provato, da provare con un account |
 | Pagina web (stato, comandi, vista e tocco dello schermo) | scritta e provata dal Mac |
 | Console seriale, su entrambe le USB-C | scritta |
+| Associazione con l'antenna (BOOT sull'antenna, finestra «Antenna trovata») | scritta e provata con l'antenna |
 
 ## Struttura
 ```

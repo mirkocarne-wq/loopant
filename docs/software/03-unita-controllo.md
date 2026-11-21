@@ -98,6 +98,7 @@ Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione
 | I4 | **Screensaver**: stile Orologio / Frequenza / Grey line / Spento; parte dopo Mai / 5 / 15 / 30 min; anteprima | [D] |
 | I5 | Luminosità; ora nella barra UTC / locale / entrambe | [D] |
 | I6 | WiFi: pulsante **Cerca reti**, elenco delle reti trovate (segnale, protetta/aperta), tocco sulla rete, password con tastiera e collegamento; campo manuale per le reti nascoste | [D] |
+| I7 | **Associazione**: quando un'antenna ha BOOT premuto compare su qualsiasi schermata la finestra «Antenna trovata» (TX/RX, MAC, segnale, antenna che sostituisce) con «Associa» e «Ignora»; l'antenna già associata si conferma da sola | [D] |
 
 ### C7. Calibrazione (da Impostazioni)
 | ID | Requisito | |
@@ -146,7 +147,7 @@ Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione
 | E3 | Heartbeat ogni secondo; indicatore di collegamento (perso dopo 3 s senza risposte) | [D] |
 | E4 | Comandi `GOTO`, `STOP`, `ZERO`, `STATO`, `JOG`, `CAL_SALVA`, `CAL_CANCELLA` (protocollo in [04](04-protocollo-espnow.md)) | [D] |
 | E5 | Ripetere il comando se non arriva la risposta (max 3 tentativi) | [N] |
-| E6 | Pairing con pulsante (scambio dei MAC in broadcast) | [D] |
+| E6 | Pairing con il pulsante BOOT dell'antenna (scambio dei MAC in broadcast, conferma sul pannello: I7); schermata `notte-1b-associazione` | [D] |
 | E7 | Con il WiFi attivo (indici solari) il canale ESP-NOW è quello del router di casa, anche sull'antenna | [D] |
 
 ## F. Sicurezza

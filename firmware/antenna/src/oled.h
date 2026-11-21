@@ -18,6 +18,9 @@ struct Dati {
   bool peerValido;     // MAC del pannello impostato
   bool collegato;      // messaggi dal pannello negli ultimi secondi
   int8_t rssi;         // dBm dell'ultimo messaggio; 0 = non disponibile
+  uint8_t associa;     // associazione::Fase
+  uint8_t canale;      // canale ESP-NOW (in prova durante l'associazione)
+  char pannello[18];   // MAC del pannello associato
 };
 
 bool inizia(const char* macLocale, uint8_t canale);  // false se il display non risponde

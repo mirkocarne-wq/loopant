@@ -18,6 +18,7 @@ un numero sopra 100 000 viene letto in Hz.
 | `tabella` | Stampa le tabelle di calibrazione |
 | `stato` | Stato, errore, posizione, finecorsa |
 | `mac <AA:BB:CC:DD:EE:FF>` | Salva in NVS il MAC dell'unità di controllo (riavvio necessario) |
+| `associa` | Associazione con il pannello, come BOOT premuto 3 s |
 | `canale <1-13>` | Salva in NVS il canale ESP-NOW: quello del router se il pannello usa il WiFi (riavvio necessario) |
 | `aiuto` | Elenco comandi |
 

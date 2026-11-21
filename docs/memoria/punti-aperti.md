@@ -26,8 +26,8 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [ ] Protocollo CAN del SERVO42D: verificare sul manuale ufficiale CRC e comandi 0xFE, 0x91, 0xF1, 0x31, 0x8C; parametri di azzeramento nel menu del driver.
 - [x] Collegamento ESP-NOW cifrato con heartbeat tra pannello e antenna, provato sulle schede il 21/11/2026 (canale 3 del router, chiavi di esempio).
 - [ ] Chiavi ESP-NOW vere (`segreti.h`) su pannello e antenna: oggi entrambi usano quelle di esempio.
-- [ ] Associazione pannello–antenna con il pulsante BOOT (GPIO 0) dell'antenna, al posto dei MAC da console: proposta.
-- [ ] Antenna: ricerca automatica del canale se il router lo cambia (oggi `canale` da console).
+- [x] Associazione con il pulsante BOOT dell'antenna e conferma sul pannello: provata sulle schede il 21/11/2026.
+- [ ] Antenna: ricerca automatica del canale se il router lo cambia senza premere BOOT (oggi BOOT o `canale`).
 - [ ] Display OLED dell'antenna: disturbo sui 40 e 20 m acceso e spento (con la radio).
 - [x] Requisiti e mockup del pannello 7B approvati (docs/software/03-unita-controllo.md).
 - [x] Firmware del pannello 7B, prima versione: driver, collegamento, barra, schede, Sintonia, temi, Impostazioni di base (compila).

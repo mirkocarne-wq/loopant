@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <Preferences.h>
 
+#include "associazione.h"
 #include "bande.h"
 #include "calibrazione.h"
 #include "collegamento.h"
@@ -16,6 +17,7 @@ namespace {
 
 Collegamento radio;
 Preferences nvs;
+uint8_t macPannello[6] = {0};
 uint8_t canale = cfg::CANALE_WIFI;  // canale ESP-NOW (NVS "canale"): quello del router se il pannello usa il WiFi
 
 uint16_t seqRisposta = 0;
@@ -222,6 +224,26 @@ void controllaHeartbeat() {
   }
 }
 
+// --- Associazione con il pulsante BOOT ---------------------------------------------------------
+
+void aggiornaAssociazione() {
+  uint8_t mac[6];
+  uint8_t ch;
+  bool consentita = !movimento::inMovimento() && !targetInSospeso;
+  if (associazione::aggiorna(radio, consentita, mac, ch)) {
+    nvs.putBytes("peer", mac, 6);
+    nvs.putUChar("canale", ch);
+    memcpy(macPannello, mac, 6);
+    canale = ch;
+    radio.cambiaPeer(mac, segreti::LMK);
+    ultimoMessaggioRadio = 0;
+    char t[18];
+    Collegamento::scriviMac(mac, t);
+    Serial.printf("Associata al pannello %s sul canale %u (salvato)\n", t, ch);
+  }
+  if (associazione::pressioneBreve()) oled::sveglia();
+}
+
 // --- Display OLED ---------------------------------------------------------------------------
 
 void aggiornaOled() {
@@ -238,6 +260,9 @@ void aggiornaOled() {
   d.peerValido = radio.peerValido();
   d.collegato = ultimoMessaggioRadio != 0 && millis() - ultimoMessaggioRadio < cfg::TIMEOUT_HEARTBEAT_MS;
   d.rssi = ultimoRssi;
+  d.associa = (uint8_t)associazione::fase();
+  d.canale = associazione::fase() == associazione::Fase::INATTIVA ? canale : associazione::canale();
+  if (radio.peerValido()) Collegamento::scriviMac(macPannello, d.pannello);
   oled::aggiorna(d);
 }
 
@@ -264,7 +289,7 @@ void stampaStato() {
 void aiuto() {
   Serial.println(
       "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calelim <kHz> | calcanc <kHz> |\n"
-      "         tabella | stato | mac <AA:BB:CC:DD:EE:FF> | canale <1-13> |\n"
+      "         tabella | stato | mac <AA:BB:CC:DD:EE:FF> | canale <1-13> | associa |\n"
       "         motore stepdir|can | canid <1-2047> | cankbit <125|250|500|1000> (solo RX) | aiuto");
 }
 
@@ -321,6 +346,9 @@ void eseguiRiga(char* riga) {
     nvs.putBytes("peer", mac, 6);
     Serial.println("MAC del controllo salvato: riavviare");
     return;
+  } else if (!strcmp(cmd, "associa")) {
+    associazione::avvia();  // come BOOT premuto 3 s
+    return;
   } else if (!strcmp(cmd, "canale") && arg) {
     int n = atoi(arg);
     if (n < 1 || n > 13) {
@@ -366,9 +394,11 @@ void setup() {
   nvs.begin("loopant", false);
   movimento::inizia();
   calibrazione::inizia();
+  associazione::inizia();
 
   uint8_t peer[6] = {0};
   nvs.getBytes("peer", peer, 6);
+  memcpy(macPannello, peer, 6);
   canale = nvs.getUChar("canale", cfg::CANALE_WIFI);
   if (canale < 1 || canale > 13) canale = cfg::CANALE_WIFI;
   bool ok = radio.inizia(peer, segreti::PMK, segreti::LMK, canale);
@@ -380,7 +410,7 @@ void setup() {
   Serial.printf("MAC di questa unità: %s\n", testo);
   Serial.printf("Display OLED: %s\n", oled::inizia(testo, canale) ? "presente" : "non trovato (SDA 21, SCL 22)");
   if (!radio.peerValido())
-    Serial.println("MAC del controllo non impostato: usare 'mac AA:BB:CC:DD:EE:FF'");
+    Serial.println("Pannello non associato: tenere premuto BOOT per 3 s, oppure 'mac AA:BB:CC:DD:EE:FF'");
   else if (!ok)
     Serial.println("ERRORE: ESP-NOW non inizializzato");
   aiuto();
@@ -399,6 +429,7 @@ void loop() {
 
   controllaHeartbeat();
   leggiConsole();
+  aggiornaAssociazione();
   aggiornaOled();
 
   // invio spontaneo quando cambia lo stato

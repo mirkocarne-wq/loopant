@@ -243,6 +243,7 @@ void aggiornaTutto(lv_timer_t*) {
     costruisci();
   }
   link_antenna::Stato s = link_antenna::stato();
+  finestra_associazione::controlla();  // prima dello screensaver: una richiesta lo chiude
   screensaver::aggiorna(s);
   if (screensaver::attivo()) return;  // schermo coperto: niente aggiornamenti
   aggiornaBarra(s);

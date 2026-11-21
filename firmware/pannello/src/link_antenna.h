@@ -32,6 +32,15 @@ struct Tabella {
   uint32_t versione;    // cambia a ogni aggiornamento
 };
 
+// Associazione: un'antenna con BOOT premuto chiede di associarsi e aspetta la conferma dell'utente.
+// La richiesta dell'antenna già associata si conferma da sola (serve a ritrovare il canale).
+struct Richiesta {
+  bool presente;
+  uint8_t mac[6];
+  bool tx;      // antenna TX (altrimenti RX)
+  int8_t rssi;  // dBm
+};
+
 void inizia(const uint8_t peer[6]);
 void aggiorna();
 void invia(proto::Tipo tipo, uint32_t freq_hz = 0, int32_t valore = 0);
@@ -40,5 +49,10 @@ Stato stato();
 // Chiede all'antenna tutti i punti di calibrazione della banda (uno alla volta).
 void richiediTabella(bande::Banda banda);
 Tabella tabella();
+
+Richiesta richiestaAssociazione();
+// Dal task di LVGL. Con conferma il chiamante salva il MAC nelle impostazioni; qui si risponde all'antenna
+// e si passa al nuovo peer senza riavvio.
+void rispondiAssociazione(bool conferma);
 
 }  // namespace link_antenna

@@ -55,6 +55,10 @@ void mostrata();
 }  // namespace pag_calibrazione
 
 // Schermate non ancora realizzate (Memorie, Propagazione, Decoder, Diagnostica)
+namespace finestra_associazione {
+void controlla();  // dal timer dell'interfaccia: apre o chiude la finestra "Antenna trovata"
+}  // namespace finestra_associazione
+
 namespace pag_segnaposto {
 void crea(lv_obj_t* contenuto, const char* nome, const char* descrizione);
 }  // namespace pag_segnaposto

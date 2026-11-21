@@ -4,6 +4,7 @@
 #include <U8g2lib.h>
 #include <Wire.h>
 
+#include "associazione.h"
 #include "config.h"
 
 namespace oled {
@@ -38,13 +39,13 @@ void sbloccaBus() {
 bool diversi(const Dati& a, const Dati& b) {
   return a.stato != b.stato || a.errore != b.errore || a.freqHz != b.freqHz || a.posizione != b.posizione ||
          a.driver != b.driver || a.can != b.can || a.peerValido != b.peerValido || a.collegato != b.collegato ||
-         a.rssi != b.rssi;
+         a.rssi != b.rssi || a.associa != b.associa || a.canale != b.canale || strcmp(a.pannello, b.pannello) != 0;
 }
 
 // Cambi che riaccendono il display (la posizione cambia solo durante un movimento, già segnalato dallo stato)
 bool importanti(const Dati& a, const Dati& b) {
   return a.stato != b.stato || a.errore != b.errore || a.freqHz != b.freqHz || a.collegato != b.collegato ||
-         a.peerValido != b.peerValido;
+         a.peerValido != b.peerValido || a.associa != b.associa;
 }
 
 void accendi(bool si) {
@@ -97,10 +98,47 @@ void schermataAvvio(const Dati& d) {
 void schermataSenzaPeer(const Dati& d) {
   fascia(d);
   u8g2.setFont(u8g2_font_6x10_tf);
-  u8g2.drawStr(0, 27, "MAC del pannello");
-  u8g2.drawStr(0, 39, "non impostato.");
+  u8g2.drawStr(0, 27, "Nessun pannello:");
+  u8g2.drawStr(0, 39, "tieni BOOT per 3 s");
   u8g2.drawUTF8(0, 51, "Questa unità:");
   u8g2.drawStr(0, 62, mac);
+}
+
+void schermataAssociazione(const Dati& d) {
+  using associazione::Fase;
+  Fase f = (Fase)d.associa;
+  u8g2.setFont(u8g2_font_6x13B_tf);
+  u8g2.drawStr(0, 12, "ASSOCIAZIONE");
+  char t[24];
+  snprintf(t, sizeof(t), "ch %u", d.canale);
+  destra(12, t);
+  u8g2.setFont(u8g2_font_6x10_tf);
+  switch (f) {
+    case Fase::RICERCA:
+      u8g2.drawStr(0, 27, "Cerco il pannello");
+      u8g2.drawStr(0, 39, "su tutti i canali...");
+      u8g2.drawStr(0, 62, "BOOT breve: annulla");
+      break;
+    case Fase::ATTESA:
+      u8g2.drawStr(0, 27, "Pannello trovato.");
+      u8g2.drawStr(0, 39, "Conferma sul pannello");
+      u8g2.drawStr(0, 62, "BOOT breve: annulla");
+      break;
+    case Fase::RIUSCITA:
+      u8g2.drawStr(0, 27, "Associata al pannello");
+      u8g2.drawStr(0, 39, d.pannello);
+      snprintf(t, sizeof(t), "canale %u", d.canale);
+      u8g2.drawStr(0, 51, t);
+      break;
+    case Fase::RIFIUTATA:
+      u8g2.drawStr(0, 27, "Rifiutata");
+      u8g2.drawStr(0, 39, "dal pannello");
+      break;
+    default:
+      u8g2.drawStr(0, 27, "Nessun pannello");
+      u8g2.drawStr(0, 39, "trovato o annullata");
+      break;
+  }
 }
 
 void schermataNormale(const Dati& d) {
@@ -150,6 +188,7 @@ void compito(void*) {
     if (acceso && (primo || inAvvio || (arrivati && diversi(d, disegnati)))) {
       u8g2.clearBuffer();
       if (inAvvio) schermataAvvio(d);
+      else if (d.associa != (uint8_t)associazione::Fase::INATTIVA) schermataAssociazione(d);
       else if (!d.peerValido) schermataSenzaPeer(d);
       else schermataNormale(d);
       u8g2.sendBuffer();
