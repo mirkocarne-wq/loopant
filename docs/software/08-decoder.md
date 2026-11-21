@@ -14,7 +14,7 @@ Legenda: **[D]** = deciso; **[N]** = proposta tecnica, da confermare.
 ## CW
 | Funzione | Specifica | |
 |---|---|---|
-| Rilevazione del tono | Algoritmo di Goertzel centrato sul tono (predefinito 700 Hz, regolabile) | [N] |
+| Rilevazione del tono | Algoritmo di Goertzel centrato sul tono (predefinito 700 Hz, regolabile a passi di 10 Hz) | [D] |
 | Filtro | Larghezza 100 / 250 / 500 Hz (durata del blocco di Goertzel) | [D] |
 | Soglia | Adattiva, mostrata sulla barra del livello | [D] |
 | Velocità | Stima automatica in WPM dalla durata dei punti; possibilità di fissarla a mano | [D] |
@@ -35,7 +35,19 @@ Legenda: **[D]** = deciso; **[N]** = proposta tecnica, da confermare.
 | Demodulazione | Due filtri (Goertzel o passa-banda) su mark e space, confronto delle energie, campionamento al centro del bit | [N] |
 | Indicatore di sintonia | Barre di livello mark e space, stato "agganciato" | [D] |
 
-## Note di realizzazione [N]
-- La decodifica gira su un task FreeRTOS dedicato (core 0); LVGL sul core 1, come negli esempi Waveshare.
-- Parametri del decoder salvati in NVS.
-- Il decoder è solo ricezione: il pannello non trasmette.
+## Realizzazione (21/11/2026)
+Codice: `firmware/pannello/src/decoder/` (algoritmi), `src/audio.*` (ADC), `src/decodifica.*`, `src/ui/pagina_decoder.cpp`.
+
+- **Ingresso**: ADC continuo dell'ESP32-S3 a 8 kHz su `cfg::PIN_AUDIO` (GPIO6, da verificare), continua tolta con
+  un passa-alto lento, task sul core 0. LVGL resta sul core 1.
+- **CW**: Goertzel su blocchi con un numero intero di periodi del tono (altrimenti l'ampiezza oscilla con la fase);
+  rumore stimato a tasto alzato, squelch a 6 volte il rumore, isteresi 55 %/35 %, conferma su 2 blocchi,
+  breve riscaldamento iniziale; punto/linea a 2 dit, fine carattere a 2 dit, fine parola a 5 dit; WPM stimati
+  (oppure fissi) tra 5 e 50.
+- **RTTY**: miscelazione I/Q su mark e space con media mobile di 0,8 bit, confronto delle energie, start sul
+  fronte mark→space, campionamento a metà bit, controllo dello stop; Baudot ITA2 con LTRS/FIGS e UOS;
+  AFC dalla rotazione di fase del tono attivo (ogni 50 ms, ±100 Hz).
+- **Prove sul PC** (`firmware/pannello/test/esegui_test.sh`): CW 12-28 WPM con filtri 100/250/500 Hz e rumore,
+  RTTY 45,45/170, Reverse, 50/850, AFC con 25 Hz di errore, rumore forte; ripetute con 10 sequenze di rumore.
+  **Da provare con segnali veri** dalla radio.
+- Parametri salvati in NVS; il decoder è solo ricezione.

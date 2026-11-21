@@ -10,6 +10,7 @@
 #include <protocollo.h>
 
 #include "src/console.h"
+#include "src/decodifica.h"
 #include "src/eventi.h"
 #include "src/impostazioni.h"
 #include "src/link_antenna.h"
@@ -35,6 +36,7 @@ void setup() {
 
   link_antenna::inizia(impostazioni::get().peer);
   rete::inizia();
+  decodifica::inizia();
 
   if (lvgl_port_lock(-1)) {
     ui::inizia();

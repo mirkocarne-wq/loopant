@@ -24,8 +24,8 @@ firmware/lib/Comune/   codice condiviso: protocollo ESP-NOW, bande, collegamento
 firmware/antenna/      firmware unità antenna (ESP32 DevKit 38 pin), PlatformIO, ambienti tx e rx
 firmware/pannello/     firmware pannello in casa (Waveshare 7B), Arduino core 3.1.1 + LVGL 8.4
 ```
-Il firmware del **pannello in casa** (Waveshare ESP32-S3-Touch-LCD-7B) è alla prima versione (stato in
-`firmware/pannello/README.md`). Requisiti e mockup approvati: `docs/software/03-unita-controllo.md`
+Il firmware del **pannello in casa** (Waveshare ESP32-S3-Touch-LCD-7B) ha tutte le schermate del mockup, non ancora
+provate sulla scheda (stato in `firmware/pannello/README.md`). Requisiti e mockup approvati: `docs/software/03-unita-controllo.md`
 (schermate, temi, screensaver), `08-decoder.md` (CW/RTTY) e `09-propagazione.md` (grey line, indici solari).
 Font del pannello: `firmware/pannello/src/font/` (Montserrat con Latin-1 e – — … − ↔ →). Nelle stringhe dell'interfaccia
 usare solo quei caratteri; per aggiungerne altri modificare e rilanciare `firmware/pannello/strumenti/genera_font.sh`.
@@ -35,6 +35,7 @@ usare solo quei caratteri; per aggiungerne altri modificare e rilanciare `firmwa
 cd firmware/antenna && pio run -e tx   # versione TX (NEMA11 + TMC2209)
 cd firmware/antenna && pio run -e rx   # versione RX (SERVO42D in STEP/DIR)
 firmware/pannello/compila.sh           # pannello, con arduino-cli (core esp32 3.1.1, lvgl 8.4.0)
+firmware/pannello/test/esegui_test.sh  # test sul PC: sole, locator, indici, decoder CW/RTTY
 ```
 Le chiavi ESP-NOW reali vanno in `firmware/lib/Comune/src/segreti.h` (non versionato);
 senza, si compila con le chiavi di esempio e un avviso.

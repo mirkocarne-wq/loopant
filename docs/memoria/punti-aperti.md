@@ -23,15 +23,16 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [x] Firmware del pannello 7B, prima versione: driver, collegamento, barra, schede, Sintonia, temi, Impostazioni di base (compila).
 - [ ] Pannello: prova sulla scheda vera (schermo, touch, collegamento con l'antenna).
 - [x] Pannello: Calibrazione e Diagnostica (protocollo v2: flag, CAL_LEGGI, CAL_ELIMINA), compilano.
-- [ ] Pannello: schermate Memorie, Propagazione, Decoder, screensaver.
+- [x] Pannello: Memorie, Propagazione, Decoder CW/RTTY, screensaver, Impostazioni complete, WiFi/NTP/indici (compilano; algoritmi provati sul PC).
+- [ ] Decoder: prova con segnali veri dalla radio.
 - [x] Pannello: font con lettere accentate, "·" e "—" (Montserrat Latin-1 con lv_font_conv).
 - [ ] Pannello: icone del mockup al posto dei simboli LVGL.
-- [ ] Pannello: verso del PWM della retroilluminazione (IO expander) per la luminosità.
-- [ ] Ingresso audio per il decoder CW/RTTY sul 7B (modulo I2S o ingresso analogico, schema elettrico).
+- [ ] Pannello: verso del PWM della retroilluminazione (IO expander): il firmware scrive 100 − luminosità, da verificare.
+- [ ] Ingresso audio del decoder: GPIO6 da verificare sullo schema; circuito d'ingresso da provare.
 - [ ] Font per LVGL: monospazio per i temi a fosfori, con lv_font_conv (le cifre a 7 segmenti sono già un widget).
 - [ ] Mappa per la grey line in flash (Natural Earth), una per tema.
-- [ ] Indici solari via WiFi: fonte (feed hamqsl.com?), formato, condizioni d'uso; canale ESP-NOW = canale del router.
-- [ ] Ora esatta sul pannello: NTP via WiFi o impostazione manuale (nessun RTC documentato).
+- [ ] Indici solari: verificare formato e condizioni d'uso del feed hamqsl.com; con il WiFi l'antenna va sul canale del router.
+- [x] Ora esatta sul pannello: NTP via WiFi oppure impostazione dalla console.
 - [ ] Verificare band plan IARU R1 e frequenze delle memorie predefinite.
 - [ ] UART per il futuro CI-V sul 7B (schema elettrico).
 - [ ] Procedura di calibrazione e tabella posizione ↔ frequenza.

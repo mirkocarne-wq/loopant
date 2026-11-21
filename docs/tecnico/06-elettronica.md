@@ -31,10 +31,18 @@ I valori sono in `firmware/antenna/include/config.h`.
 - Valutata anche la diymore 3,5" (320×480): più piccola, documentazione da verificare.
   Non adatta all'antenna: pochi GPIO e schermo inutile.
 
-### Ingresso audio per il decoder CW/RTTY (da definire)
-- Il 7B non documenta un ingresso audio. Dall'uscita linea della radio servirà un modulo ADC I2S
-  oppure un partitore verso un ingresso analogico libero, meglio con trasformatore audio 1:1 di isolamento.
-  Dettagli: [../software/08-decoder.md](../software/08-decoder.md).
+### Ingresso audio per il decoder CW/RTTY
+- Il firmware usa l'ADC1 dell'ESP32-S3 su **GPIO6** (`cfg::PIN_AUDIO`): sembra l'unico ADC1 libero sul 7B, perché
+  GPIO1-5 e 7-10 sono di schermo, touch e I2C. **Da verificare sullo schema** (connettore "Sensor"?).
+- Collegamento proposto (da verificare):
+  ```
+  uscita linea radio ── trasformatore 1:1 ── 10 µF ──┬── GPIO6
+                                                      ├── 10 kΩ ── 3,3 V
+                                                      └── 10 kΩ ── GND
+  ```
+  Il partitore porta l'ingresso a metà tensione; il segnale deve restare sotto circa 1 V picco-picco.
+  Il trasformatore evita anelli di massa con la radio.
+- Alternativa: modulo ADC I2S. Dettagli: [../software/08-decoder.md](../software/08-decoder.md).
 
 ## CAN (solo se il SERVO42D si usa via CAN)
 - Il manuale non indica isolamento dell'interfaccia: considerarla **non isolata**.

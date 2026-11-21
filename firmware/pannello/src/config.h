@@ -16,6 +16,11 @@ constexpr uint32_t TIMEOUT_COLLEGAMENTO_MS = 3000;  // senza risposte: collegame
 constexpr uint32_t RIPETIZIONE_MS = 300;            // attesa prima di ripetere un comando
 constexpr uint8_t MAX_TENTATIVI = 3;
 
+// Ingresso audio per il decoder CW/RTTY (ADC1). GPIO6 sembra l'unico ADC1 libero sul 7B
+// (gli altri sono di schermo, touch e I2C): da verificare sullo schema elettrico. -1 = disattivato.
+constexpr int PIN_AUDIO = 6;
+constexpr uint32_t FREQ_AUDIO_HZ = 8000;
+
 // Frequenze proposte dai pulsanti di banda al primo avvio (poi: ultima usata)
 constexpr uint32_t PROPOSTA_40M_HZ = 7100000;
 constexpr uint32_t PROPOSTA_20M_HZ = 14200000;

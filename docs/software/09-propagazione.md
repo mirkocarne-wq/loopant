@@ -31,3 +31,11 @@ Serve solo l'ora UTC esatta e la posizione della stazione (dal locator).
 ## Ora esatta [N]
 - Con il WiFi: NTP all'avvio e periodicamente.
 - Senza WiFi: impostazione manuale (il 7B non documenta un RTC); in futuro dalla radio via CI-V.
+
+## Realizzazione (21/11/2026)
+Codice: `firmware/pannello/src/sole.*`, `locator.*`, `mappa.*`, `indici.*`, `rete.*`, `ui/pagina_propagazione.cpp`.
+- La mappa si disegna in PSRAM (riempimento per righe di scansione: i continenti non sono convessi), poi a ogni minuto
+  si aggiungono notte, grey line (fascia di circa 3° intorno al terminatore), sole e stazione.
+- Il locator (4 o 6 caratteri) dà la posizione della stazione.
+- Prova sul PC: alba 06:08 e tramonto 15:44 UTC a Roma il 20/11/2026 (riferimento indicativo 06:05 / 15:44).
+- Il WiFi è un task sul core 0: NTP all'avvio della connessione, indici ogni 2 ore (o a richiesta da Impostazioni).
