@@ -13,6 +13,9 @@ struct Tema {
   lv_color_t info, infoBg, infoText;
   lv_color_t segOffAccent;  // segmenti spenti del display (accento)
   lv_color_t segOffText;    // segmenti spenti del display (testo)
+  // mappa della propagazione
+  lv_color_t mapSea, mapLand, mapCoast, mapLine, sun;
+  uint8_t mapNotte;  // quanto si scurisce la notte (0-255)
 };
 
 namespace tema {

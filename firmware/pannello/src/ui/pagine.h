@@ -21,6 +21,12 @@ void crea(lv_obj_t* contenuto);
 void aggiorna(const link_antenna::Stato& s);
 }  // namespace pag_memorie
 
+namespace pag_propagazione {
+void crea(lv_obj_t* contenuto);
+void aggiorna(const link_antenna::Stato& s);
+void mostrata();
+}  // namespace pag_propagazione
+
 namespace pag_diagnostica {
 void crea(lv_obj_t* contenuto);
 void aggiorna(const link_antenna::Stato& s);
