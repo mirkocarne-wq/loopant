@@ -5,11 +5,11 @@ Legenda: **[D]** = deciso; **[N]** = proposta tecnica, da confermare.
 
 ## Ingresso audio
 - Sorgente: **uscita linea / audio della radio** (Malahit DSP2, in futuro IC-7300 MK2). [D]
-- Il 7B **non documenta un ingresso audio**. Servirà un piccolo modulo esterno: [N]
-  - ADC I2S (es. un modulo con PCM1808), oppure
-  - partitore + condensatore di disaccoppiamento verso un ingresso analogico libero (connettore "sensore", pin da verificare sullo schema).
-- Campionamento proposto: 8 kHz, 16 bit (sufficiente per toni fino a circa 3 kHz). [N]
-- Isolamento dalla radio (trasformatore audio 1:1) per evitare loop di massa e rumore. [N]
+- Il 7B non ha un ingresso audio: si usa l'ADC interno su **GPIO6** (connettore J8) con un circuito d'ingresso
+  (trasformatore 1:1, operazionale MCP6002, passa-basso a 3,4 kHz): schema in
+  [../tecnico/06-elettronica.md](../tecnico/06-elettronica.md). [D]
+- ADC a 32 kHz, FIR passa-basso e riduzione a 8 kHz, 16 bit (toni fino a circa 3 kHz). [D]
+- Evoluzione possibile: secondo ESP32-S3 con ADC I2S (PCM1808) che decodifica e manda il testo al pannello. [N]
 
 ## CW
 | Funzione | Specifica | |
@@ -38,8 +38,9 @@ Legenda: **[D]** = deciso; **[N]** = proposta tecnica, da confermare.
 ## Realizzazione (21/11/2026)
 Codice: `firmware/pannello/src/decoder/` (algoritmi), `src/audio.*` (ADC), `src/decodifica.*`, `src/ui/pagina_decoder.cpp`.
 
-- **Ingresso**: ADC continuo dell'ESP32-S3 a 8 kHz su `cfg::PIN_AUDIO` (GPIO6, da verificare), continua tolta con
-  un passa-alto lento, task sul core 0. LVGL resta sul core 1.
+- **Ingresso**: ADC continuo dell'ESP32-S3 a 32 kHz su `cfg::PIN_AUDIO` (GPIO6, connettore J8), continua tolta con
+  un passa-alto lento, FIR passa-basso e riduzione a 8 kHz (`decoder/decimatore.*`, provato sul PC), task sul
+  core 0. LVGL resta sul core 1.
 - **CW**: Goertzel su blocchi con un numero intero di periodi del tono (altrimenti l'ampiezza oscilla con la fase);
   rumore stimato a tasto alzato, squelch a 6 volte il rumore, isteresi 55 %/35 %, conferma su 2 blocchi,
   breve riscaldamento iniziale; punto/linea a 2 dit, fine carattere a 2 dit, fine parola a 5 dit; WPM stimati

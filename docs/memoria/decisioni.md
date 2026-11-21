@@ -39,7 +39,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Driver del pannello | Driver degli esempi Waveshare (15_LVGL_SLIDER) copiati in `src/waveshare/` | Funzionano sulla scheda; licenza Apache 2.0 |
 | Cifre a 7 segmenti | Widget LVGL che disegna i segmenti con poligoni | Nessun font da convertire; stessa geometria del mockup |
 | Font del pannello | Montserrat Medium 12-34 con Latin-1, generati con lv_font_conv; font integrati di LVGL disattivati | Testi in italiano corretto; circa 150 KB di flash in più |
-| Ingresso audio del decoder | ADC1 su GPIO6 a 8 kHz (connettore J8, verificato sullo schema) | Unico ADC1 apparentemente libero; nessun modulo in più |
+| Ingresso audio del decoder | ADC1 su GPIO6 (connettore J8) con circuito d'ingresso: trasformatore 1:1, MCP6002, passa-basso a 3,4 kHz; ADC a 32 kHz con FIR e riduzione a 8 kHz | Unico ADC1 libero (J8); qualità sufficiente per decodificare, pochi euro, nessuna scheda in più |
 | Algoritmi del decoder | C++ puro con test sul PC (segnali sintetici e rumore) | Si verificano senza hardware |
 | Mappa della grey line | Disegnata in PSRAM con continenti semplificati; Natural Earth in futuro | LVGL 8 non riempie poligoni concavi |
 | Simulatore sul PC | Interfaccia vera compilata con LVGL su Linux o macOS, schermate PNG | Controllo dell'impaginazione senza scheda |
@@ -66,6 +66,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Display sui pin 16/17 con EN e CAN fermi | Scelta dell'utente: il display resta sui pin I2C standard |
 | Password del WiFi all'antenna con l'associazione | Non serve: la ricerca con ACK trova il canale; l'antenna non entra nella rete e la password non resta nella scatola sul balcone |
 | Doppio driver per l'RX (STEP/DIR o CAN scelto dal pannello) | L'RX accorda solo via CAN; la scelta separata creava confusione con i finecorsa |
+| ADC su I2C per l'audio | Troppo lento (ADS1115 860 campioni/s) o a 12 bit come l'ADC interno; bus condiviso con il touch |
 | Calibrazione come scheda del pannello | Si usa di rado: spostata dentro Impostazioni |
 | D1 mini ESP8266 all'antenna | Non è un ESP32: un solo ADC, pochi GPIO, niente CAN; FastAccelStepper non lo supporta |
 | ESP32-S3-Zero all'antenna | Chip non schermato e antenna ceramica: troppo esposto all'RF del TX |

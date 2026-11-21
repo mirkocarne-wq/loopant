@@ -22,7 +22,9 @@
 - [ ] **TMC2209**, microswitch finecorsa
 - [ ] Waveshare ESP32-S3-Touch-LCD-7B (7", 1024×600, touch)
 - [ ] Per il TX: wattmetro (AD8307 ×2, ADS1115, accoppiatore)
-- [ ] Interfaccia audio radio → pannello per il decoder (modulo ADC I2S o partitore, trasformatore 1:1): da scegliere
+- [ ] Ingresso audio del decoder (circuito in 06-elettronica): trasformatore audio 1:1 600:600 Ω, MCP6002 (DIP-8)
+  con zoccolo, trimmer 10 kΩ, resistenze 10 kΩ ×4, 100 kΩ, 1 kΩ, condensatori 1 µF (film), 10 µF, 6,8 nF e 3,3 nF
+  (film o C0G), 10 nF, 100 nF, jack 3,5 mm, millefori, cavetto per il connettore J8 del 7B
 
 ### Alimentazione e cablaggio
 - [ ] Convertitore 24→5 V (ingresso fino a 36–40 V), fusibile, elettrolitico, ferriti

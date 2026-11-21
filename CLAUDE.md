@@ -34,7 +34,7 @@ usare solo quei caratteri; per aggiungerne altri modificare e rilanciare `firmwa
 ```bash
 firmware/antenna/compila.sh            # antenna, firmware unico (tipo TX/RX dal pannello); "carica <porta>" carica
 firmware/pannello/compila.sh           # pannello, con arduino-cli (core esp32 3.1.1, lvgl 8.4.0)
-firmware/pannello/test/esegui_test.sh  # test sul PC: sole, locator, indici, decoder CW/RTTY
+firmware/pannello/test/esegui_test.sh  # test sul PC: sole, locator, indici, decoder CW/RTTY, QRZ, decimatore audio
 firmware/pannello/simulatore/compila.sh <lvgl>  # interfaccia sul PC, schermate PNG (controllare dopo ogni modifica)
 ```
 Le chiavi ESP-NOW reali vanno in `firmware/lib/Comune/src/segreti.h` (non versionato);

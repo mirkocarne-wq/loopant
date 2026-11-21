@@ -49,15 +49,31 @@ pull-down interna e il driver (EN attivo basso) resterebbe abilitato durante l'a
 - Altri connettori del 7B utili: **H1 «I2C»** (3V3, GND, SDA 8, SCL 9: stesso bus di touch e IO expander) e
   **H3 «UART2»** (seriale 0 dell'ESP32, GPIO 43/44): si attiva con il deviatore SW1 su UART2, che scollega il CH343
   («USB TO UART»); resta la USB nativa.
-- Collegamento proposto (da verificare):
+- **Circuito d'ingresso** (scelta del 21/11/2026; valori da verificare sul banco), alimentato dal 3,3 V di J8:
   ```
-  uscita linea radio ── trasformatore 1:1 ── 10 µF ──┬── GPIO6
-                                                      ├── 10 kΩ ── 3,3 V
-                                                      └── 10 kΩ ── GND
+  radio (linea/cuffia) ─ T1 1:1 600 Ω ─ RV1 10 kΩ (livello) ─ C1 1 µF ─┬─ R1 10 kΩ ─┬─ R2 10 kΩ ─┬─ U1 (+)
+                                                                       │            │            │
+                                                              R3 100 kΩ a VREF   C2 6,8 nF    C3 3,3 nF
+                                                                            (verso l'uscita) (a VREF)
+  U1 (−) collegato all'uscita (inseguitore)
+  U1 uscita ─ R4 1 kΩ ─┬─ GPIO6 (J8)
+                        └─ C4 10 nF ─ GND
+  VREF = 1,65 V: partitore 10 kΩ + 10 kΩ tra 3,3 V e GND, con 10 µF verso GND
+  U1 = MCP6002 (operazionale rail-to-rail a 3,3 V), 100 nF tra 3,3 V e GND vicino all'integrato
   ```
-  Il partitore porta l'ingresso a metà tensione; il segnale deve restare sotto circa 1 V picco-picco.
-  Il trasformatore evita anelli di massa con la radio.
-- Alternativa: modulo ADC I2S. Dettagli: [../software/08-decoder.md](../software/08-decoder.md).
+  - T1 separa le masse di radio e pannello (niente ronzii né anelli di massa).
+  - C1 e R3 tolgono la continua e polarizzano a metà alimentazione (l'ADC non legge tensioni negative).
+  - R1, R2, C2, C3 con U1 formano un passa-basso Sallen-Key del secondo ordine a circa 3,4 kHz (Q circa 0,7):
+    primo filtro anti-aliasing; il secondo è il FIR del firmware.
+  - R4 e C4 isolano l'uscita dell'operazionale dal condensatore di campionamento dell'ADC.
+  - Livello: con RV1 si regola per circa 1 V picco-picco sui segnali forti (fondo scala circa 2,8 V p-p);
+    la barra del livello nella pagina Decoder aiuta.
+- **Firmware**: ADC a 32 kHz, componente continua tolta, FIR passa-basso a 63 prese (finestra di Hamming, −6 dB a
+  3,6 kHz) e riduzione a 8 kHz (`decoder/decimatore.*`). Sul PC: toni di CW e RTTY a 0,0 dB, frequenze che si
+  ripiegherebbero sulla banda attenuate di circa 65 dB.
+- Se servirà di più (spettro o waterfall fluidi), un secondo ESP32-S3 con ADC I2S PCM1808 a 24 bit che decodifica e
+  manda il testo al pannello (I2C su H1, UART su H3 o ESP-NOW). Un ADC su I2C non conviene: quelli ad alta
+  risoluzione sono troppo lenti per l'RTTY e quelli veloci sono a 12 bit come l'ADC interno.
 
 ## CAN (solo se il SERVO42D si usa via CAN)
 - Transceiver: **Waveshare SN65HVD230 CAN Board** (già in possesso), alimentato a 3,3 V come l'ESP32:

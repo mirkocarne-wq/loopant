@@ -4,22 +4,28 @@
 #include <esp_adc/adc_continuous.h>
 #include <math.h>
 
+#include "decoder/decimatore.h"
+
 namespace audio {
 namespace {
 
-constexpr size_t BYTE_FRAME = 256 * SOC_ADC_DIGI_RESULT_BYTES;  // 256 campioni per lettura
+constexpr size_t BYTE_FRAME = 256 * SOC_ADC_DIGI_RESULT_BYTES;  // 256 campioni dell'ADC per lettura
+constexpr float TAGLIO_HZ = 3600;  // -6 dB del FIR: piatto fino a circa 2,8 kHz (toni RTTY fino a 2,3 kHz)
 
 adc_continuous_handle_t adc = nullptr;
 adc_channel_t canale;
 Consumatore consumatore = nullptr;
 volatile bool attivo_ = false;
 volatile float livello_ = 0;
+uint32_t fsAdc = 32000;
+decoder::Decimatore decimatore;
 
 void compito(void*) {
   static uint8_t grezzi[BYTE_FRAME];
   static int16_t campioni[BYTE_FRAME / SOC_ADC_DIGI_RESULT_BYTES];
   float media = 2048;  // componente continua (metà scala)
   float energia = 0;
+  const float alfa = 8.0f / fsAdc;  // passa-alto molto lento (costante di tempo circa 0,125 s)
   for (;;) {
     uint32_t letti = 0;
     if (adc_continuous_read(adc, grezzi, sizeof(grezzi), &letti, 1000) != ESP_OK) continue;
@@ -28,8 +34,10 @@ void compito(void*) {
       const adc_digi_output_data_t* d = (const adc_digi_output_data_t*)&grezzi[i];
       if (d->type2.channel != canale) continue;
       float v = (float)d->type2.data;
-      media += (v - media) * 0.001f;  // passa-alto molto lento: toglie la continua
-      float c = (v - media) * 16.0f;  // 12 bit -> 16 bit
+      media += (v - media) * alfa;  // toglie la continua
+      float y;
+      if (!decimatore.campione(v - media, y)) continue;
+      float c = y * 16.0f;  // 12 bit -> 16 bit (la media sui 4 campioni dà circa un bit in più)
       if (c > 32767) c = 32767;
       if (c < -32768) c = -32768;
       campioni[n++] = (int16_t)c;
@@ -60,7 +68,9 @@ bool inizia(int gpio, uint32_t fs, Consumatore c) {
   adc_continuous_config_t cfg = {};
   cfg.pattern_num = 1;
   cfg.adc_pattern = &schema;
-  cfg.sample_freq_hz = fs;
+  fsAdc = fs * decoder::Decimatore::FATTORE;
+  decimatore.configura((float)fsAdc, TAGLIO_HZ);
+  cfg.sample_freq_hz = fsAdc;
   cfg.conv_mode = ADC_CONV_SINGLE_UNIT_1;
   cfg.format = ADC_DIGI_OUTPUT_FORMAT_TYPE2;
   if (adc_continuous_config(adc, &cfg) != ESP_OK || adc_continuous_start(adc) != ESP_OK) {
