@@ -38,11 +38,11 @@ constexpr uint8_t FLAG_FC_MAX = 1 << 1;      // finecorsa MAX premuto
 constexpr uint8_t FLAG_DRIVER = 1 << 2;      // driver abilitato (motore in coppia)
 constexpr uint8_t FLAG_VERSIONE_TX = 1 << 3; // antenna TX (altrimenti RX)
 constexpr uint8_t FLAG_AZZERATA = 1 << 4;    // posizione nota
-constexpr uint8_t FLAG_CAN = 1 << 5;         // motore pilotato via CAN (SERVO42D), altrimenti STEP/DIR
+constexpr uint8_t FLAG_CAN = 1 << 5;         // motore via CAN (SERVO42D, antenna RX), altrimenti STEP/DIR (TX)
 
 // Parametri del comando IMPOSTA (nel campo freq_hz)
 enum class Parametro : uint32_t {
-  MODO_MOTORE = 1,  // 0 = STEP/DIR, 1 = CAN (solo antenna RX con SERVO42D)
+  MODO_MOTORE = 1,  // non più usato: il driver segue il tipo di antenna (TX STEP/DIR, RX CAN)
   CAN_ID = 2,       // indirizzo del SERVO42D, 1-2047
   CAN_KBIT = 3,     // velocità del bus: 125, 250, 500 o 1000
   TIPO_ANTENNA = 4, // 1 = TX (NEMA11 + TMC2209), 0 = RX (SERVO42D); l'antenna risponde e poi si riavvia

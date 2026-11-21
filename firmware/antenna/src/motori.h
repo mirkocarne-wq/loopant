@@ -1,7 +1,7 @@
 // I due driver del motore, con la stessa interfaccia:
-// - stepdir: STEP/DIR/EN (TMC2209 sul TX, SERVO42D in modo a impulsi sull'RX), finecorsa sui GPIO;
-// - can42d: SERVO42D comandato via CAN (solo RX), finecorsa collegati al SERVO42D.
-// movimento.cpp sceglie quale usare.
+// - stepdir: antenna TX, STEP/DIR/EN con il TMC2209, finecorsa sui GPIO dell'ESP32;
+// - can42d: antenna RX, SERVO42D comandato via CAN, finecorsa collegati al SERVO42D.
+// movimento.cpp usa quello del tipo di antenna.
 #pragma once
 #include <stdint.h>
 

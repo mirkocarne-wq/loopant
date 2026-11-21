@@ -1,4 +1,4 @@
-// Driver STEP/DIR/EN: TMC2209 (TX) oppure SERVO42D in modo a impulsi (RX).
+// Driver STEP/DIR/EN dell'antenna TX: TMC2209 (anche via UART).
 // Finecorsa sui GPIO dell'ESP32, azzeramento fatto dal firmware.
 #include "motori.h"
 

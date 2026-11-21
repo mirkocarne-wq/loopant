@@ -49,17 +49,15 @@ dura meno di un secondo; se non risponde (pannello spento) si riprova ogni 10 s.
 dal canale 6, l'antenna ha ritrovato il pannello sul 3. Costanti `RICERCA_CANALE_*` in `config.h`.
 Se il pannello è collegato al WiFi di casa deve essere il canale del router (oggi il 3).
 
-## Driver del motore (antenna RX)
-Si sceglie dal pannello (Impostazioni → Antenna) o dalla console (`motore stepdir|can`); la scelta resta in NVS.
-| Driver | Comandi | Finecorsa e azzeramento | Codice |
-|---|---|---|---|
-| STEP/DIR | impulsi con FastAccelStepper | finecorsa sul SERVO42D: azzeramento **da adattare** (oggi il firmware li cerca sui GPIO 27/14, che valgono solo per il TX) | `motore_stepdir.cpp` |
-| CAN | SERVO42D via SN65HVD230 (GPIO 17/16) | finecorsa collegati al SERVO42D, azzeramento con il suo comando 0x91 (parametri dal menu del driver) | `motore_can.cpp` |
+## Driver del motore
+Segue il tipo di antenna (decisione del 21/11/2026): non c'è una scelta separata.
+| Tipo | Driver | Comandi | Finecorsa e azzeramento | Codice |
+|---|---|---|---|---|
+| TX | TMC2209 | STEP/DIR/EN con FastAccelStepper, configurazione via UART | sull'ESP32 (GPIO 27 MIN, 14 MAX), azzeramento fatto dal firmware | `motore_stepdir.cpp` |
+| RX | SERVO42D | CAN via SN65HVD230 (GPIO 17/16) | sugli ingressi del SERVO42D, azzeramento con il suo comando 0x91 (parametri dal menu del driver) | `motore_can.cpp` |
 
-- Finecorsa: sull'antenna RX sono collegati al SERVO42D, sull'antenna TX all'ESP32 (GPIO 27/14).
-- Le posizioni sono in impulsi con gli stessi micropassi in entrambi i modi: la tabella di calibrazione resta valida.
-- Dopo un cambio di driver la posizione non è più nota: serve un nuovo azzeramento.
-- Nel cambio il firmware mette il SERVO42D nel modo giusto via CAN (SR_vFOC per il CAN, CR_vFOC per STEP/DIR).
+- Per l'RX si impostano dal pannello (o con `canid` / `cankbit`) indirizzo e velocità del bus, salvati in NVS.
+- All'avvio con il tipo RX il firmware mette il SERVO42D nel modo CAN (SR_vFOC).
 - Protocollo CAN ricavato da una libreria della comunità (MKSServoCAN): **da verificare sul manuale ufficiale**
   (CRC, codici 0xFE/0x91/0xF1/0x31, risposte attive con 0x8C, parametri di azzeramento 0x90).
 

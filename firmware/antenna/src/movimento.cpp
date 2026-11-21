@@ -10,17 +10,15 @@
 namespace movimento {
 namespace {
 
-Modo modo_ = Modo::STEP_DIR;
 uint16_t id_ = cfg::CAN_ID_PREDEFINITO;
 uint16_t kbit_ = cfg::CAN_KBIT_PREDEFINITO;
 Preferences nvs;
 
-bool can() { return !tipo_antenna::tx() && modo_ == Modo::CAN; }
+bool can() { return !tipo_antenna::tx(); }  // TX: STEP/DIR (TMC2209); RX: CAN (SERVO42D)
 
 bool kbitValido(uint16_t k) { return k == 125 || k == 250 || k == 500 || k == 1000; }
 
 void salva() {
-  nvs.putUChar("modo", (uint8_t)modo_);
   nvs.putUShort("canid", id_);
   nvs.putUShort("cankbit", kbit_);
 }
@@ -34,14 +32,12 @@ void avviaCan() {
 
 void inizia() {
   nvs.begin("motore", false);
-  modo_ = (Modo)nvs.getUChar("modo", (uint8_t)Modo::STEP_DIR);
   id_ = nvs.getUShort("canid", cfg::CAN_ID_PREDEFINITO);
   kbit_ = nvs.getUShort("cankbit", cfg::CAN_KBIT_PREDEFINITO);
-  if (tipo_antenna::tx() || modo_ > Modo::CAN) modo_ = Modo::STEP_DIR;  // il TX usa sempre STEP/DIR
   if (!kbitValido(kbit_)) kbit_ = cfg::CAN_KBIT_PREDEFINITO;
 
-  stepdir::inizia();  // sempre: con il CAN attivo resta fermo con il driver disabilitato
   if (can()) avviaCan();
+  else stepdir::inizia();
 }
 
 void aggiorna() {
@@ -62,17 +58,7 @@ bool driverAbilitato() { return can() ? can42d::driverAbilitato() : stepdir::dri
 proto::Errore errore() { return can() ? can42d::errore() : stepdir::errore(); }
 void cancellaErrore() { can() ? can42d::cancellaErrore() : stepdir::cancellaErrore(); }
 
-bool impostaModo(Modo m) {
-  if (tipo_antenna::tx() || m > Modo::CAN || inMovimento()) return false;
-  if (m == modo_) return true;
-  if (modo_ == Modo::CAN) can42d::fine();
-  modo_ = m;
-  salva();
-  if (can()) avviaCan();
-  return true;
-}
-
-Modo modo() { return modo_; }
+bool viaCan() { return can(); }
 
 bool impostaCan(uint16_t id, uint16_t kbit) {
   if (tipo_antenna::tx() || id < 1 || id > 2047 || !kbitValido(kbit) || inMovimento()) return false;

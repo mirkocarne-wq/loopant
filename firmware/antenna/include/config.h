@@ -7,6 +7,7 @@ namespace cfg {
 
 // --- Pin (ESP32 DevKit 30 pin, tutti presenti anche sulla 38 pin; evitare 0, 2, 12, 15;
 //     analogici solo ADC1 32-39) ---
+// STEP/DIR/EN, UART e finecorsa: solo antenna TX (TMC2209)
 constexpr int PIN_STEP = 18;
 constexpr int PIN_DIR = 19;
 constexpr int PIN_EN = 23;     // attivo basso (TMC2209 e SERVO42D); libero all'accensione, niente pull interne
@@ -16,8 +17,7 @@ constexpr int PIN_FC_MIN = 27;  // finecorsa lato zero
 constexpr int PIN_FC_MAX = 14;  // finecorsa lato opposto
 constexpr bool FC_ATTIVO_BASSO = true;  // microswitch verso massa, pull-up + RC 100 nF
 
-// CAN verso il SERVO42D (antenna RX, alternativa a STEP/DIR): transceiver Waveshare SN65HVD230.
-// Il driver (STEP/DIR o CAN) si sceglie dal pannello e resta salvato in NVS.
+// CAN verso il SERVO42D (antenna RX): transceiver Waveshare SN65HVD230. Finecorsa collegati al SERVO42D.
 constexpr int PIN_CAN_TX = 17;  // TX2 -> CTX del transceiver
 constexpr int PIN_CAN_RX = 16;  // RX2 -> CRX del transceiver
 constexpr uint16_t CAN_ID_PREDEFINITO = 1;      // indirizzo del SERVO42D (menu del driver)

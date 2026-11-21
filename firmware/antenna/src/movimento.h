@@ -1,4 +1,5 @@
-// Movimento del condensatore: smista i comandi al driver scelto (STEP/DIR o CAN).
+// Movimento del condensatore: smista i comandi al driver del tipo di antenna
+// (TX: STEP/DIR con il TMC2209; RX: CAN con il SERVO42D).
 // Regole: docs/software/02-unita-antenna.md
 #pragma once
 #include <stdint.h>
@@ -6,8 +7,6 @@
 #include "protocollo.h"
 
 namespace movimento {
-
-enum class Modo : uint8_t { STEP_DIR = 0, CAN = 1 };
 
 void inizia();
 void aggiorna();  // da chiamare a ogni giro del loop
@@ -27,11 +26,9 @@ bool driverAbilitato();
 proto::Errore errore();
 void cancellaErrore();
 
-// Driver del motore (solo antenna RX: il TX usa sempre STEP/DIR). Salvato in NVS.
-// Il tipo di antenna (TX/RX) è in tipo_antenna.h.
-// false se non si può cambiare (antenna TX o motore in movimento). Dopo il cambio serve un nuovo azzeramento.
-bool impostaModo(Modo m);
-Modo modo();
+// Il driver segue il tipo di antenna (tipo_antenna.h): true con l'antenna RX (SERVO42D via CAN).
+bool viaCan();
+// Parametri del bus CAN (solo antenna RX), salvati in NVS. false se non validi o con il motore in movimento.
 bool impostaCan(uint16_t id, uint16_t kbit);  // indirizzo 1-2047, velocità 125/250/500/1000
 uint16_t canId();
 uint16_t canKbit();

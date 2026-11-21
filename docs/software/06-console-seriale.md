@@ -13,7 +13,6 @@ un numero sopra 100 000 viene letto in Hz.
 | `cal <freq>` | Salva la posizione attuale per quella frequenza |
 | `calelim <freq>` | Elimina il punto più vicino a quella frequenza (entro 1 kHz) |
 | `tipo tx` / `tipo rx` | Tipo di antenna (firmware unico): salvato in NVS, poi l'antenna si riavvia |
-| `motore stepdir` / `motore can` | Driver del motore (solo antenna RX) |
 | `canid <1-2047>` / `cankbit <125\|250\|500\|1000>` | Indirizzo e velocità del bus CAN del SERVO42D |
 | `calcanc <freq>` | Cancella la tabella della banda |
 | `tabella` | Stampa le tabelle di calibrazione |

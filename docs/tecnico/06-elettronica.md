@@ -14,7 +14,7 @@ Il software è descritto in [`../software/`](../software/README.md).
 - Corrente del NEMA11: da regolare sul valore nominale (0,5–1 A, controllare la scheda tecnica).
 - Finecorsa: **antenna TX** sull'ESP32 (GPIO 27 MIN, 14 MAX, pull-up e filtro RC/100 nF), lo zero lo fa il firmware;
   **antenna RX** sugli ingressi del SERVO42D, che fa lo zero da solo (decisione del 21/11/2026).
-- Versione RX: SERVO42D pilotato dallo stesso ESP32 con **STEP/DIR/EN** (modo a impulsi) oppure via CAN.
+- Versione RX: SERVO42D pilotato dallo stesso ESP32 **via CAN**. La versione TX accorda in STEP/DIR con il TMC2209.
 
 ### Pinout suggerito (da confermare in fase di cablaggio)
 | Funzione | GPIO | Note |
@@ -71,7 +71,7 @@ pull-down interna e il driver (EN attivo basso) resterebbe abilitato durante l'a
 - La scheda Waveshare ha a bordo una resistenza da 120 Ω (da verificare sulla scheda). Con un solo slave e
   cavo corto basta quella: non aggiungere altri terminatori.
 - Velocità del bus: deve essere uguale a quella impostata nel menu del SERVO42D (500 kbit/s di solito; da verificare).
-- Il firmware supporta entrambi i modi (STEP/DIR o CAN), scelti dal pannello. Sull'antenna RX i finecorsa sono sempre
+- Sull'antenna RX il motore è comandato via CAN (il tipo di antenna si sceglie dal pannello). I finecorsa sono
   sul SERVO42D e l'azzeramento lo fa il driver con i parametri impostati nel suo menu (livello, verso, velocità): da provare.
 - Il manuale non indica isolamento dell'interfaccia: considerarla **non isolata**.
   Con l'ESP32 nella scatola il cavo CAN è corto e non serve isolatore.

@@ -65,7 +65,7 @@ proto::Risposta preparaRisposta(uint16_t seqComando) {
   r.flag = (movimento::finecorsaMin() ? proto::FLAG_FC_MIN : 0) |
            (movimento::finecorsaMax() ? proto::FLAG_FC_MAX : 0) |
            (movimento::driverAbilitato() ? proto::FLAG_DRIVER : 0) |
-           (movimento::modo() == movimento::Modo::CAN ? proto::FLAG_CAN : 0) |
+           (movimento::viaCan() ? proto::FLAG_CAN : 0) |
            (tipo_antenna::tx() ? proto::FLAG_VERSIONE_TX : 0) |
            (movimento::azzerato() ? proto::FLAG_AZZERATA : 0);
   return r;
@@ -183,9 +183,8 @@ void esegui(const proto::Comando& c, bool daRadio) {
       cancellaErrori();
       bool ok = false;
       switch ((proto::Parametro)c.freq_hz) {
-        case proto::Parametro::MODO_MOTORE:
-          ok = movimento::impostaModo(c.valore == 1 ? movimento::Modo::CAN : movimento::Modo::STEP_DIR);
-          if (ok) targetInSospeso = false;  // con l'altro driver serve un nuovo azzeramento
+        case proto::Parametro::MODO_MOTORE:  // non più usato: il driver segue il tipo di antenna
+          ok = (c.valore == 1) == movimento::viaCan();
           break;
         case proto::Parametro::CAN_ID:
           ok = movimento::impostaCan((uint16_t)c.valore, movimento::canKbit());
@@ -307,7 +306,7 @@ void aggiornaOled() {
   d.posizione = movimento::posizione();
   d.driver = movimento::driverAbilitato();
   d.tx = tipo_antenna::tx();
-  d.can = movimento::modo() == movimento::Modo::CAN;
+  d.can = movimento::viaCan();
   d.peerValido = radio.peerValido();
   d.collegato = ultimoMessaggioRadio != 0 && millis() - ultimoMessaggioRadio < cfg::TIMEOUT_HEARTBEAT_MS;
   d.rssi = ultimoRssi;
@@ -332,17 +331,17 @@ void stampaStato() {
                 movimento::finecorsaMax());
   Serial.printf("ESP-NOW: canale %u\n", canale);
   Serial.printf("Antenna: %s\n", tipo_antenna::tx() ? "TX (NEMA11 + TMC2209)" : "RX (SERVO42D)");
-  if (movimento::modo() == movimento::Modo::CAN)
+  if (movimento::viaCan())
     Serial.printf("Motore: CAN (SERVO42D indirizzo %u, %u kbit/s)\n", movimento::canId(), movimento::canKbit());
   else
-    Serial.println("Motore: STEP/DIR");
+    Serial.println("Motore: STEP/DIR (TMC2209)");
 }
 
 void aiuto() {
   Serial.println(
       "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calelim <kHz> | calcanc <kHz> |\n"
       "         tabella | stato | mac <AA:BB:CC:DD:EE:FF> | canale <1-13> | associa |\n"
-      "         tipo tx|rx | motore stepdir|can | canid <1-2047> | cankbit <125|250|500|1000> (solo RX) | aiuto");
+      "         tipo tx|rx | canid <1-2047> | cankbit <125|250|500|1000> (solo RX) | aiuto");
 }
 
 void eseguiRiga(char* riga) {
@@ -372,10 +371,6 @@ void eseguiRiga(char* riga) {
     c.tipo = proto::Tipo::IMPOSTA;
     c.freq_hz = (uint32_t)proto::Parametro::TIPO_ANTENNA;
     c.valore = !strcmp(arg, "tx") ? 1 : 0;
-  } else if (!strcmp(cmd, "motore") && arg) {
-    c.tipo = proto::Tipo::IMPOSTA;
-    c.freq_hz = (uint32_t)proto::Parametro::MODO_MOTORE;
-    c.valore = !strcmp(arg, "can") ? 1 : 0;
   } else if (!strcmp(cmd, "canid") && arg) {
     c.tipo = proto::Tipo::IMPOSTA;
     c.freq_hz = (uint32_t)proto::Parametro::CAN_ID;

@@ -20,7 +20,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Alimentazione | 24 V 2,5 A in casa, convertitore 24→5 V all'antenna | Corrente sufficiente; alimentatore lontano dalla radio |
 | Firmware dell'antenna | Unico per TX e RX: tipo scelto dal pannello (o `tipo tx\|rx`), salvato in NVS, riavvio al cambio; calibrazione separata per tipo; al primo avvio RX | Richiesta dell'utente; niente versioni da scegliere quando si carica |
 | Finecorsa | Antenna RX: sugli ingressi del SERVO42D, che fa lo zero; antenna TX: sull'ESP32 (GPIO 27/14), zero fatto dal firmware | Decisione dell'utente; il TMC2209 non ha ingressi per i finecorsa |
-| Driver del motore RX | Doppio: STEP/DIR o CAN (SERVO42D), scelto dal pannello e salvato in NVS sull'antenna | Il SERVO42D ha già gli ingressi dei finecorsa; in CAN si legge lo stato del driver |
+| Driver del motore | Segue il tipo di antenna: TX in STEP/DIR (TMC2209), RX via CAN (SERVO42D) | Precisazione dell'utente: sono due modelli di antenna; nessuna scelta separata |
 | Transceiver CAN | Waveshare SN65HVD230 (3,3 V) su GPIO 17 (TX2) / 16 (RX2), già in possesso | Stessa tensione dell'ESP32, nessun convertitore di livello; 22/23 lasciati al display |
 | Display all'antenna | OLED 0,96" SSD1306 (ELEGOO) su I2C SDA 21 / SCL 22, facoltativo, spento dopo 2 minuti a riposo | Stato e MAC visibili sul banco e all'installazione; già cablato sui pin I2C standard |
 | EN del motore | GPIO 23 (prima 21) | Il 21 va al display; il 23 è libero all'accensione, il 4 ha una pull-down |
@@ -65,6 +65,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | PlatformIO per l'antenna (core 2.0.17) | Avviso malware di macOS al primo download, causa non trovata; sostituito da arduino-cli |
 | Display sui pin 16/17 con EN e CAN fermi | Scelta dell'utente: il display resta sui pin I2C standard |
 | Password del WiFi all'antenna con l'associazione | Non serve: la ricerca con ACK trova il canale; l'antenna non entra nella rete e la password non resta nella scatola sul balcone |
+| Doppio driver per l'RX (STEP/DIR o CAN scelto dal pannello) | L'RX accorda solo via CAN; la scelta separata creava confusione con i finecorsa |
 | Calibrazione come scheda del pannello | Si usa di rado: spostata dentro Impostazioni |
 | D1 mini ESP8266 all'antenna | Non è un ESP32: un solo ADC, pochi GPIO, niente CAN; FastAccelStepper non lo supporta |
 | ESP32-S3-Zero all'antenna | Chip non schermato e antenna ceramica: troppo esposto all'RF del TX |

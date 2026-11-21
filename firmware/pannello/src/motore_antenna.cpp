@@ -8,12 +8,11 @@ namespace motore_antenna {
 namespace {
 
 const uint16_t KBIT[] = {125, 250, 500, 1000};
-Scelte s = {0, 0, 1, 2};
+Scelte s = {0, 1, 2};
 Preferences nvs;
 
 void salva() {
   nvs.putUChar("tipo", s.tipo);
-  nvs.putUChar("modo", s.modo);
   nvs.putUShort("canid", s.canId);
   nvs.putUChar("kbit", s.kbitIdx);
 }
@@ -23,7 +22,6 @@ void salva() {
 void carica() {
   nvs.begin("motore", false);
   s.tipo = nvs.getUChar("tipo", 0) ? 1 : 0;
-  s.modo = nvs.getUChar("modo", 0) ? 1 : 0;
   s.canId = nvs.getUShort("canid", 1);
   s.kbitIdx = nvs.getUChar("kbit", 2);
   if (s.canId < 1 || s.canId > 2047) s.canId = 1;
@@ -37,11 +35,6 @@ uint16_t kbit() { return KBIT[s.kbitIdx < 4 ? s.kbitIdx : 2]; }
 void inviaTipo() {
   salva();
   link_antenna::invia(proto::Tipo::IMPOSTA, (uint32_t)proto::Parametro::TIPO_ANTENNA, s.tipo);
-}
-
-void inviaModo() {
-  salva();
-  link_antenna::invia(proto::Tipo::IMPOSTA, (uint32_t)proto::Parametro::MODO_MOTORE, s.modo);
 }
 
 void inviaCan() {

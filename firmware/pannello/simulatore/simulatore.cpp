@@ -325,17 +325,16 @@ int main(int argc, char** argv) {
         avanza(300);
       }
     }
-    if (tm == 0) {  // sezione Antenna con l'antenna RX e il motore via CAN
+    if (tm == 0) {  // sezione Antenna con l'antenna RX (SERVO42D via CAN)
       uint8_t flag = statoFinto.r.flag;
       statoFinto.r.flag = proto::FLAG_CAN | proto::FLAG_AZZERATA;
-      motore_antenna::scelte().modo = 1;
+      motore_antenna::scelte().tipo = 0;
       ui::richiediRicostruzione();
       avanza(300);
       ui::vaiA(ui::IMPOSTAZIONI);
       pag_impostazioni::mostraAntenna();
       salva("notte-7d-impostazioni-motore");
       statoFinto.r.flag = flag;
-      motore_antenna::scelte().modo = 0;
       ui::richiediRicostruzione();
       avanza(300);
     }
