@@ -222,6 +222,7 @@ bool vaiA(int32_t pos, bool recupero) {
   if (!installato || !azzerato_ || fase == Fase::AZZERAMENTO) return false;
   // con il recupero del gioco serve spazio sotto il target (posMin); il jog libero può scendere fino allo zero
   target = constrain(pos, recupero ? cfg::RX.posMin() : 0, cfg::RX.posMax());
+  if (!recupero && target == pos_) return true;  // già lì (per esempio a 0 girando ancora indietro): niente impulsi
   abilita(true);
   inizioFase = millis();
   if (target > pos_ || !recupero) {

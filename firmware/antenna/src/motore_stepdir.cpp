@@ -115,6 +115,7 @@ bool vaiA(int32_t pos, bool recupero) {
   if (!stepper || !azzerato_ || azzeramento(fase)) return false;
   // con il recupero del gioco serve spazio sotto il target (posMin); il jog libero può scendere fino allo stacco
   target = constrain(pos, recupero ? M().posMin() : M().staccoPassi, M().posMax());
+  if (!recupero && target == stepper->getCurrentPosition()) return true;  // già lì: niente impulsi né driver acceso
   stepper->enableOutputs();
   if (target > stepper->getCurrentPosition() || !recupero) {
     avvia(target, M().velocitaHz);
