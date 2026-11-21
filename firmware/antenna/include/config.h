@@ -26,6 +26,7 @@ constexpr uint16_t CAN_KBIT_PREDEFINITO = 500;  // deve essere uguale a quello d
 constexpr uint8_t SERVO_MODO_CAN = 5;       // SR_vFOC: comandi dal bus
 constexpr uint8_t SERVO_MODO_IMPULSI = 2;   // CR_vFOC: STEP/DIR
 constexpr uint8_t SERVO_ACCELERAZIONE = 2;  // 0-255 (0 = senza rampa)
+// Parametri di azzeramento: oggi NON inviati, il SERVO42D usa quelli del suo menu (HmTrig, HmDir, HmSpeed)
 constexpr uint8_t SERVO_HOME_LIVELLO = 0;   // finecorsa attivo basso (da verificare)
 constexpr uint8_t SERVO_HOME_VERSO = 1;     // 0 = CW, 1 = CCW verso il finecorsa (da verificare)
 constexpr uint16_t SERVO_HOME_RPM = 60;

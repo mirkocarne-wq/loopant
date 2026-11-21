@@ -58,6 +58,9 @@ Segue il tipo di antenna (decisione del 21/11/2026): non c'è una scelta separat
 
 - Per l'RX si impostano dal pannello (o con `canid` / `cankbit`) indirizzo e velocità del bus, salvati in NVS.
 - All'avvio con il tipo RX il firmware mette il SERVO42D nel modo CAN (SR_vFOC).
+- **Verso dello zero (RX)**: lo decide il menu del SERVO42D (HmDir, con HmTrig e HmSpeed); il firmware manda solo
+  il comando 0x91. Il 21/11/2026 è servito invertire HmDir. Dopo lo zero, «+» in Calibrazione deve allontanarsi dal
+  finecorsa: se va verso il finecorsa, invertire anche Dir nel menu (zero e «+» devono avere versi opposti).
 - Protocollo CAN ricavato da una libreria della comunità (MKSServoCAN): **da verificare sul manuale ufficiale**
   (CRC, codici 0xFE/0x91/0xF1/0x31, risposte attive con 0x8C, parametri di azzeramento 0x90).
 
