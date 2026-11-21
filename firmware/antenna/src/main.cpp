@@ -8,6 +8,7 @@
 #include "collegamento.h"
 #include "config.h"
 #include "movimento.h"
+#include "oled.h"
 #include "protocollo.h"
 #include "segreti_scelti.h"
 
@@ -15,9 +16,11 @@ namespace {
 
 Collegamento radio;
 Preferences nvs;
+uint8_t canale = cfg::CANALE_WIFI;  // canale ESP-NOW (NVS "canale"): quello del router se il pannello usa il WiFi
 
 uint16_t seqRisposta = 0;
 uint32_t ultimoMessaggioRadio = 0;
+int8_t ultimoRssi = 0;
 bool movimentoDaRadio = false;  // il watchdog vale solo per i comandi via radio
 
 bande::Banda bandaAzzerata = bande::Banda::NESSUNA;
@@ -203,6 +206,8 @@ void riceviRadio() {
     memcpy(&c, p.dati, sizeof(c));
     if (c.versione != proto::VERSIONE) continue;
     ultimoMessaggioRadio = millis();  // ogni comando vale come heartbeat
+    ultimoRssi = p.rssi;
+    if (c.tipo != proto::Tipo::HEARTBEAT && c.tipo != proto::Tipo::STATO) oled::sveglia();
     esegui(c, true);
   }
 }
@@ -215,6 +220,25 @@ void controllaHeartbeat() {
     erroreComando = proto::Errore::HEARTBEAT;
     movimentoDaRadio = false;
   }
+}
+
+// --- Display OLED ---------------------------------------------------------------------------
+
+void aggiornaOled() {
+  static uint32_t ultimo = 0;
+  if (millis() - ultimo < 100) return;
+  ultimo = millis();
+  oled::Dati d = {};
+  d.stato = statoAttuale();
+  d.errore = erroreAttuale();
+  d.freqHz = freqCorrente;
+  d.posizione = movimento::posizione();
+  d.driver = movimento::driverAbilitato();
+  d.can = movimento::modo() == movimento::Modo::CAN;
+  d.peerValido = radio.peerValido();
+  d.collegato = ultimoMessaggioRadio != 0 && millis() - ultimoMessaggioRadio < cfg::TIMEOUT_HEARTBEAT_MS;
+  d.rssi = ultimoRssi;
+  oled::aggiorna(d);
 }
 
 // --- Console seriale ------------------------------------------------------------------------
@@ -230,6 +254,7 @@ void stampaStato() {
                 proto::nomeStato(statoAttuale()), proto::nomeErrore(erroreAttuale()),
                 (long)movimento::posizione(), freqCorrente / 1000.0, movimento::finecorsaMin(),
                 movimento::finecorsaMax());
+  Serial.printf("ESP-NOW: canale %u\n", canale);
   if (movimento::modo() == movimento::Modo::CAN)
     Serial.printf("Motore: CAN (SERVO42D indirizzo %u, %u kbit/s)\n", movimento::canId(), movimento::canKbit());
   else
@@ -239,7 +264,7 @@ void stampaStato() {
 void aiuto() {
   Serial.println(
       "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calelim <kHz> | calcanc <kHz> |\n"
-      "         tabella | stato | mac <AA:BB:CC:DD:EE:FF> |\n"
+      "         tabella | stato | mac <AA:BB:CC:DD:EE:FF> | canale <1-13> |\n"
       "         motore stepdir|can | canid <1-2047> | cankbit <125|250|500|1000> (solo RX) | aiuto");
 }
 
@@ -296,6 +321,15 @@ void eseguiRiga(char* riga) {
     nvs.putBytes("peer", mac, 6);
     Serial.println("MAC del controllo salvato: riavviare");
     return;
+  } else if (!strcmp(cmd, "canale") && arg) {
+    int n = atoi(arg);
+    if (n < 1 || n > 13) {
+      Serial.println("Canale non valido (1-13)");
+      return;
+    }
+    nvs.putUChar("canale", (uint8_t)n);
+    Serial.printf("Canale %d salvato: riavviare\n", n);
+    return;
   } else {
     aiuto();
     return;
@@ -335,13 +369,16 @@ void setup() {
 
   uint8_t peer[6] = {0};
   nvs.getBytes("peer", peer, 6);
-  bool ok = radio.inizia(peer, segreti::PMK, segreti::LMK, cfg::CANALE_WIFI);
+  canale = nvs.getUChar("canale", cfg::CANALE_WIFI);
+  if (canale < 1 || canale > 13) canale = cfg::CANALE_WIFI;
+  bool ok = radio.inizia(peer, segreti::PMK, segreti::LMK, canale);
 
   uint8_t mio[6];
   char testo[18];
   Collegamento::macLocale(mio);
   Collegamento::scriviMac(mio, testo);
   Serial.printf("MAC di questa unità: %s\n", testo);
+  Serial.printf("Display OLED: %s\n", oled::inizia(testo, canale) ? "presente" : "non trovato (SDA 21, SCL 22)");
   if (!radio.peerValido())
     Serial.println("MAC del controllo non impostato: usare 'mac AA:BB:CC:DD:EE:FF'");
   else if (!ok)
@@ -362,6 +399,7 @@ void loop() {
 
   controllaHeartbeat();
   leggiConsole();
+  aggiornaOled();
 
   // invio spontaneo quando cambia lo stato
   if (radio.peerValido() && statoAttuale() != statoUltimoInvio) inviaRisposta(0);

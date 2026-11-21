@@ -19,7 +19,11 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Collegamento | ESP-NOW cifrato (PMK/LMK), MAC fissi in NVS, canale fisso (quello del router di casa se il pannello usa il WiFi) | Semplice; il WiFi serve solo per indici solari e ora |
 | Alimentazione | 24 V 2,5 A in casa, convertitore 24→5 V all'antenna | Corrente sufficiente; alimentatore lontano dalla radio |
 | Driver del motore RX | Doppio: STEP/DIR o CAN (SERVO42D), scelto dal pannello e salvato in NVS sull'antenna | Il SERVO42D ha già gli ingressi dei finecorsa; in CAN si legge lo stato del driver |
-| Transceiver CAN | Waveshare SN65HVD230 (3,3 V) su GPIO 22 (TX) / 23 (RX), già in possesso | Stessa tensione dell'ESP32, nessun convertitore di livello |
+| Transceiver CAN | Waveshare SN65HVD230 (3,3 V) su GPIO 17 (TX2) / 16 (RX2), già in possesso | Stessa tensione dell'ESP32, nessun convertitore di livello; 22/23 lasciati al display |
+| Display all'antenna | OLED 0,96" SSD1306 (ELEGOO) su I2C SDA 21 / SCL 22, facoltativo, spento dopo 2 minuti a riposo | Stato e MAC visibili sul banco e all'installazione; già cablato sui pin I2C standard |
+| EN del motore | GPIO 23 (prima 21) | Il 21 va al display; il 23 è libero all'accensione, il 4 ha una pull-down |
+| Toolchain dell'antenna | arduino-cli con il core esp32 3.1.1, come il pannello (`compila.sh tx\|rx`) | Un solo core sul Mac; evita PlatformIO dopo l'avviso malware; compila senza modifiche |
+| Canale ESP-NOW dell'antenna | Predefinito in `config.h`, modificabile dalla console (`canale`) e salvato in NVS | Deve seguire il canale del router senza ricompilare |
 | Isolamento albero RX | Barra ABS 8 mm tra due giunti metallici | Albero e telaio del variabile portano RF |
 | Schermate del pannello | Sintonia, Memorie, Propagazione, Decoder, Diagnostica, Impostazioni (+ Calibrazione da Impostazioni, screensaver) | Mockup approvato il 20/11/2026 |
 | Temi del pannello | Notte, Giorno, Fosfori verdi, Fosfori ambra; STOP rosso in tutti | Leggibilità e gusto; lo STOP deve riconoscersi sempre |
@@ -54,6 +58,8 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | diymore ESP32-S3 3,5" come unità antenna | Pochi GPIO, schermo inutile all'antenna |
 | Core Arduino "esp32-XIP-3.1.1" di Waveshare (PSRAM a 120 MHz) | Pacchetto non ufficiale da Google Drive; a 21 MHz lo schermo è già fermo |
 | Bounce buffer da 20 righe | Schermo fermo, ma 20 KB di RAM interna in più rispetto a 15 righe, che bastano |
+| PlatformIO per l'antenna (core 2.0.17) | Avviso malware di macOS al primo download, causa non trovata; sostituito da arduino-cli |
+| Display sui pin 16/17 con EN e CAN fermi | Scelta dell'utente: il display resta sui pin I2C standard |
 | Calibrazione come scheda del pannello | Si usa di rado: spostata dentro Impostazioni |
 | D1 mini ESP8266 all'antenna | Non è un ESP32: un solo ADC, pochi GPIO, niente CAN; FastAccelStepper non lo supporta |
 | ESP32-S3-Zero all'antenna | Chip non schermato e antenna ceramica: troppo esposto all'RF del TX |

@@ -18,14 +18,23 @@ Il software è descritto in [`../software/`](../software/README.md).
 ### Pinout suggerito (da confermare in fase di cablaggio)
 | Funzione | GPIO | Note |
 |---|---|---|
-| STEP / DIR / EN | nell'intervallo 16–23 | Nel firmware: STEP 18, DIR 19, EN 21 |
+| STEP / DIR / EN | nell'intervallo 16–23 | Nel firmware: STEP 18, DIR 19, EN 23 (libero all'accensione) |
 | UART TMC2209 | 25 / 26 | Nel firmware: TX 25, RX 26 |
 | Finecorsa | 27 / 14 | Nel firmware: MIN 27, MAX 14 |
 | Ingressi analogici | solo ADC1 (32–39) | L'ADC2 non funziona con WiFi/ESP-NOW |
-| CAN (solo SERVO42D via CAN) | TX 22 / RX 23 | Transceiver Waveshare SN65HVD230 (3,3 V) |
+| CAN (solo SERVO42D via CAN) | TX 17 (TX2) / RX 16 (RX2) | Transceiver Waveshare SN65HVD230 (3,3 V) |
+| Display OLED 0,96" (I2C) | SDA 21 / SCL 22 | SSD1306 128×64 a 0x3C, pin I2C standard; bus libero per altri moduli I2C (es. ADS1115) |
 | Da evitare | 0, 2, 12, 15 | Pin di strapping |
 
-I valori sono in `firmware/antenna/include/config.h`.
+I valori sono in `firmware/antenna/include/config.h`. Il 21/11/2026 EN e CAN sono stati spostati (prima EN 21,
+CAN 22/23) per lasciare al display OLED i pin I2C standard. Il GPIO 4 non va bene per EN: all'accensione ha una
+pull-down interna e il driver (EN attivo basso) resterebbe abilitato durante l'avvio.
+
+### Display OLED (facoltativo)
+- Modulo ELEGOO 0,96" blu e giallo: SSD1306 128×64 su I2C, indirizzo 0x3C; le prime 16 righe sono gialle.
+  Collegamenti: VCC a 3,3 V, GND, SDA al GPIO 21, SCL al GPIO 22 (provato sulla scheda il 21/11/2026).
+- Il firmware funziona anche senza. Dopo 2 minuti senza cambi di stato si spegne, convertitore interno compreso:
+  il suo eventuale disturbo sui 40 e 20 m è **da verificare** con la radio.
 
 ## Unità di controllo (casa)
 - **Waveshare ESP32-S3-Touch-LCD-7B** (7", 1024×600, touch capacitivo GT911) — scelta (sostituisce il 5" previsto prima).
@@ -54,8 +63,8 @@ I valori sono in `firmware/antenna/include/config.h`.
   |---|---|
   | 3V3 | 3,3 V dell'ESP32 |
   | GND | GND comune (ESP32, SERVO42D, alimentazione) |
-  | CTX | GPIO 22 (TX del controller CAN dell'ESP32, non incrociato) |
-  | CRX | GPIO 23 (RX) |
+  | CTX | GPIO 17, «TX2» sul DevKit (TX del controller CAN dell'ESP32, non incrociato) |
+  | CRX | GPIO 16, «RX2» sul DevKit (RX) |
   | CANH / CANL | CANH / CANL del SERVO42D, doppino intrecciato corto |
 
 - La scheda Waveshare ha a bordo una resistenza da 120 Ω (da verificare sulla scheda). Con un solo slave e

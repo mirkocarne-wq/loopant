@@ -21,7 +21,7 @@ docs/software/     software: architettura, unità antenna, pannello (requisiti),
 docs/memoria/      decisioni prese/scartate e punti aperti
 docs/archivio/     documento originale del 20/11/2026 (non aggiornato)
 firmware/lib/Comune/   codice condiviso: protocollo ESP-NOW, bande, collegamento, chiavi
-firmware/antenna/      firmware unità antenna (ESP32 DevKit 30 pin, WROOM-32), PlatformIO, ambienti tx e rx
+firmware/antenna/      firmware unità antenna (ESP32 DevKit 30 pin, WROOM-32), arduino-cli, versioni tx e rx
 firmware/pannello/     firmware pannello in casa (Waveshare 7B), Arduino core 3.1.1 + LVGL 8.4
 ```
 Il firmware del **pannello in casa** (Waveshare ESP32-S3-Touch-LCD-7B) ha tutte le schermate del mockup, non ancora
@@ -32,16 +32,17 @@ usare solo quei caratteri; per aggiungerne altri modificare e rilanciare `firmwa
 
 ## Build
 ```bash
-cd firmware/antenna && pio run -e tx   # versione TX (NEMA11 + TMC2209)
-cd firmware/antenna && pio run -e rx   # versione RX (SERVO42D in STEP/DIR)
+firmware/antenna/compila.sh tx         # antenna TX (NEMA11 + TMC2209); "tx carica <porta>" carica
+firmware/antenna/compila.sh rx         # antenna RX (SERVO42D in STEP/DIR o CAN)
 firmware/pannello/compila.sh           # pannello, con arduino-cli (core esp32 3.1.1, lvgl 8.4.0)
 firmware/pannello/test/esegui_test.sh  # test sul PC: sole, locator, indici, decoder CW/RTTY
 firmware/pannello/simulatore/compila.sh <lvgl>  # interfaccia sul PC, schermate PNG (controllare dopo ogni modifica)
 ```
 Le chiavi ESP-NOW reali vanno in `firmware/lib/Comune/src/segreti.h` (non versionato);
 senza, si compila con le chiavi di esempio e un avviso.
-Il pannello 7B usa il core Arduino ESP32 **3.1.1** (gli esempi Waveshare usano `esp_lcd` e `i2c_master` di IDF 5);
-l'antenna resta su PlatformIO `espressif32@6.9.0` (core 2.0.17). Non usare `Wire` sul pannello: l'I2C è del driver Waveshare.
+Pannello e antenna usano il core Arduino ESP32 **3.1.1** con arduino-cli (gli esempi Waveshare usano `esp_lcd` e
+`i2c_master` di IDF 5); `platformio.ini` dell'antenna non è più provato. Non usare `Wire` sul pannello: l'I2C è del
+driver Waveshare. Sull'antenna `Wire` (SDA 21, SCL 22) è del display OLED, usato solo dal suo task.
 Sul pannello LVGL alloca in **PSRAM** (`lv_conf.h`): non tornare a `malloc`, la RAM interna si esaurisce
 (controllare con il comando `mem`). Nel task di LVGL (stack 6 KB) le strutture grandi vanno dichiarate `static`.
 Schermo del pannello: clock dei pixel 21 MHz e bounce buffer da 15 righe; a 30 MHz l'immagine trema (PSRAM a 80 MHz).

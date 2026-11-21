@@ -15,8 +15,8 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [ ] Disegno quotato della scatola RX e del gruppo TX.
 
 ## Strumenti
-- [ ] macOS ha segnalato un malware durante il primo `pio run` (21/11/2026): file non identificato; il download si era
-  fermato a un file vuoto. Capire cosa è stato segnalato prima di rilanciare PlatformIO.
+- [x] Avviso malware al primo `pio run` (21/11/2026): causa non trovata nei log; l'antenna ora si compila con
+  arduino-cli e il core 3.1.1, PlatformIO non serve più. Non rilanciarlo senza capire cosa era stato segnalato.
 
 ## Firmware
 - [x] Unità antenna: prima versione scritta (PlatformIO, compila TX e RX), da provare sul banco.
@@ -24,11 +24,15 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [x] Doppio driver del motore RX (STEP/DIR o CAN) scelto dal pannello: scritto, compila (protocollo v3).
 - [ ] Prova del SERVO42D via CAN (SN65HVD230, GPIO 22/23; 120 Ω a bordo e velocità del bus da verificare) e via STEP/DIR.
 - [ ] Protocollo CAN del SERVO42D: verificare sul manuale ufficiale CRC e comandi 0xFE, 0x91, 0xF1, 0x31, 0x8C; parametri di azzeramento nel menu del driver.
-- [ ] Prova del collegamento ESP-NOW con heartbeat e cifratura tra le due schede.
+- [x] Collegamento ESP-NOW cifrato con heartbeat tra pannello e antenna, provato sulle schede il 21/11/2026 (canale 3 del router, chiavi di esempio).
+- [ ] Chiavi ESP-NOW vere (`segreti.h`) su pannello e antenna: oggi entrambi usano quelle di esempio.
+- [ ] Associazione pannello–antenna con il pulsante BOOT (GPIO 0) dell'antenna, al posto dei MAC da console: proposta.
+- [ ] Antenna: ricerca automatica del canale se il router lo cambia (oggi `canale` da console).
+- [ ] Display OLED dell'antenna: disturbo sui 40 e 20 m acceso e spento (con la radio).
 - [x] Requisiti e mockup del pannello 7B approvati (docs/software/03-unita-controllo.md).
 - [x] Firmware del pannello 7B, prima versione: driver, collegamento, barra, schede, Sintonia, temi, Impostazioni di base (compila).
 - [x] Pannello sulla scheda vera (21/11/2026): schermo, touch, colori, luminosità, ricerca reti WiFi funzionano.
-- [ ] Pannello: collegamento ESP-NOW con l'antenna sulla scheda vera.
+- [x] Pannello: collegamento ESP-NOW con l'antenna sulla scheda vera (21/11/2026).
 - [x] Pannello: Calibrazione e Diagnostica (protocollo v2: flag, CAL_LEGGI, CAL_ELIMINA), compilano.
 - [x] Pannello: Memorie, Propagazione, Decoder CW/RTTY, screensaver, Impostazioni complete, WiFi/NTP/indici (compilano; algoritmi provati sul PC).
 - [ ] Decoder: prova con segnali veri dalla radio.

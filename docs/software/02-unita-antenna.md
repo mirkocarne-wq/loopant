@@ -3,10 +3,28 @@
 Hardware: vedi [tecnico/06-elettronica.md](../tecnico/06-elettronica.md). Codice: `firmware/antenna/`.
 
 ## Versioni
-| Ambiente PlatformIO | Versione | Motore | Driver |
+Si compila con arduino-cli e il core esp32 **3.1.1**, lo stesso del pannello: `firmware/antenna/compila.sh tx|rx`
+(con `carica <porta>` carica anche). Librerie: FastAccelStepper 2.0.1, TMCStepper 0.7.3, U8g2.
+`platformio.ini` resta per chi usa PlatformIO (core 2.0.17), ma non è più provato.
+
+| Versione di `compila.sh` | Versione | Motore | Driver |
 |---|---|---|---|
 | `tx` (predefinito) | TX 100 W | NEMA11, attuatore lineare T6×1, corsa 150 mm | TMC2209 (STEP/DIR/EN + UART) |
 | `rx` | RX | NEMA17 + riduttore 20:1 sul variabile | SERVO42D in STEP/DIR/EN **oppure** via CAN, a scelta dal pannello |
+
+## Display OLED
+Facoltativo (SSD1306 128×64 su SDA 21 / SCL 22, vedi [tecnico/06-elettronica.md](../tecnico/06-elettronica.md)).
+Lo disegna un task a bassa priorità sul core 0, al massimo 4 volte al secondo, così il loop che legge i finecorsa
+non aspetta l'I2C.
+- All'accensione, per 4 s: MAC dell'unità, canale ESP-NOW, pannello impostato o no.
+- Fascia gialla: `LOOPANT TX`/`RX` e collegamento (dBm dell'ultimo messaggio, `SCOLLEGATO`, `NO MAC`).
+- Zona blu: frequenza in kHz a cifre grandi, stato, posizione in passi e `MOTORE ON` mentre il driver è abilitato;
+  in errore il motivo al posto della posizione. Senza MAC del pannello mostra il MAC dell'unità da inserire.
+- Si spegne dopo `OLED_SPEGNI_S` (120 s) senza cambi di stato né comandi e si riaccende al primo cambio.
+
+## Canale ESP-NOW
+Predefinito `CANALE_WIFI` (1) in `config.h`; dalla console `canale <1-13>` lo salva in NVS (riavviare).
+Se il pannello è collegato al WiFi di casa deve essere il canale del router (oggi il 3).
 
 ## Driver del motore (antenna RX)
 Si sceglie dal pannello (Impostazioni → Antenna) o dalla console (`motore stepdir|can`); la scelta resta in NVS.

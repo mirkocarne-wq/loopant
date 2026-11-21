@@ -18,6 +18,7 @@
 
 ### Elettronica
 - [x] ESP32 DevKit 30 pin (WROOM-32), già in possesso
+- [x] Display OLED 0,96" ELEGOO blu e giallo (SSD1306, I2C), già in possesso
 - [ ] **TMC2209**, microswitch finecorsa
 - [ ] Waveshare ESP32-S3-Touch-LCD-7B (7", 1024×600, touch)
 - [ ] Per il TX: wattmetro (AD8307 ×2, ADS1115, accoppiatore)

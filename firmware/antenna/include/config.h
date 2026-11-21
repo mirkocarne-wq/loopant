@@ -13,7 +13,7 @@ namespace cfg {
 //     analogici solo ADC1 32-39) ---
 constexpr int PIN_STEP = 18;
 constexpr int PIN_DIR = 19;
-constexpr int PIN_EN = 21;     // attivo basso (TMC2209 e SERVO42D)
+constexpr int PIN_EN = 23;     // attivo basso (TMC2209 e SERVO42D); libero all'accensione, niente pull interne
 constexpr int PIN_TMC_TX = 25;  // UART TMC2209 (con resistenza da 1 kΩ verso PDN_UART)
 constexpr int PIN_TMC_RX = 26;
 constexpr int PIN_FC_MIN = 27;  // finecorsa lato zero
@@ -22,8 +22,8 @@ constexpr bool FC_ATTIVO_BASSO = true;  // microswitch verso massa, pull-up + RC
 
 // CAN verso il SERVO42D (versione RX, alternativa a STEP/DIR): transceiver Waveshare SN65HVD230.
 // Il driver (STEP/DIR o CAN) si sceglie dal pannello e resta salvato in NVS.
-constexpr int PIN_CAN_TX = 22;  // -> CTX del transceiver
-constexpr int PIN_CAN_RX = 23;  // -> CRX del transceiver
+constexpr int PIN_CAN_TX = 17;  // TX2 -> CTX del transceiver
+constexpr int PIN_CAN_RX = 16;  // RX2 -> CRX del transceiver
 constexpr uint16_t CAN_ID_PREDEFINITO = 1;      // indirizzo del SERVO42D (menu del driver)
 constexpr uint16_t CAN_KBIT_PREDEFINITO = 500;  // deve essere uguale a quello del SERVO42D
 // Comandi del SERVO42D (protocollo da verificare sul manuale ufficiale V1.0.3)
@@ -35,8 +35,17 @@ constexpr uint8_t SERVO_HOME_VERSO = 1;     // 0 = CW, 1 = CCW verso il finecors
 constexpr uint16_t SERVO_HOME_RPM = 60;
 constexpr uint32_t SERVO_TIMEOUT_MS = 250;  // attesa della risposta prima di ripetere
 
+// Display OLED 0,96" (SSD1306 128x64, I2C 0x3C, prime 16 righe gialle) sui pin I2C standard dell'ESP32.
+// Facoltativo: se non risponde il firmware funziona senza.
+constexpr int PIN_OLED_SDA = 21;
+constexpr int PIN_OLED_SCL = 22;
+constexpr uint8_t OLED_INDIRIZZO = 0x3C;
+// Spegnimento dopo questi secondi senza cambi di stato né comandi (0 = sempre acceso): il convertitore
+// interno del display potrebbe disturbare la ricezione, come il driver del motore (da verificare con la radio).
+constexpr uint16_t OLED_SPEGNI_S = 120;
+
 // --- Collegamento ---
-constexpr uint8_t CANALE_WIFI = 1;
+constexpr uint8_t CANALE_WIFI = 1;  // predefinito; si cambia dalla console con "canale <n>" (NVS)
 constexpr uint32_t TIMEOUT_HEARTBEAT_MS = 3000;  // 3 heartbeat persi
 
 #if VERSIONE_TX
