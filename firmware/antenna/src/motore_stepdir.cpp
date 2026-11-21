@@ -41,6 +41,9 @@ const cfg::Meccanica& M() { return tipo_antenna::meccanica(); }
 bool attivo(int pin) { return digitalRead(pin) == (cfg::FC_ATTIVO_BASSO ? LOW : HIGH); }
 
 void avvia(int32_t pos, uint32_t velocita) {
+  // Mai impulsi sotto lo zero (lo stacco, dove finisce l'azzeramento) fuori dall'azzeramento stesso:
+  // ultima difesa, qualunque cosa chiedano gli strati sopra.
+  if (azzerato_ && pos < M().staccoPassi) pos = M().staccoPassi;
   stepper->setSpeedInHz(velocita);
   stepper->moveTo(pos);
 }

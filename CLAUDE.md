@@ -55,6 +55,8 @@ Schermo del pannello: clock dei pixel 21 MHz e bounce buffer da 15 righe; a 30 M
   (30 arc-min ≈ 2,7 pF) diventa un offset costante assorbito dalla tabella di calibrazione.
   Eccezione: il JOG libero della manopola (ritocco a orecchio) va diretto; il GOTO successivo riallinea.
 - **Zero sui finecorsa a ogni cambio banda** (il TX è in ciclo aperto, senza encoder).
+- **Mai impulsi sotto lo zero** (dove finisce l'azzeramento), tranne durante l'azzeramento stesso: controllo
+  nell'ultima funzione di movimento di ciascun driver (`avvia` STEP/DIR, `muoviA` CAN).
 - **Driver disabilitato dopo ogni movimento** (motore libero, niente rumore HF durante l'ascolto).
 - **Heartbeat ESP-NOW ogni secondo**; al timeout: motore fermo e driver disabilitato.
 - In TX **non muovere il condensatore con RF ad alta potenza**: ricerca del ROS minimo a circa 5 W.

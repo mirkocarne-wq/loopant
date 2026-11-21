@@ -74,7 +74,8 @@ Segue il tipo di antenna (decisione del 21/11/2026): non c'è una scelta separat
    TUNE. **Quella posizione vale 0**: fuori dai driver (risposte al pannello, calibrazione, display) le posizioni
    contano da lì; i driver contano dal finecorsa (`movimento.cpp`). GOTO e jog normale stanno sopra `posMin`
    (stacco + recupero del gioco: spazio per scendere sotto il target e risalire); il jog libero della manopola
-   scende fino a 0, così il primo scatto dopo lo zero non salta.
+   scende fino a 0, così il primo scatto dopo lo zero non salta. **Mai impulsi sotto lo zero** fuori
+   dall'azzeramento: ultimo controllo in `avvia` (STEP/DIR) e `muoviA` (CAN).
    Sequenza: ricerca veloce → stacco → riavvicinamento lento → zero → stacco finale.
 3. **Driver disabilitato dopo ogni movimento** (motore libero, nessun rumore HF).
 4. **Limiti software**: il target viene limitato tra `POS_MIN` e `POS_MAX`.

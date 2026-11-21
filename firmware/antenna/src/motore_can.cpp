@@ -76,6 +76,9 @@ uint16_t rpm() {  // velocità in giri/min del motore, dagli impulsi al secondo 
 }
 
 void muoviA(int32_t pos) {
+  // Mai sotto lo zero (dove il SERVO42D ha finito l'azzeramento): ultima difesa, qualunque cosa chiedano
+  // gli strati sopra. L'azzeramento non passa da qui (comando 0x91).
+  if (pos < 0) pos = 0;
   tappa = pos;
   uint16_t v = rpm();
   const uint8_t d[] = {0xFE,
