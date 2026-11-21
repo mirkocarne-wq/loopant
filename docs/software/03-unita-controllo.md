@@ -25,7 +25,7 @@ Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione
 | IO expander | Indirizzo I2C 0x24 (chip non indicato): EXIO1 reset touch, EXIO2 retroilluminazione, EXIO4 CS della SD, EXIO5 selezione USB/CAN, EXIO6 alimentazione LCD; ha anche un'uscita PWM e un ingresso ADC (tensione batteria) |
 | Retroilluminazione | Accesa/spenta con EXIO2; luminosità tramite il PWM dell'IO expander (registro 0x05, 0–100) |
 | USB | Due USB-C: USB nativa (GPIO 19/20, in comune con il CAN) e "USB TO UART" (CH343) |
-| Altre interfacce | CAN (TJA1051, GPIO 19/20), RS485 (TX 16 / RX 15), SD (MOSI 11, SCK 12, MISO 13), connettori I2C, UART, sensore |
+| Altre interfacce | CAN (TJA1051, GPIO 19/20), RS485 (TX 16 / RX 15), SD (MOSI 11, SCK 12, MISO 13); connettori J8 «GPIO» (3V3, GND, GPIO6), H1 «I2C» (SDA 8, SCL 9), H3 «UART2» (GPIO 43/44, con SW1 su UART2 al posto del CH343) — dallo schema |
 | Batteria | Li-ion 3,7 V opzionale, connettore PH2.0, caricatore integrato |
 | Alimentazione | 5 V da USB-C, circa 350 mA |
 | RTC / ingresso audio | **Non indicati** nella documentazione |

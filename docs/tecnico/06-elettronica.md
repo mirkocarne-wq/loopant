@@ -44,8 +44,11 @@ pull-down interna e il driver (EN attivo basso) resterebbe abilitato durante l'a
   Non adatta all'antenna: pochi GPIO e schermo inutile.
 
 ### Ingresso audio per il decoder CW/RTTY
-- Il firmware usa l'ADC1 dell'ESP32-S3 su **GPIO6** (`cfg::PIN_AUDIO`): sembra l'unico ADC1 libero sul 7B, perché
-  GPIO1-5 e 7-10 sono di schermo, touch e I2C. **Da verificare sullo schema** (connettore "Sensor"?).
+- Il firmware usa l'ADC1 dell'ESP32-S3 su **GPIO6** (`cfg::PIN_AUDIO`), l'unico ADC1 libero sul 7B. Verificato
+  sullo schema Waveshare il 21/11/2026: arriva al connettore **J8 «GPIO»** (3V3, GND, GP6).
+- Altri connettori del 7B utili: **H1 «I2C»** (3V3, GND, SDA 8, SCL 9: stesso bus di touch e IO expander) e
+  **H3 «UART2»** (seriale 0 dell'ESP32, GPIO 43/44): si attiva con il deviatore SW1 su UART2, che scollega il CH343
+  («USB TO UART»); resta la USB nativa.
 - Collegamento proposto (da verificare):
   ```
   uscita linea radio ── trasformatore 1:1 ── 10 µF ──┬── GPIO6

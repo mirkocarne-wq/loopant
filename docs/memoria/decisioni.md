@@ -39,7 +39,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Driver del pannello | Driver degli esempi Waveshare (15_LVGL_SLIDER) copiati in `src/waveshare/` | Funzionano sulla scheda; licenza Apache 2.0 |
 | Cifre a 7 segmenti | Widget LVGL che disegna i segmenti con poligoni | Nessun font da convertire; stessa geometria del mockup |
 | Font del pannello | Montserrat Medium 12-34 con Latin-1, generati con lv_font_conv; font integrati di LVGL disattivati | Testi in italiano corretto; circa 150 KB di flash in più |
-| Ingresso audio del decoder | ADC1 su GPIO6 a 8 kHz (da verificare sullo schema) | Unico ADC1 apparentemente libero; nessun modulo in più |
+| Ingresso audio del decoder | ADC1 su GPIO6 a 8 kHz (connettore J8, verificato sullo schema) | Unico ADC1 apparentemente libero; nessun modulo in più |
 | Algoritmi del decoder | C++ puro con test sul PC (segnali sintetici e rumore) | Si verificano senza hardware |
 | Mappa della grey line | Disegnata in PSRAM con continenti semplificati; Natural Earth in futuro | LVGL 8 non riempie poligoni concavi |
 | Simulatore sul PC | Interfaccia vera compilata con LVGL su Linux o macOS, schermate PNG | Controllo dell'impaginazione senza scheda |

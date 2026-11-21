@@ -46,11 +46,12 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [x] Pannello: font con lettere accentate, "·" e "—" (Montserrat Latin-1 con lv_font_conv).
 - [x] Pannello: icone del mockup, disegnate con linee e archi LVGL.
 - [x] Verso del PWM della retroilluminazione: 100 − luminosità è corretto (verificato sulla scheda).
-- [ ] Ingresso audio del decoder: GPIO6 da verificare sullo schema; circuito d'ingresso da provare.
+- [x] Ingresso audio del decoder: GPIO6 sul connettore J8 «GPIO» del 7B (schema Waveshare).
+- [ ] Ingresso audio di qualità per CW/RTTY: scegliere tra circuito su GPIO6 e secondo ESP32 con ADC I2S (proposta).
 - [ ] Font monospazio per i temi a fosfori: servono circa 1,4 MB di flash (partizione app più grande) e un font per tema in tutta l'interfaccia.
 - [ ] Mappa per la grey line in flash (Natural Earth), una per tema.
 - [ ] Indici solari: verificare formato e condizioni d'uso del feed hamqsl.com; con il WiFi l'antenna va sul canale del router.
 - [x] Ora esatta sul pannello: NTP via WiFi oppure impostazione dalla console.
 - [ ] Verificare band plan IARU R1 e frequenze delle memorie predefinite.
-- [ ] UART per il futuro CI-V sul 7B (schema elettrico).
+- [x] UART per il futuro CI-V sul 7B: connettore H3 «UART2» (GPIO 43/44) con SW1 su UART2 (scollega il CH343).
 - [ ] Procedura di calibrazione e tabella posizione ↔ frequenza.
