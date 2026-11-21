@@ -41,7 +41,12 @@ La manopola **passa sempre dal pannello**: è il pannello a comandare l'antenna 
 | Girare la manopola (FREQUENZA) | 1 kHz per scatto, 10 kHz girando in fretta; oltre il bordo della banda si passa all'altra |
 | Tocco lungo (FREQUENZA) | TUNE sulla frequenza mostrata, poi si torna al ritocco fine |
 
-Display: modo e collegamento in alto, al centro posizione (passi) o frequenza a 7 segmenti, frequenza accordata,
+Nel ritocco fine il numero al centro è **relativo**: i passi dall'ultimo GOTO o ZERO (da qualsiasi parte: Sintonia,
+memorie, TUNE della manopola, pagina web, console), che riparte da 0. Il riferimento lo tiene il pannello: quando
+l'antenna finisce il movimento e la posizione resta uguale per 1,5 s (la posizione dopo lo ZERO via CAN arriva con
+la risposta successiva), la manda alla manopola come `finePassi`.
+
+Display: modo e collegamento in alto, al centro passi dal TUNE o frequenza a 7 segmenti, frequenza accordata,
 ultime lettere decodificate e CW WPM / RTTY agganciato; il livello audio è l'arco sul bordo.
 
 ## Audio e decoder [D]

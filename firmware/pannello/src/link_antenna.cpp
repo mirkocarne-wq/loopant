@@ -49,6 +49,8 @@ int8_t esito = 0;  // dall'interfaccia: 1 conferma, -1 rifiuto
 uint8_t macEsito[6] = {0};
 bool esitoManopola = false;
 
+volatile uint32_t comandiPosizione_ = 0;
+
 uint16_t prossimaSeq() {
   if (++seq == 0) seq = 1;  // 0 è riservato alle risposte spontanee
   return seq;
@@ -166,6 +168,7 @@ void invia(proto::Tipo tipo, uint32_t freq_hz, int32_t valore) {
   c.tipo = tipo;
   c.freq_hz = freq_hz;
   c.valore = valore;
+  if (tipo == proto::Tipo::GOTO || tipo == proto::Tipo::ZERO) comandiPosizione_ = comandiPosizione_ + 1;
   portENTER_CRITICAL(&mux);
   if (tipo != proto::Tipo::HEARTBEAT && inAttesa) {  // in coda: parte dopo la risposta al comando in corso
     if (nCoda < MAX_CODA) coda[nCoda++] = c;
@@ -290,6 +293,8 @@ Tabella tabella() {
   portEXIT_CRITICAL(&mux);
   return t;
 }
+
+uint32_t comandiPosizione() { return comandiPosizione_; }
 
 Richiesta richiestaAssociazione() {
   portENTER_CRITICAL(&mux);

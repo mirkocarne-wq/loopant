@@ -25,7 +25,7 @@ enum class Fase : uint8_t {
   AZ_STACCA,
   AZ_LENTO,        // riavvicinamento lento
   AZ_ATTESA_2,
-  AZ_FINE,         // stacco finale
+  AZ_FINE,         // stacco finale fino alla posizione minima ammessa
 };
 
 FastAccelStepperEngine motore;
@@ -220,7 +220,9 @@ void aggiorna() {
     case Fase::AZ_ATTESA_2:
       if (fermo()) {
         stepper->setCurrentPosition(0);  // zero dove il motore si è fermato davvero
-        avvia(M().staccoPassi, M().velocitaAzzeramentoHz);
+        // si sale fino alla posizione minima ammessa (stacco + recupero del gioco): parcheggio dopo lo zero,
+        // da cui jog e ritocco partono senza salti
+        avvia(M().posMin(), M().velocitaAzzeramentoHz);
         fase = Fase::AZ_FINE;
       }
       break;

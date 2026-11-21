@@ -69,7 +69,9 @@ Segue il tipo di antenna (decisione del 21/11/2026): non c'è una scelta separat
    libero del ritocco fine della manopola (`JOG_LIBERO`), che va diretto; il GOTO successivo riallinea.
    Se il target è sotto la posizione attuale, il motore scende di `RECUPERO_GIOCO_PASSI`
    sotto il target e poi risale. Così il gioco è sempre preso dalla stessa parte.
-2. **Azzeramento sul finecorsa MIN a ogni cambio banda**, e all'accensione al primo comando.
+2. **Azzeramento sul finecorsa MIN a ogni cambio banda**, e all'accensione al primo comando. Dopo lo zero l'antenna
+   sale alla posizione minima ammessa (`posMin` = stacco + recupero del gioco: 532 passi sull'RX), arrivando dal
+   basso: da lì jog e ritocco partono senza salti (sotto `posMin` i target vengono alzati a `posMin`).
    Sequenza: ricerca veloce → stacco → riavvicinamento lento → zero → stacco finale.
 3. **Driver disabilitato dopo ogni movimento** (motore libero, nessun rumore HF).
 4. **Limiti software**: il target viene limitato tra `POS_MIN` e `POS_MAX`.

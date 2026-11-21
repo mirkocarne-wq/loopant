@@ -148,15 +148,22 @@ void aggiorna(lv_timer_t*) {
     lv_label_set_text(unita, "kHz · tocco lungo = TUNE");
   } else {
     lv_label_set_text(modo, "RITOCCO FINE");
-    long pos = p.valida ? (long)p.imp.antPosizione : 0;
-    if (pos < 0) pos = 0;
-    snprintf(n, sizeof(n), "%6ld", pos % 1000000);
-    char m[12];
-    snprintf(m, sizeof(m), "%.3s %.3s", n, n + 3);
-    for (char* q = m; *q; q++)
-      if (*q == ' ' && q != m + 3) *q = '_';
-    display7::testo(cifre, p.valida ? m : "___ ___");
-    snprintf(t, sizeof(t), "passi · %u per scatto", p.valida ? p.imp.passiScatto : 0);
+    // scostamento dall'ultimo TUNE o ZERO (riparte da 0), non la posizione assoluta
+    bool ok = p.valida && p.imp.fineValido;
+    long fine = ok ? (long)p.imp.finePassi : 0;
+    if (fine > 99999) fine = 99999;
+    if (fine < -9999) fine = -9999;
+    snprintf(n, sizeof(n), "%5ld", fine);
+    for (char* q = n; *q; q++)
+      if (*q == ' ') *q = '_';
+    display7::testo(cifre, ok ? n : "_____");
+    proto::Stato st = (proto::Stato)p.imp.antStato;
+    if (ok) snprintf(t, sizeof(t), "passi dal TUNE · %u per scatto", p.imp.passiScatto);
+    else if (!p.valida || !p.imp.antCollegata) t[0] = 0;
+    else if (st == proto::Stato::IN_MOVIMENTO) snprintf(t, sizeof(t), "in movimento");
+    else if (st == proto::Stato::AZZERAMENTO) snprintf(t, sizeof(t), "azzeramento");
+    else if (!(p.imp.antFlag & proto::FLAG_AZZERATA)) snprintf(t, sizeof(t), "antenna non azzerata");
+    else snprintf(t, sizeof(t), "un attimo…");
     lv_label_set_text(unita, t);
   }
   if (p.valida && p.imp.antFreqHz) {

@@ -141,9 +141,14 @@ void ricevi(const twai_message_t& m) {
       if (fase != Fase::AZZERAMENTO) break;
       if (stato == 0) errore(proto::Errore::AZZERAMENTO_FALLITO);
       else if (stato == 2) {
+        // zero sul finecorsa del SERVO42D; poi si sale alla posizione minima ammessa (stacco + recupero del
+        // gioco), da cui jog e ritocco partono senza salti
         pos_ = 0;
         azzerato_ = true;
-        termina();
+        target = cfg::RX.posMin();
+        fase = Fase::VERSO_TARGET;
+        inizioFase = millis();
+        muoviA(target);
       }
       break;
     case 0x31:  // encoder cumulativo a 48 bit, 0x4000 per giro del motore

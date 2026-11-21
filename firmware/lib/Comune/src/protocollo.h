@@ -139,6 +139,8 @@ struct __attribute__((packed)) ManopolaImposta {  // pannello -> manopola
   uint32_t antFreqHz;    // frequenza accordata (0 = non nota)
   uint32_t freqProposta; // ultima frequenza digitata sul pannello (punto di partenza per la manopola)
   uint16_t passiScatto;  // passi per scatto nel ritocco fine
+  int32_t finePassi;     // ritocco fine: posizione meno quella dopo l'ultimo GOTO o ZERO (riparte da 0)
+  uint8_t fineValido;    // 0 finché non c'è un riferimento
 };
 
 constexpr uint8_t AUDIO_INGRESSO = 1 << 0;  // sorgente attiva (microfono trovato o segnale di prova)

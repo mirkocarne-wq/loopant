@@ -46,6 +46,9 @@ void inizia(const uint8_t peer[6]);
 void aggiorna();
 void invia(proto::Tipo tipo, uint32_t freq_hz = 0, int32_t valore = 0);
 Stato stato();
+// Contatore dei comandi che fissano la posizione (GOTO e ZERO, da qualsiasi parte arrivino): la manopola
+// lo usa per far ripartire da 0 il ritocco fine.
+uint32_t comandiPosizione();
 
 // Chiede all'antenna tutti i punti di calibrazione della banda (uno alla volta).
 void richiediTabella(bande::Banda banda);

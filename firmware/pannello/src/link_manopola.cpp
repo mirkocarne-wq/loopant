@@ -33,6 +33,46 @@ int32_t scattiFatti = 0;
 uint16_t nTuneVisto = 0, nZeroVisto = 0;
 uint32_t testoVisto = 0;
 
+// Riferimento del ritocco fine: posizione dell'antenna alla fine dell'ultimo GOTO o ZERO
+uint32_t comandiVisti = 0;
+uint8_t faseRiferimento = 0;  // 0 a posto, 1 comando partito (si aspetta il movimento), 2 si aspetta la fine
+uint32_t inizioRiferimento = 0;
+int32_t riferimento = 0;
+bool riferimentoValido = false;
+int32_t candidato = 0;    // posizione in attesa di conferma
+uint32_t stabileDa = 0;   // da quando è ferma lì (0 = nessun candidato)
+constexpr uint32_t STABILE_MS = 1500;  // la posizione dopo lo ZERO via CAN arriva con la risposta successiva
+
+void aggiornaRiferimento() {
+  link_antenna::Stato a = link_antenna::stato();
+  uint32_t c = link_antenna::comandiPosizione();
+  if (c != comandiVisti) {
+    comandiVisti = c;
+    faseRiferimento = 1;
+    inizioRiferimento = millis();
+  }
+  if (!a.collegato) return;
+  if (faseRiferimento && a.r.stato == proto::Stato::ERRORE) faseRiferimento = 0;  // GOTO rifiutato: resta il vecchio
+  bool muove = a.r.stato == proto::Stato::IN_MOVIMENTO || a.r.stato == proto::Stato::AZZERAMENTO;
+  if (faseRiferimento == 1 && (muove || millis() - inizioRiferimento > 3000)) faseRiferimento = 2;
+  bool fermaAzzerata = a.r.stato == proto::Stato::FERMO && (a.r.flag & proto::FLAG_AZZERATA);
+  if (fermaAzzerata && (faseRiferimento == 2 || (!riferimentoValido && faseRiferimento == 0))) {
+    // fine del GOTO/ZERO (o prima posizione nota dopo l'avvio): si aspetta che la posizione resti uguale
+    if (!stabileDa || a.r.posizione != candidato) {
+      candidato = a.r.posizione;
+      stabileDa = millis();
+    } else if (millis() - stabileDa >= STABILE_MS) {
+      riferimento = candidato;
+      riferimentoValido = true;
+      faseRiferimento = 0;
+      stabileDa = 0;
+    }
+  } else {
+    stabileDa = 0;
+  }
+  if (!(a.r.flag & proto::FLAG_AZZERATA)) riferimentoValido = false;  // posizione persa
+}
+
 void inviaImpostazioni() {
   const Impostazioni& imp = impostazioni::get();
   link_antenna::Stato a = link_antenna::stato();
@@ -57,6 +97,8 @@ void inviaImpostazioni() {
   m.antFreqHz = a.r.freq_hz;
   m.freqProposta = imp.ultima40_hz;
   m.passiScatto = scelte_.passiScatto;
+  m.fineValido = riferimentoValido && faseRiferimento == 0;
+  m.finePassi = m.fineValido ? a.r.posizione - riferimento : 0;
   radio.invia(&m, sizeof(m));
   ultimoInvio = millis();
 }
@@ -111,6 +153,7 @@ void inizia() {
 }
 
 void aggiorna() {
+  aggiornaRiferimento();
   Pacchetto p;
   while (radio.ricevi(p)) {
     if (p.len != sizeof(proto::ManopolaStato)) continue;
