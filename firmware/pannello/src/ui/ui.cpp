@@ -5,6 +5,7 @@
 
 #include "../config.h"
 #include "../display7.h"
+#include "../icona.h"
 #include "../impostazioni.h"
 #include "../ora.h"
 #include "../tema.h"
@@ -28,6 +29,7 @@ const Pagina PAGINE[NUM_PAGINE] = {
 
 lv_obj_t* pagine[NUM_PAGINE];
 lv_obj_t* schede[NUM_SCHEDE];
+lv_obj_t* icone[NUM_SCHEDE];
 uint8_t attiva = 0;
 
 lv_obj_t* orologio;
@@ -164,6 +166,7 @@ void mostra(uint8_t indice) {
     lv_obj_set_style_bg_color(schede[i], sel ? t.surface2 : t.surface, 0);
     lv_obj_set_style_text_color(schede[i], sel ? t.accent : t.text2, 0);
     lv_obj_set_style_border_color(schede[i], sel ? t.accent : t.surface, 0);
+    icona::colore(icone[i], sel ? t.accent : t.text2);
   }
   if (PAGINE[indice].mostrata) PAGINE[indice].mostrata();
 }
@@ -190,10 +193,15 @@ void creaSchede(lv_obj_t* scr) {
     lv_obj_set_style_border_side(b, LV_BORDER_SIDE_TOP, 0);
     lv_obj_set_style_border_width(b, 3, 0);
     lv_obj_set_style_bg_color(b, t.surface2, LV_STATE_PRESSED);
-    lv_obj_t* l = lv_label_create(b);
-    lv_label_set_text_fmt(l, "%s  %s", PAGINE[i].simbolo, PAGINE[i].nome);
+    lv_obj_t* riga = contenitore(b, LV_FLEX_FLOW_ROW, 8);
+    lv_obj_set_flex_align(riga, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_add_flag(riga, LV_OBJ_FLAG_EVENT_BUBBLE);
+    lv_obj_clear_flag(riga, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_center(riga);
+    icone[i] = icona::crea(riga, (icona::Tipo)i, 26, t.text2);
+    lv_obj_t* l = lv_label_create(riga);
+    lv_label_set_text(l, PAGINE[i].nome);
     lv_obj_set_style_text_font(l, &font_16, 0);
-    lv_obj_center(l);
     lv_obj_add_event_cb(b, premiScheda, LV_EVENT_CLICKED, (void*)(uintptr_t)i);
     schede[i] = b;
   }

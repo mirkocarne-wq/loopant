@@ -30,6 +30,7 @@ src/config.h            canale, tempi del collegamento, frequenze proposte
 src/impostazioni.*      impostazioni in NVS (nominativo, tema, MAC antenna, ultime frequenze...)
 src/tema.*              i quattro temi del mockup
 src/display7.*          widget display a 7 segmenti (poligoni LVGL, nessun font esterno)
+src/icona.*             icone delle schede disegnate con linee e archi (come nel mockup)
 src/link_antenna.*      ESP-NOW verso l'antenna (usa ../lib/Comune)
 src/console.*           comandi da seriale
 src/eventi.*            registro eventi e contatori (Diagnostica)
@@ -118,7 +119,6 @@ wifi <ssid> <password>       WiFi di casa (facoltativo)
 Sull'antenna va impostato il MAC del pannello (stampato all'avvio e mostrato in Impostazioni).
 
 ## Limiti noti di questa versione
-- Icone delle schede: per ora i simboli integrati in LVGL; quelle del mockup vanno convertite in immagini.
 - Temi a fosfori: niente bagliore e righe di scansione (costosi in LVGL), niente font monospazio.
 - Luminosità: si scrive 100 − luminosità nel PWM dell'IO expander (dedotto dagli esempi): verso da verificare.
 - Mappa: continenti molto semplificati, da sostituire con dati Natural Earth.
