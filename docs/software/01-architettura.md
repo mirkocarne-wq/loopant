@@ -1,7 +1,7 @@
 # 01 — Architettura
 
 ```
-[Waveshare ESP32-S3-Touch-LCD-7B, in casa]  <-- ESP-NOW -->  [ESP32 DevKit 38 pin, all'antenna]
+[Waveshare ESP32-S3-Touch-LCD-7B, in casa]  <-- ESP-NOW -->  [ESP32 DevKit 30 pin, all'antenna]
   unità di CONTROLLO                                          unità ANTENNA
   tastierino, stato, LVGL                                     TMC2209 + motore, finecorsa, calibrazione
 ```

@@ -16,7 +16,8 @@
 - [ ] Asta isolante, giunti (8→6 mm, 5→8 mm)
 
 ### Elettronica
-- [ ] ESP32 DevKit 38 pin, **TMC2209**, microswitch finecorsa
+- [x] ESP32 DevKit 30 pin (WROOM-32), già in possesso
+- [ ] **TMC2209**, microswitch finecorsa
 - [ ] Waveshare ESP32-S3-Touch-LCD-7B (7", 1024×600, touch)
 - [ ] Per il TX: wattmetro (AD8307 ×2, ADS1115, accoppiatore)
 - [ ] Interfaccia audio radio → pannello per il decoder (modulo ADC I2S o partitore, trasformatore 1:1): da scegliere

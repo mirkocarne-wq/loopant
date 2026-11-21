@@ -9,7 +9,8 @@
 
 namespace cfg {
 
-// --- Pin (ESP32 DevKit 38 pin; evitare 0, 2, 12, 15; analogici solo ADC1 32-39) ---
+// --- Pin (ESP32 DevKit 30 pin, tutti presenti anche sulla 38 pin; evitare 0, 2, 12, 15;
+//     analogici solo ADC1 32-39) ---
 constexpr int PIN_STEP = 18;
 constexpr int PIN_DIR = 19;
 constexpr int PIN_EN = 21;     // attivo basso (TMC2209 e SERVO42D)

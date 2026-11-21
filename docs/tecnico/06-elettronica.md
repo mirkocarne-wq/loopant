@@ -8,7 +8,8 @@
 Il software è descritto in [`../software/`](../software/README.md).
 
 ## Unità antenna
-- **ESP32 DevKit a 38 pin** (normale, senza schermo), nella scatola, lontano da anello e motore.
+- **ESP32 DevKit a 30 pin** (modulo WROOM-32 schermato, senza schermo LCD), nella scatola, lontano da anello e motore.
+  Tutti i pin usati dal firmware ci sono sia sulla versione a 30 sia su quella a 38 pin.
 - Driver **TMC2209** (STEP/DIR/EN), in **stealthChop**; driver disabilitato dopo ogni movimento.
 - Corrente del NEMA11: da regolare sul valore nominale (0,5–1 A, controllare la scheda tecnica).
 - Finecorsa: 2, con pull-up e filtro RC/100 nF.
@@ -21,6 +22,7 @@ Il software è descritto in [`../software/`](../software/README.md).
 | UART TMC2209 | 25 / 26 | Nel firmware: TX 25, RX 26 |
 | Finecorsa | 27 / 14 | Nel firmware: MIN 27, MAX 14 |
 | Ingressi analogici | solo ADC1 (32–39) | L'ADC2 non funziona con WiFi/ESP-NOW |
+| CAN (solo SERVO42D via CAN) | es. 22 / 23 | Con transceiver a 3,3 V (es. SN65HVD230) |
 | Da evitare | 0, 2, 12, 15 | Pin di strapping |
 
 I valori sono in `firmware/antenna/include/config.h`.

@@ -21,7 +21,7 @@ docs/software/     software: architettura, unità antenna, pannello (requisiti),
 docs/memoria/      decisioni prese/scartate e punti aperti
 docs/archivio/     documento originale del 20/11/2026 (non aggiornato)
 firmware/lib/Comune/   codice condiviso: protocollo ESP-NOW, bande, collegamento, chiavi
-firmware/antenna/      firmware unità antenna (ESP32 DevKit 38 pin), PlatformIO, ambienti tx e rx
+firmware/antenna/      firmware unità antenna (ESP32 DevKit 30 pin, WROOM-32), PlatformIO, ambienti tx e rx
 firmware/pannello/     firmware pannello in casa (Waveshare 7B), Arduino core 3.1.1 + LVGL 8.4
 ```
 Il firmware del **pannello in casa** (Waveshare ESP32-S3-Touch-LCD-7B) ha tutte le schermate del mockup, non ancora

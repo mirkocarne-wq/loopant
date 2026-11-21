@@ -14,7 +14,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Motore RX | NEMA17 + MKS SERVO42D CAN + riduttore planetario 20:1 | Closed loop, risoluzione circa 0,006 pF per conteggio |
 | Motore TX | Attuatore lineare a guida, NEMA11, vite T6×1, corsa 150 mm | Già allineato, compatto |
 | Driver TX | TMC2209 in stealthChop, STEP/DIR/EN + UART | StallGuard per rilevare blocchi, silenzioso |
-| MCU antenna | ESP32 DevKit 38 pin, nella scatola all'antenna | Molti GPIO, ESP-NOW |
+| MCU antenna | ESP32 DevKit 30 pin (WROOM-32), già in possesso, nella scatola all'antenna | GPIO sufficienti, CAN, ADC1, modulo schermato contro l'RF del loop |
 | Controllo casa | Waveshare ESP32-S3-Touch-LCD-7B (7", 1024×600) con LVGL | Schermo grande, touch capacitivo; sostituisce il 5" |
 | Collegamento | ESP-NOW cifrato (PMK/LMK), MAC fissi in NVS, canale fisso (quello del router di casa se il pannello usa il WiFi) | Semplice; il WiFi serve solo per indici solari e ora |
 | Alimentazione | 24 V 2,5 A in casa, convertitore 24→5 V all'antenna | Corrente sufficiente; alimentatore lontano dalla radio |
@@ -45,3 +45,6 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Tubo prolunga doccia Leroy Merlin (ottone, circa 24 mm) | Scartato per il condensatore TX |
 | diymore ESP32-S3 3,5" come unità antenna | Pochi GPIO, schermo inutile all'antenna |
 | Calibrazione come scheda del pannello | Si usa di rado: spostata dentro Impostazioni |
+| D1 mini ESP8266 all'antenna | Non è un ESP32: un solo ADC, pochi GPIO, niente CAN; FastAccelStepper non lo supporta |
+| ESP32-S3-Zero all'antenna | Chip non schermato e antenna ceramica: troppo esposto all'RF del TX |
+| ESP32-S3 N16R8 all'antenna | Memoria inutile qui; la PSRAM occupa GPIO 35-37 |
