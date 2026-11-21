@@ -27,6 +27,9 @@
 #define EXAMPLE_PIN_NUM_TOUCH_SDA 11
 
 
+// loopant: schermo ruotato di 180 gradi (MADCTL 0xC0 e coordinate del touch invertite)
+#define LOOPANT_RUOTA_180 1
+
 //#define Backlight_Testing
 //#define EXAMPLE_Rotate_90
 #endif

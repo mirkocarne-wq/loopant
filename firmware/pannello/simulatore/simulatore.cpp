@@ -19,6 +19,7 @@
 #include "ora.h"
 #include "rete.h"
 #include "schermo.h"
+#include "link_manopola.h"
 #include "server_web.h"
 #include "servizio_qrz.h"
 #include "tema.h"
@@ -78,6 +79,15 @@ void rispondiAssociazione(bool conferma) {
   richiestaFinta.presente = false;
 }
 }  // namespace link_antenna
+
+// --- Manopola remota finta (non associata) ---------------------------------------------------------
+namespace link_manopola {
+static Scelte sceltaFinta = {1, 20};
+Stato stato() { return Stato{}; }
+Scelte& scelte() { return sceltaFinta; }
+void salvaScelte() {}
+void impostazioniCambiate() {}
+}  // namespace link_manopola
 
 // --- Rete, schermo e decoder finti ---------------------------------------------------------------
 namespace rete {
@@ -338,7 +348,7 @@ int main(int argc, char** argv) {
       avanza(300);
     }
     if (tm == 0) {  // finestra "Antenna trovata" (BOOT premuto sull'antenna); MAC di esempio
-      link_antenna::richiestaFinta = {true, {0x24, 0x6F, 0x28, 0xAA, 0xBB, 0xCC}, true, -48};
+      link_antenna::richiestaFinta = {true, {0x24, 0x6F, 0x28, 0xAA, 0xBB, 0xCC}, false, true, -48};
       ui::vaiA(ui::SINTONIA);
       avanza(600);
       salva("notte-1b-associazione");

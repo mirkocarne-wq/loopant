@@ -37,8 +37,9 @@ struct Tabella {
 struct Richiesta {
   bool presente;
   uint8_t mac[6];
-  bool tx;      // antenna TX (altrimenti RX)
-  int8_t rssi;  // dBm
+  bool manopola;  // la manopola remota (altrimenti l'antenna)
+  bool tx;        // antenna TX (altrimenti RX)
+  int8_t rssi;    // dBm
 };
 
 void inizia(const uint8_t peer[6]);
@@ -51,8 +52,8 @@ void richiediTabella(bande::Banda banda);
 Tabella tabella();
 
 Richiesta richiestaAssociazione();
-// Dal task di LVGL. Con conferma il chiamante salva il MAC nelle impostazioni; qui si risponde all'antenna
-// e si passa al nuovo peer senza riavvio.
+// Dal task di LVGL. Antenna: con conferma il chiamante salva il MAC nelle impostazioni; qui si risponde e si passa
+// al nuovo peer senza riavvio. Manopola: MAC salvato da link_manopola.
 void rispondiAssociazione(bool conferma);
 
 }  // namespace link_antenna

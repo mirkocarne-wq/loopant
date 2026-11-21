@@ -14,6 +14,7 @@
 #include "src/eventi.h"
 #include "src/impostazioni.h"
 #include "src/link_antenna.h"
+#include "src/link_manopola.h"
 #include "src/motore_antenna.h"
 #include "src/ora.h"
 #include "src/rete.h"
@@ -46,6 +47,7 @@ void setup() {
   ESP_ERROR_CHECK(lvgl_port_init(schermo, touch));
 
   link_antenna::inizia(impostazioni::get().peer);
+  link_manopola::inizia();  // dopo l'antenna: ESP-NOW è già acceso
   rete::inizia();
   servizio_qrz::inizia();
   server_web::inizia();
@@ -61,6 +63,7 @@ void setup() {
 
 void loop() {
   link_antenna::aggiorna();
+  link_manopola::aggiorna();
   eventi::osserva(link_antenna::stato());
   console::aggiorna();
   delay(5);

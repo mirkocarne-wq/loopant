@@ -47,7 +47,10 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [x] Pannello: icone del mockup, disegnate con linee e archi LVGL.
 - [x] Verso del PWM della retroilluminazione: 100 − luminosità è corretto (verificato sulla scheda).
 - [x] Ingresso audio del decoder: GPIO6 sul connettore J8 «GPIO» del 7B (schema Waveshare).
-- [ ] Ingresso audio: costruire e provare il circuito su GPIO6 (trasformatore, MCP6002, passa-basso); livello con RV1.
+- [x] Manopola remota (Waveshare ESP32-S3-Knob): hardware, associazione e decoder con il segnale di prova provati (21/11/2026).
+- [ ] Manopola: ritocco fine (JOG) e TUNE con l'antenna collegata; microfono con la radio vera.
+- [ ] Antenna da ricaricare con il firmware delle librerie comuni (collegamento a più peer, associazione in lib/Comune).
+- [ ] Ingresso J8 del pannello (circuito con MCP6002): facoltativo, ora c'è la manopola.
 - [ ] Font monospazio per i temi a fosfori: servono circa 1,4 MB di flash (partizione app più grande) e un font per tema in tutta l'interfaccia.
 - [ ] Mappa per la grey line in flash (Natural Earth), una per tema.
 - [ ] Indici solari: verificare formato e condizioni d'uso del feed hamqsl.com; con il WiFi l'antenna va sul canale del router.

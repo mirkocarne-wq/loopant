@@ -331,15 +331,23 @@ void aggiorna(const link_antenna::Stato&) {
   const Impostazioni& imp = impostazioni::get();
   decodifica::Stato s = decodifica::stato();
 
-  if (!s.ingresso) {
+  static const char* const SORGENTE[] = {"segnale di prova", "microfono", "linea"};
+  const char* sorgente = SORGENTE[s.sorgente <= 2 ? s.sorgente : 1];
+  if (s.remoto && !s.remotoCollegato) {
+    lv_label_set_text(chipStato, "Manopola non collegata");
+    ui::coloriChip(chipStato, t.dangerBg, t.dangerText);
+    lv_label_set_text(testoAudio, "Il decoder è sulla manopola remota");
+  } else if (!s.ingresso) {
     lv_label_set_text(chipStato, "Ingresso audio non attivo");
     ui::coloriChip(chipStato, t.dangerBg, t.dangerText);
-    lv_label_set_text_fmt(testoAudio, "GPIO %d (config.h, da verificare)", cfg::PIN_AUDIO);
+    if (s.remoto) lv_label_set_text_fmt(testoAudio, "Manopola: %s non attivo", sorgente);
+    else lv_label_set_text_fmt(testoAudio, "GPIO %d (connettore J8)", cfg::PIN_AUDIO);
   } else {
     bool segnale = s.rtty ? s.rttyAgganciato : s.cwLivello > 0.05f;
     lv_label_set_text(chipStato, s.rtty ? (s.rttyAgganciato ? "• Agganciato" : "• In ascolto") : "• In ascolto");
     ui::coloriChip(chipStato, segnale ? t.okBg : t.surface2, segnale ? t.okText : t.text2);
-    lv_label_set_text_fmt(testoAudio, "Audio %d %%", (int)(s.audio * 100 + 0.5f));
+    if (s.remoto) lv_label_set_text_fmt(testoAudio, "Manopola · %s · audio %d %%", sorgente, (int)(s.audio * 100 + 0.5f));
+    else lv_label_set_text_fmt(testoAudio, "Audio %d %%", (int)(s.audio * 100 + 0.5f));
   }
 
   static char buf[1300];

@@ -7,6 +7,7 @@
 #include "audio.h"
 #include "config.h"
 #include "impostazioni.h"
+#include "link_manopola.h"
 
 namespace decodifica {
 namespace {
@@ -33,6 +34,7 @@ void aggiungi(char c, void*) {  // chiamata con il mutex preso
 }
 
 void elabora(const int16_t* x, size_t n) {
+  if (link_manopola::stato().associata) return;  // decodifica la manopola
   if (xSemaphoreTake(mutex, pdMS_TO_TICKS(50)) != pdTRUE) return;
   if (modoRtty) rtty.campioni(x, n);
   else cw.campioni(x, n);
@@ -65,10 +67,31 @@ void configura() {
   p.afc = imp.rttyOpzioni & impostazioni::RTTY_AFC;
   rtty.configura((float)cfg::FREQ_AUDIO_HZ, p, aggiungi, nullptr);
   xSemaphoreGive(mutex);
+  link_manopola::impostazioniCambiate();
 }
 
 Stato stato() {
   Stato s = {};
+  link_manopola::Stato m = link_manopola::stato();
+  if (m.associata) {  // stato del decoder della manopola (valori 0-255 -> 0-1)
+    const proto::ManopolaStato& r = m.s;
+    s.remoto = true;
+    s.remotoCollegato = m.collegata;
+    s.sorgente = r.sorgente;
+    s.ingresso = m.collegata && (r.flag & proto::AUDIO_INGRESSO);
+    s.audio = r.audio / 255.0f;
+    s.rtty = r.flag & proto::AUDIO_RTTY;
+    s.cwLivello = r.cwLivello / 255.0f;
+    s.cwSoglia = r.cwSoglia / 255.0f;
+    s.cwWpm = r.cwWpm;
+    s.cwTasto = r.flag & proto::AUDIO_TASTO;
+    strncpy(s.cwElementi, r.cwElementi, sizeof(s.cwElementi) - 1);
+    s.rttyMark = r.rttyMark / 255.0f;
+    s.rttySpace = r.rttySpace / 255.0f;
+    s.rttyAfc = r.rttyAfc / 10.0f;
+    s.rttyAgganciato = r.flag & proto::AUDIO_AGGANCIATO;
+    return s;
+  }
   s.ingresso = audio::attivo();
   s.audio = audio::livello();
   xSemaphoreTake(mutex, portMAX_DELAY);
@@ -94,6 +117,12 @@ uint32_t testo(char* out, size_t n) {
   uint32_t v = versione;
   xSemaphoreGive(mutex);
   return v;
+}
+
+void aggiungiRemoto(const char* t, size_t n) {
+  xSemaphoreTake(mutex, portMAX_DELAY);
+  for (size_t i = 0; i < n; i++) aggiungi(t[i], nullptr);
+  xSemaphoreGive(mutex);
 }
 
 void pulisci() {

@@ -100,6 +100,7 @@ Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione
 | I5 | Luminosità; ora nella barra UTC / locale / entrambe | [D] |
 | I6 | WiFi: pulsante **Cerca reti**, elenco delle reti trovate (segnale, protetta/aperta), tocco sulla rete, password con tastiera e collegamento; campo manuale per le reti nascoste | [D] |
 | I7 | **Associazione**: quando un'antenna ha BOOT premuto compare su qualsiasi schermata la finestra «Antenna trovata» (TX/RX, MAC, segnale, antenna che sostituisce) con «Associa» e «Ignora»; l'antenna già associata si conferma da sola | [D] |
+| I8 | **Manopola remota**: stato del collegamento, sorgente del decoder (Microfono / Segnale di prova), passi per scatto del ritocco fine ([12-manopola.md](12-manopola.md)) | [D] |
 
 ### C7. Calibrazione (da Impostazioni)
 | ID | Requisito | |

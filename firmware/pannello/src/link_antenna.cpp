@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "config.h"
+#include "link_manopola.h"
 
 namespace link_antenna {
 namespace {
@@ -46,6 +47,7 @@ Richiesta richiesta = {};
 uint32_t ultimaRichiesta = 0;
 int8_t esito = 0;  // dall'interfaccia: 1 conferma, -1 rifiuto
 uint8_t macEsito[6] = {0};
+bool esitoManopola = false;
 
 uint16_t prossimaSeq() {
   if (++seq == 0) seq = 1;  // 0 è riservato alle risposte spontanee
@@ -108,7 +110,9 @@ void gestisciAssociazione() {
     if (r.versione != proto::VERSIONE || r.magia != proto::MAGIA_ASSOCIA ||
         r.tipo != proto::Tipo::ASSOCIA_RICHIESTA)
       continue;
-    if (radio.peerValido() && Collegamento::stessoMac(a.mac, macPeer)) {
+    bool manopola = r.flag & proto::FLAG_MANOPOLA;
+    bool gia = manopola ? link_manopola::stessoMac(a.mac) : radio.peerValido() && Collegamento::stessoMac(a.mac, macPeer);
+    if (gia) {
       rispondiAntenna(proto::Tipo::ASSOCIA_CONFERMA, a.mac);  // già associata: nuovo canale, niente domande
       continue;
     }
@@ -117,6 +121,7 @@ void gestisciAssociazione() {
     if (libera) {
       richiesta.presente = true;
       memcpy(richiesta.mac, a.mac, 6);
+      richiesta.manopola = manopola;
       richiesta.tx = r.flag & proto::FLAG_VERSIONE_TX;
       richiesta.rssi = a.rssi;
       ultimaRichiesta = millis();
@@ -131,10 +136,13 @@ void gestisciAssociazione() {
   esito = 0;
   uint8_t mac[6];
   memcpy(mac, macEsito, 6);
+  bool manopola = esitoManopola;
   portEXIT_CRITICAL(&mux);
   if (!e) return;
   rispondiAntenna(e > 0 ? proto::Tipo::ASSOCIA_CONFERMA : proto::Tipo::ASSOCIA_RIFIUTO, mac);
-  if (e > 0) {
+  if (e > 0 && manopola) {
+    link_manopola::associa(mac);
+  } else if (e > 0) {
     radio.cambiaPeer(mac, segreti::LMK);
     portENTER_CRITICAL(&mux);
     memcpy(macPeer, mac, 6);
@@ -295,6 +303,7 @@ void rispondiAssociazione(bool conferma) {
   if (richiesta.presente) {
     esito = conferma ? 1 : -1;
     memcpy(macEsito, richiesta.mac, 6);
+    esitoManopola = richiesta.manopola;
     richiesta.presente = false;
   }
   portEXIT_CRITICAL(&mux);

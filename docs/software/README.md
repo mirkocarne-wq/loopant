@@ -13,5 +13,6 @@
 | 09 | [Propagazione](09-propagazione.md) | Grey line calcolata, alba/tramonto, indici solari via WiFi |
 | 10 | [QRZ.com](10-qrz.md) | Ricerca nominativi, i miei QSO, abbonamento, HTTPS |
 | 11 | [Pagina web](11-pagina-web.md) | Stato, comandi e schermo del pannello dal browser |
+| 12 | [Manopola remota](12-manopola.md) | Decoder dal microfono, ritocco fine, frequenza e TUNE (Waveshare ESP32-S3-Knob) |
 
 Il codice è in [`firmware/`](../../firmware/README.md).

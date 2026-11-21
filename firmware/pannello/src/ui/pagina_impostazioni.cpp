@@ -7,6 +7,7 @@
 #include <initializer_list>
 
 #include "../impostazioni.h"
+#include "../link_manopola.h"
 #include "../motore_antenna.h"
 #include "../ora.h"
 #include "../rete.h"
@@ -35,6 +36,8 @@ uint32_t cambioTipoAlle = 0;  // millis della richiesta di cambio tipo (0 = ness
 lv_obj_t* testoCanId;
 lv_obj_t* statoMotore;
 lv_obj_t* sezioneAntenna;
+lv_obj_t* testoManopola;
+lv_obj_t* testoPassi;
 lv_obj_t* campoQrzUtente;
 lv_obj_t* campoQrzPassword;
 lv_obj_t* campoQrzChiave;
@@ -234,6 +237,21 @@ void tipoCambiato() {
 }
 
 void kbitCambiato() { motore_antenna::inviaCan(); }
+
+// --- Manopola remota ---------------------------------------------------------------------------
+
+void sorgenteCambiata() { link_manopola::salvaScelte(); }
+
+void premiPassi(lv_event_t* e) {
+  static const uint16_t PASSI[] = {5, 10, 20, 50, 100, 200, 500};
+  link_manopola::Scelte& m = link_manopola::scelte();
+  int i = 0;
+  while (i < 6 && PASSI[i] < m.passiScatto) i++;
+  i += (int)(intptr_t)lv_event_get_user_data(e);
+  m.passiScatto = PASSI[i < 0 ? 0 : i > 6 ? 6 : i];
+  lv_label_set_text_fmt(testoPassi, "%u", m.passiScatto);
+  link_manopola::salvaScelte();
+}
 
 void premiCanId(lv_event_t* e) {
   motore_antenna::Scelte& m = motore_antenna::scelte();
@@ -571,6 +589,32 @@ void crea(lv_obj_t* c) {
   lv_obj_set_size(cal, LV_PCT(100), 52);
   lv_obj_add_event_cb(cal, apriCalibrazione, LV_EVENT_CLICKED, nullptr);
 
+  // Manopola remota
+  lv_obj_t* mn = sezione(sx, "MANOPOLA REMOTA");
+  testoManopola = ui::etichetta(mn, "", &font_14, t.text2);
+  lv_label_set_long_mode(testoManopola, LV_LABEL_LONG_WRAP);
+  lv_obj_set_width(testoManopola, LV_PCT(100));
+  static const char* const SORGENTI[] = {"Microfono", "Segnale di prova"};
+  static const uint8_t V_SORGENTI[] = {(uint8_t)proto::SorgenteAudio::MICROFONO, (uint8_t)proto::SorgenteAudio::PROVA};
+  link_manopola::Scelte& man = link_manopola::scelte();
+  ui::etichetta(mn, "Sorgente del decoder", &font_14, t.text2);
+  gruppo(mn, SORGENTI, V_SORGENTI, 2, &man.sorgente, sorgenteCambiata);
+  lv_obj_t* rpm = ui::contenitore(mn, LV_FLEX_FLOW_ROW, 8);
+  lv_obj_set_width(rpm, LV_PCT(100));
+  lv_obj_set_flex_align(rpm, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+  lv_obj_t* lp = ui::etichetta(rpm, "Ritocco fine: passi per scatto", &font_14, t.text2);
+  lv_obj_set_flex_grow(lp, 1);
+  lv_obj_t* pm = ui::pulsante(rpm, "−", &font_20, ui::Stile::NORMALE);
+  lv_obj_set_size(pm, 52, 44);
+  lv_obj_add_event_cb(pm, premiPassi, LV_EVENT_CLICKED, (void*)(intptr_t)-1);
+  testoPassi = ui::etichetta(rpm, "", &font_20, t.text);
+  lv_obj_set_width(testoPassi, 60);
+  lv_obj_set_style_text_align(testoPassi, LV_TEXT_ALIGN_CENTER, 0);
+  lv_label_set_text_fmt(testoPassi, "%u", man.passiScatto);
+  lv_obj_t* pp = ui::pulsante(rpm, "+", &font_20, ui::Stile::NORMALE);
+  lv_obj_set_size(pp, 52, 44);
+  lv_obj_add_event_cb(pp, premiPassi, LV_EVENT_CLICKED, (void*)(intptr_t)1);
+
   // QRZ.com
   const ImpostazioniQrz& q = impostazioni::qrz();
   lv_obj_t* qz = sezione(sx, "QRZ.COM");
@@ -691,6 +735,15 @@ void aggiorna(const link_antenna::Stato& s) {
   } else {
     lv_label_set_text(statoMotore, "Antenna RX: SERVO42D via CAN, finecorsa sul SERVO42D. Calibrazione separata da quella TX.");
   }
+  link_manopola::Stato ms = link_manopola::stato();
+  if (!ms.associata)
+    lv_label_set_text(testoManopola, "Non associata: accendi la manopola, si presenta da sola e qui compare la richiesta.");
+  else if (!ms.collegata)
+    lv_label_set_text(testoManopola, "Associata, non collegata (spenta o fuori portata).");
+  else
+    lv_label_set_text_fmt(testoManopola, "Collegata · segnale %s%d dBm · decoder sulla manopola", ms.rssi < 0 ? "−" : "",
+                          ms.rssi < 0 ? -ms.rssi : ms.rssi);
+
   rete::stato(buf, sizeof(buf));
   char web[72];
   server_web::indirizzo(web, sizeof(web));

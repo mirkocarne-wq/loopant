@@ -93,6 +93,12 @@ non può comunque comandare l'antenna.
 
 Provata sulle schede il 21/11/2026: conferma automatica dalla console e associazione con il pulsante e la finestra.
 
+### Manopola remota
+`MANOPOLA_IMPOSTA` (0x20, pannello → manopola, ogni secondo) e `MANOPOLA_STATO` (0xA0, manopola → pannello,
+10 volte al secondo); strutture in `protocollo.h`, uso in [12-manopola.md](12-manopola.md). L'associazione usa gli
+stessi messaggi `ASSOCIA_*` con `FLAG_MANOPOLA` nel campo `flag`. Aggiunti senza cambiare la versione 4: i messaggi
+esistenti sono invariati.
+
 ## Coda dei comandi
 Il pannello tiene un solo comando in attesa di risposta; i comandi inviati nel frattempo vanno in una coda
 (fino a 6) e partono uno alla volta. L'heartbeat non passa dalla coda.

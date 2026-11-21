@@ -39,6 +39,8 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Driver del pannello | Driver degli esempi Waveshare (15_LVGL_SLIDER) copiati in `src/waveshare/` | Funzionano sulla scheda; licenza Apache 2.0 |
 | Cifre a 7 segmenti | Widget LVGL che disegna i segmenti con poligoni | Nessun font da convertire; stessa geometria del mockup |
 | Font del pannello | Montserrat Medium 12-34 con Latin-1, generati con lv_font_conv; font integrati di LVGL disattivati | Testi in italiano corretto; circa 150 KB di flash in più |
+| Manopola remota | Waveshare ESP32-S3-Knob-Touch-LCD-1.8: decoder CW/RTTY dal microfono PDM, ritocco fine (JOG), frequenza e TUNE, display ruotato di 180°; passa sempre dal pannello; associazione automatica senza pulsante | Scatoletta vicino alla radio; un solo «capo» per l'antenna |
+| Librerie comuni | `lib/Decoder` (decoder e decimatore) e `lib/Grafica` (font e 7 segmenti) per pannello e manopola; collegamento ESP-NOW con un'istanza per peer | Stesso codice sulle due schede |
 | Ingresso audio del decoder | ADC1 su GPIO6 (connettore J8) con circuito d'ingresso: trasformatore 1:1, MCP6002, passa-basso a 3,4 kHz; ADC a 32 kHz con FIR e riduzione a 8 kHz | Unico ADC1 libero (J8); qualità sufficiente per decodificare, pochi euro, nessuna scheda in più |
 | Algoritmi del decoder | C++ puro con test sul PC (segnali sintetici e rumore) | Si verificano senza hardware |
 | Mappa della grey line | Disegnata in PSRAM con continenti semplificati; Natural Earth in futuro | LVGL 8 non riempie poligoni concavi |
@@ -66,6 +68,10 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Display sui pin 16/17 con EN e CAN fermi | Scelta dell'utente: il display resta sui pin I2C standard |
 | Password del WiFi all'antenna con l'associazione | Non serve: la ricerca con ACK trova il canale; l'antenna non entra nella rete e la password non resta nella scatola sul balcone |
 | Doppio driver per l'RX (STEP/DIR o CAN scelto dal pannello) | L'RX accorda solo via CAN; la scelta separata creava confusione con i finecorsa |
+| Nodo audio con ESP32 classico, INMP441 e PCM1808 | Sostituito dalla manopola Waveshare, che ha già microfono, display e manopola |
+| ESP32 Audio Kit (ES8388) | Non disponibile |
+| Pannello CrowPanel ESP32-P4 7" | ESP-NOW non supportato dal C6 con il firmware di fabbrica; modulo C6 non riprogrammabile dal P4 |
+| Telecomando diretto all'antenna (manopola senza pannello) | Due «capi» per l'antenna; scelto il passaggio dal pannello |
 | ADC su I2C per l'audio | Troppo lento (ADS1115 860 campioni/s) o a 12 bit come l'ADC interno; bus condiviso con il touch |
 | Calibrazione come scheda del pannello | Si usa di rado: spostata dentro Impostazioni |
 | D1 mini ESP8266 all'antenna | Non è un ESP32: un solo ADC, pochi GPIO, niente CAN; FastAccelStepper non lo supporta |

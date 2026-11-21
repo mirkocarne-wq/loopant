@@ -1,4 +1,5 @@
-// Decoder CW/RTTY sul pannello: configurazione dalle impostazioni, testo ricevuto, stato per l'interfaccia.
+// Decoder CW/RTTY: sul pannello (ingresso J8) oppure, se la manopola remota è associata, quello della manopola
+// (testo e stato arrivano da link_manopola). Configurazione dalle impostazioni, testo, stato per l'interfaccia.
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
@@ -6,6 +7,9 @@
 namespace decodifica {
 
 struct Stato {
+  bool remoto;          // decoder della manopola remota
+  bool remotoCollegato; // manopola collegata
+  uint8_t sorgente;     // proto::SorgenteAudio della manopola
   bool ingresso;        // ingresso audio attivo
   float audio;          // livello audio 0-1
   bool rtty;            // modo attuale
@@ -23,5 +27,6 @@ void configura();   // rilegge le impostazioni (modo e parametri)
 Stato stato();
 uint32_t testo(char* out, size_t n);  // copia il testo ricevuto; restituisce un contatore che cambia a ogni carattere
 void pulisci();
+void aggiungiRemoto(const char* testo, size_t n);  // caratteri decodificati dalla manopola (da link_manopola)
 
 }  // namespace decodifica

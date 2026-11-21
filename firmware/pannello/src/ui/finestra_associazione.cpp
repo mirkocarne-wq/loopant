@@ -1,5 +1,5 @@
-// Finestra "Antenna trovata": compare su qualsiasi scheda quando un'antenna, con il pulsante BOOT premuto,
-// chiede di associarsi. Requisito I7 in docs/software/03-unita-controllo.md.
+// Finestra "Antenna trovata" / "Manopola trovata": compare su qualsiasi scheda quando un'antenna (pulsante BOOT
+// premuto) o la manopola remota (non ancora associata) chiede di associarsi. Requisito I7 in docs/software/03-unita-controllo.md.
 #include <collegamento.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +16,7 @@ namespace {
 
 lv_obj_t* finestra = nullptr;
 uint8_t macMostrato[6] = {0};
+bool manopolaMostrata = false;
 
 void chiudi() {
   if (!finestra) return;
@@ -24,9 +25,11 @@ void chiudi() {
 }
 
 void premiAssocia(lv_event_t*) {
-  Impostazioni& imp = impostazioni::get();
-  memcpy(imp.peer, macMostrato, 6);
-  impostazioni::salva();
+  if (!manopolaMostrata) {  // la manopola la salva link_manopola
+    Impostazioni& imp = impostazioni::get();
+    memcpy(imp.peer, macMostrato, 6);
+    impostazioni::salva();
+  }
   link_antenna::rispondiAssociazione(true);
   chiudi();
 }
@@ -39,6 +42,7 @@ void premiIgnora(lv_event_t*) {
 void apri(const link_antenna::Richiesta& r) {
   const Tema& t = tema::corrente();
   memcpy(macMostrato, r.mac, 6);
+  manopolaMostrata = r.manopola;
   finestra = lv_obj_create(lv_layer_top());
   lv_obj_remove_style_all(finestra);
   lv_obj_set_size(finestra, LV_PCT(100), LV_PCT(100));
@@ -49,11 +53,12 @@ void apri(const link_antenna::Richiesta& r) {
   lv_obj_set_size(box, 600, LV_SIZE_CONTENT);
   lv_obj_align(box, LV_ALIGN_TOP_MID, 0, 60);
   lv_obj_set_style_pad_row(box, 14, 0);
-  ui::etichetta(box, "Antenna trovata", &font_24, t.text);
+  ui::etichetta(box, r.manopola ? "Manopola trovata" : "Antenna trovata", &font_24, t.text);
 
   char mac[18], riga[96];
   Collegamento::scriviMac(r.mac, mac);
-  snprintf(riga, sizeof(riga), "L'antenna %s chiede di associarsi a questo pannello.", r.tx ? "TX" : "RX");
+  if (r.manopola) snprintf(riga, sizeof(riga), "La manopola remota chiede di associarsi a questo pannello.");
+  else snprintf(riga, sizeof(riga), "L'antenna %s chiede di associarsi a questo pannello.", r.tx ? "TX" : "RX");
   lv_obj_t* l = ui::etichetta(box, riga, &font_20, t.text);
   lv_obj_set_width(l, LV_PCT(100));
   lv_label_set_long_mode(l, LV_LABEL_LONG_WRAP);
@@ -63,7 +68,7 @@ void apri(const link_antenna::Richiesta& r) {
   const Impostazioni& imp = impostazioni::get();
   bool vecchia = false;
   for (int i = 0; i < 6; i++) vecchia |= imp.peer[i] != 0;
-  if (vecchia) {
+  if (vecchia && !r.manopola) {
     Collegamento::scriviMac(imp.peer, mac);
     snprintf(riga, sizeof(riga), "Sostituisce l'antenna associata ora (%s).", mac);
     ui::etichetta(box, riga, &font_16, t.text2);

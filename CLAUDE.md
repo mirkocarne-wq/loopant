@@ -23,17 +23,21 @@ docs/archivio/     documento originale del 20/11/2026 (non aggiornato)
 firmware/lib/Comune/   codice condiviso: protocollo ESP-NOW, bande, collegamento, chiavi
 firmware/antenna/      firmware unità antenna (ESP32 DevKit 30 pin, WROOM-32), arduino-cli, unico per TX e RX
 firmware/pannello/     firmware pannello in casa (Waveshare 7B), Arduino core 3.1.1 + LVGL 8.4
+firmware/manopola/     manopola remota (Waveshare ESP32-S3-Knob-Touch-LCD-1.8): decoder dal microfono, ritocco fine, TUNE
+firmware/lib/Decoder/  decoder CW/RTTY e decimatore (pannello e manopola)
+firmware/lib/Grafica/  font con lettere accentate e cifre a 7 segmenti (pannello e manopola)
 ```
 Il firmware del **pannello in casa** (Waveshare ESP32-S3-Touch-LCD-7B) ha tutte le schermate del mockup, non ancora
 provate sulla scheda (stato in `firmware/pannello/README.md`). Requisiti e mockup approvati: `docs/software/03-unita-controllo.md`
 (schermate, temi, screensaver), `08-decoder.md` (CW/RTTY) e `09-propagazione.md` (grey line, indici solari).
-Font del pannello: `firmware/pannello/src/font/` (Montserrat con Latin-1 e – — … − ↔ →). Nelle stringhe dell'interfaccia
+Font del pannello e della manopola: `firmware/lib/Grafica/src/font/` (Montserrat con Latin-1 e – — … − ↔ →). Nelle stringhe dell'interfaccia
 usare solo quei caratteri; per aggiungerne altri modificare e rilanciare `firmware/pannello/strumenti/genera_font.sh`.
 
 ## Build
 ```bash
 firmware/antenna/compila.sh            # antenna, firmware unico (tipo TX/RX dal pannello); "carica <porta>" carica
 firmware/pannello/compila.sh           # pannello, con arduino-cli (core esp32 3.1.1, lvgl 8.4.0)
+firmware/manopola/compila.sh           # manopola remota; "carica <porta>" carica (USB nativa)
 firmware/pannello/test/esegui_test.sh  # test sul PC: sole, locator, indici, decoder CW/RTTY, QRZ, decimatore audio
 firmware/pannello/simulatore/compila.sh <lvgl>  # interfaccia sul PC, schermate PNG (controllare dopo ogni modifica)
 ```
