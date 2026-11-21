@@ -30,5 +30,8 @@ void avviaScansione();
 // Copia gli ultimi risultati (dal segnale più forte) e restituisce quante reti ci sono.
 // inCorso: ricerca non ancora finita; versione: cambia a ogni ricerca completata.
 uint8_t reti(Rete* out, uint8_t max, bool& inCorso, uint32_t& versione);
+// Esito dell'ultima ricerca (per la console): reti viste (>= 0) o codice di errore di WiFi.scanNetworks (< 0),
+// durata in ms e modo del WiFi.
+void esitoScansione(int16_t& codice, uint32_t& durataMs, uint8_t& modo);
 
 }  // namespace rete

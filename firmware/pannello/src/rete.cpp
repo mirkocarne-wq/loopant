@@ -31,6 +31,8 @@ volatile bool scansioneInCorso = false;
 Rete risultati[MAX_RETI];
 uint8_t nRisultati = 0;
 uint32_t versioneScansione = 0;
+int16_t codiceScansione = 0;
+uint32_t durataScansione = 0;
 
 // Interrompe le attese del task quando serve fare qualcosa subito
 bool interrompere() { return daRiavviare || scansioneRichiesta; }
@@ -71,8 +73,17 @@ void scaricaIndici() {
 void eseguiScansione() {
   scansioneInCorso = true;
   bool eraCollegata = WiFi.status() == WL_CONNECTED;
-  if (!eraCollegata) WiFi.disconnect(false, false);  // ferma i tentativi di connessione in corso
-  int16_t n = WiFi.scanNetworks(false, false);
+  // Mentre la stazione prova a collegarsi (rete salvata assente, per esempio fuori casa) l'ESP32 rifiuta la ricerca
+  // ("sta is connecting"): si ferma il tentativo e, se serve, si riprova qualche volta.
+  uint32_t inizio = millis();
+  int16_t n = WIFI_SCAN_FAILED;
+  for (int tentativo = 0; tentativo < 6 && n < 0; tentativo++) {
+    if (!eraCollegata) WiFi.disconnect(false, false);
+    if (tentativo) vTaskDelay(pdMS_TO_TICKS(300));
+    n = WiFi.scanNetworks(false, false);
+  }
+  codiceScansione = n;
+  durataScansione = millis() - inizio;
 
   Rete tmp[MAX_RETI];
   uint8_t k = 0;
@@ -183,7 +194,9 @@ void compito(void*) {
 }  // namespace
 
 void inizia() {
-  WiFi.setAutoReconnect(true);
+  // La riconnessione la fa il task (tentativo di 15 s, poi pausa di 30 s). Quella automatica del core riprova
+  // senza sosta quando la rete non c'è e in quei momenti la ricerca delle reti viene rifiutata.
+  WiFi.setAutoReconnect(false);
   xTaskCreatePinnedToCore(compito, "rete", 8192, nullptr, 1, nullptr, 0);
 }
 
@@ -225,6 +238,12 @@ uint8_t reti(Rete* out, uint8_t max, bool& inCorso, uint32_t& versione) {
   portEXIT_CRITICAL(&mux);
   inCorso = scansioneInCorso;
   return n;
+}
+
+void esitoScansione(int16_t& codice, uint32_t& durataMs, uint8_t& modo) {
+  codice = codiceScansione;
+  durataMs = durataScansione;
+  modo = (uint8_t)WiFi.getMode();
 }
 
 }  // namespace rete

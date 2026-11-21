@@ -51,7 +51,7 @@ void aiuto() {
   uscita.println(
       "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calcanc <kHz> | stato |\n"
       "         mac <AA:BB:CC:DD:EE:FF> | call <nominativo> | loc <locator> | tema <0-3> |\n"
-      "         ora <AAAA-MM-GG HH:MM> (UTC) | wifi <ssid> <password> | reti | rete |\n"
+      "         ora <AAAA-MM-GG HH:MM> (UTC) | wifi <ssid> <password> | wificancella | reti | rete |\n"
       "         qrz <utente> <password> | qrzkey <chiave> | qrzcancella | cerca <nominativo> | qso [40|20] |\n"
       "         mem | lcd [MHz | sync 0|1] | aiuto");
 }
@@ -119,6 +119,11 @@ void esegui(char* riga) {
     impostazioni::salva();
     rete::riavvia();
     uscita.println("WiFi salvato: connessione in corso");
+  } else if (!strcmp(cmd, "wificancella")) {
+    imp.wifiSsid[0] = imp.wifiPassword[0] = 0;
+    impostazioni::salva();
+    rete::riavvia();
+    uscita.println("Rete WiFi dimenticata");
   } else if (!strcmp(cmd, "reti")) {
     rete::Rete r[rete::MAX_RETI];
     bool inCorso;
@@ -132,6 +137,11 @@ void esegui(char* riga) {
       uscita.printf("%2u  %4d dBm  can %2u  %-8s  %s\n", i + 1, r[i].rssi, r[i].canale,
                     r[i].protetta ? "protetta" : "aperta", r[i].ssid);
     if (!n && v) uscita.println("Nessuna rete trovata");
+    int16_t codice;
+    uint32_t durata;
+    uint8_t modo;
+    rete::esitoScansione(codice, durata, modo);
+    if (v) uscita.printf("Ultima ricerca: esito %d, %lu ms, modo WiFi %u\n", codice, (unsigned long)durata, modo);
     rete::avviaScansione();
     uscita.println(v ? "Nuova ricerca avviata" : "Ricerca avviata: ripeti 'reti' tra qualche secondo");
   } else if (!strcmp(cmd, "rete")) {
