@@ -7,12 +7,19 @@
 namespace pag_sintonia {
 void crea(lv_obj_t* contenuto);
 void aggiorna(const link_antenna::Stato& s);
+void proponi(uint32_t hz);       // mostra la frequenza nel display (senza accordare)
+uint32_t frequenzaDigitata();
 }  // namespace pag_sintonia
 
 namespace pag_impostazioni {
 void crea(lv_obj_t* contenuto);
 void aggiorna(const link_antenna::Stato& s);
 }  // namespace pag_impostazioni
+
+namespace pag_memorie {
+void crea(lv_obj_t* contenuto);
+void aggiorna(const link_antenna::Stato& s);
+}  // namespace pag_memorie
 
 namespace pag_diagnostica {
 void crea(lv_obj_t* contenuto);

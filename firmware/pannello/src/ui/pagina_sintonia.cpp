@@ -276,4 +276,8 @@ void aggiorna(const link_antenna::Stato& s) {
   }
 }
 
+void proponi(uint32_t hz) { imposta(hz); }
+
+uint32_t frequenzaDigitata() { return frequenzaHz(); }
+
 }  // namespace pag_sintonia

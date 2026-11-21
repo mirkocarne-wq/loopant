@@ -13,9 +13,6 @@
 namespace ui {
 namespace {
 
-void segnapostoMemorie(lv_obj_t* c) {
-  pag_segnaposto::crea(c, "Memorie", "Memorie predefinite (FT8, FT4, WSPR, QRP) e personali.");
-}
 void segnapostoPropagazione(lv_obj_t* c) {
   pag_segnaposto::crea(c, "Propagazione", "Mappa con grey line, alba e tramonto, indici solari.");
 }
@@ -26,7 +23,7 @@ void nessunAggiornamento(const link_antenna::Stato&) {}
 
 const Pagina PAGINE[NUM_PAGINE] = {
     {"Sintonia", LV_SYMBOL_GPS, pag_sintonia::crea, pag_sintonia::aggiorna, nullptr},
-    {"Memorie", LV_SYMBOL_LIST, segnapostoMemorie, nessunAggiornamento, nullptr},
+    {"Memorie", LV_SYMBOL_LIST, pag_memorie::crea, pag_memorie::aggiorna, nullptr},
     {"Propagazione", LV_SYMBOL_WIFI, segnapostoPropagazione, nessunAggiornamento, nullptr},
     {"Decoder", LV_SYMBOL_KEYBOARD, segnapostoDecoder, nessunAggiornamento, nullptr},
     {"Diagnostica", LV_SYMBOL_BARS, pag_diagnostica::crea, pag_diagnostica::aggiorna, nullptr},
