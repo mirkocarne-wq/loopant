@@ -24,7 +24,8 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [ ] Pannello: prova sulla scheda vera (schermo, touch, collegamento con l'antenna).
 - [x] Pannello: Calibrazione e Diagnostica (protocollo v2: flag, CAL_LEGGI, CAL_ELIMINA), compilano.
 - [ ] Pannello: schermate Memorie, Propagazione, Decoder, screensaver.
-- [ ] Pannello: font con lettere accentate, "·" e "—" (Montserrat Latin-1 con lv_font_conv); icone del mockup.
+- [x] Pannello: font con lettere accentate, "·" e "—" (Montserrat Latin-1 con lv_font_conv).
+- [ ] Pannello: icone del mockup al posto dei simboli LVGL.
 - [ ] Pannello: verso del PWM della retroilluminazione (IO expander) per la luminosità.
 - [ ] Ingresso audio per il decoder CW/RTTY sul 7B (modulo I2S o ingresso analogico, schema elettrico).
 - [ ] Font per LVGL: monospazio per i temi a fosfori, con lv_font_conv (le cifre a 7 segmenti sono già un widget).

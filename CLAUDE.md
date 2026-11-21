@@ -27,7 +27,8 @@ firmware/pannello/     firmware pannello in casa (Waveshare 7B), Arduino core 3.
 Il firmware del **pannello in casa** (Waveshare ESP32-S3-Touch-LCD-7B) è alla prima versione (stato in
 `firmware/pannello/README.md`). Requisiti e mockup approvati: `docs/software/03-unita-controllo.md`
 (schermate, temi, screensaver), `08-decoder.md` (CW/RTTY) e `09-propagazione.md` (grey line, indici solari).
-Le stringhe dell'interfaccia del pannello per ora devono essere **solo ASCII** (font Montserrat integrati in LVGL).
+Font del pannello: `firmware/pannello/src/font/` (Montserrat con Latin-1 e – — … − ↔ →). Nelle stringhe dell'interfaccia
+usare solo quei caratteri; per aggiungerne altri modificare e rilanciare `firmware/pannello/strumenti/genera_font.sh`.
 
 ## Build
 ```bash

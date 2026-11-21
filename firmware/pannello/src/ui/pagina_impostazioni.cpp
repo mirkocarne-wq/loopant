@@ -53,7 +53,7 @@ void apriTastiera(lv_event_t* e) {
 lv_obj_t* campo(lv_obj_t* parent, const char* nome, const char* valore, uint32_t max, lv_coord_t larghezza) {
   const Tema& t = tema::corrente();
   lv_obj_t* box = ui::contenitore(parent, LV_FLEX_FLOW_COLUMN, 6);
-  ui::etichetta(box, nome, &lv_font_montserrat_14, t.text2);
+  ui::etichetta(box, nome, &font_14, t.text2);
   lv_obj_t* ta = lv_textarea_create(box);
   lv_textarea_set_one_line(ta, true);
   lv_textarea_set_max_length(ta, max);
@@ -65,7 +65,7 @@ lv_obj_t* campo(lv_obj_t* parent, const char* nome, const char* valore, uint32_t
   lv_obj_set_style_border_width(ta, 2, 0);
   lv_obj_set_style_radius(ta, 10, 0);
   lv_obj_set_style_text_color(ta, t.text, 0);
-  lv_obj_set_style_text_font(ta, &lv_font_montserrat_22, 0);
+  lv_obj_set_style_text_font(ta, &font_22, 0);
   lv_obj_add_event_cb(ta, apriTastiera, LV_EVENT_CLICKED, nullptr);
   return ta;
 }
@@ -88,7 +88,7 @@ void creaTastiera() {
   lv_obj_set_style_bg_color(tastiera, t.surface, 0);
   lv_obj_set_style_bg_color(tastiera, t.surface2, LV_PART_ITEMS);
   lv_obj_set_style_text_color(tastiera, t.text, LV_PART_ITEMS);
-  lv_obj_set_style_text_font(tastiera, &lv_font_montserrat_20, LV_PART_ITEMS);
+  lv_obj_set_style_text_font(tastiera, &font_20, LV_PART_ITEMS);
   lv_obj_add_flag(tastiera, LV_OBJ_FLAG_HIDDEN);
   lv_obj_add_event_cb(tastiera, conferma, LV_EVENT_READY, nullptr);
   lv_obj_add_event_cb(tastiera, conferma, LV_EVENT_CANCEL, nullptr);
@@ -120,14 +120,14 @@ void crea(lv_obj_t* c) {
   ui::titoletto(an, "ANTENNA");
   char mac[18];
   Collegamento::scriviMac(imp.peer, mac);
-  testoMac = ui::etichetta(an, "", &lv_font_montserrat_18, t.text);
+  testoMac = ui::etichetta(an, "", &font_18, t.text);
   lv_label_set_text_fmt(testoMac, "MAC dell'antenna: %s", mac);
   uint8_t mio[6];
   Collegamento::macLocale(mio);
   Collegamento::scriviMac(mio, mac);
-  lv_obj_t* l = ui::etichetta(an, "", &lv_font_montserrat_14, t.text2);
+  lv_obj_t* l = ui::etichetta(an, "", &font_14, t.text2);
   lv_label_set_text_fmt(l, "MAC di questo pannello: %s\nPer ora il MAC dell'antenna si imposta dalla console: mac AA:BB:...", mac);
-  lv_obj_t* cal = ui::pulsante(an, "Calibrazione antenna  " LV_SYMBOL_RIGHT, &lv_font_montserrat_18, ui::Stile::NORMALE);
+  lv_obj_t* cal = ui::pulsante(an, "Calibrazione antenna  " LV_SYMBOL_RIGHT, &font_18, ui::Stile::NORMALE);
   lv_obj_set_size(cal, LV_PCT(100), 52);
   lv_obj_add_event_cb(cal, apriCalibrazione, LV_EVENT_CLICKED, nullptr);
 
@@ -148,9 +148,9 @@ void crea(lv_obj_t* c) {
     lv_obj_set_style_bg_color(b, x.bg, 0);
     lv_obj_set_style_border_color(b, sel ? t.accent : t.border, 0);
     lv_obj_set_style_border_width(b, sel ? 3 : 1, 0);
-    lv_obj_t* n = ui::etichetta(b, x.nome, &lv_font_montserrat_16, x.text);
+    lv_obj_t* n = ui::etichetta(b, x.nome, &font_16, x.text);
     lv_obj_align(n, LV_ALIGN_BOTTOM_LEFT, 12, -10);
-    lv_obj_t* f = ui::etichetta(b, "7 074", &lv_font_montserrat_26, x.accent);
+    lv_obj_t* f = ui::etichetta(b, "7 074", &font_26, x.accent);
     lv_obj_align(f, LV_ALIGN_TOP_LEFT, 12, 8);
     lv_obj_add_event_cb(b, scegliTema, LV_EVENT_CLICKED, (void*)(uintptr_t)i);
   }
@@ -169,9 +169,9 @@ void crea(lv_obj_t* c, const char* nome, const char* descrizione) {
   lv_obj_set_flex_flow(c, LV_FLEX_FLOW_COLUMN);
   lv_obj_set_flex_align(c, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
   lv_obj_set_style_pad_row(c, 12, 0);
-  ui::etichetta(c, nome, &lv_font_montserrat_30, t.text);
-  ui::etichetta(c, descrizione, &lv_font_montserrat_18, t.text2);
-  ui::etichetta(c, "Schermata in preparazione", &lv_font_montserrat_16, t.accent);
+  ui::etichetta(c, nome, &font_30, t.text);
+  ui::etichetta(c, descrizione, &font_18, t.text2);
+  ui::etichetta(c, "Schermata in preparazione", &font_16, t.accent);
 }
 
 }  // namespace pag_segnaposto

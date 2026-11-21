@@ -46,9 +46,9 @@ const char* segmento(uint32_t hz) {
   bool ft8 = (hz >= 7072000 && hz <= 7076000) || (hz >= 14072000 && hz <= 14076000);
   if (k >= 7000 && k < 7040) return "CW";
   if (k >= 7040 && k < 7050) return "Digitale a banda stretta";
-  if (k >= 7050 && k <= 7200) return ft8 ? "Tutti i modi - FT8" : "Tutti i modi";
+  if (k >= 7050 && k <= 7200) return ft8 ? "Tutti i modi · FT8" : "Tutti i modi";
   if (k >= 14000 && k < 14070) return "CW";
-  if (k >= 14070 && k < 14099) return ft8 ? "Digitale a banda stretta - FT8" : "Digitale a banda stretta";
+  if (k >= 14070 && k < 14099) return ft8 ? "Digitale a banda stretta · FT8" : "Digitale a banda stretta";
   if (k >= 14099 && k < 14101) return "Radiofari";
   if (k >= 14101 && k <= 14350) return "Tutti i modi";
   return "";
@@ -93,10 +93,10 @@ void aggiornaIngresso() {
   bande::Banda b = bande::di(hz);
   bool valida = b != bande::Banda::NESSUNA;
   if (valida) {
-    lv_label_set_text_fmt(chipBanda, "%s - %s", bande::info(b)->nome, segmento(hz));
+    lv_label_set_text_fmt(chipBanda, "%s · %s", bande::info(b)->nome, segmento(hz));
     ui::coloriChip(chipBanda, t.surface2, t.text);
   } else {
-    lv_label_set_text(chipBanda, "Fuori banda: 7 000-7 200 o 14 000-14 350 kHz");
+    lv_label_set_text(chipBanda, "Fuori banda: 7 000–7 200 o 14 000–14 350 kHz");
     ui::coloriChip(chipBanda, t.dangerBg, t.dangerText);
   }
   ui::stilePulsante(btn40, b == bande::Banda::B40M ? ui::Stile::ATTIVO : ui::Stile::NORMALE);
@@ -191,20 +191,20 @@ void crea(lv_obj_t* c) {
   lv_obj_t* riga = ui::contenitore(card, LV_FLEX_FLOW_ROW, 14);
   lv_obj_set_flex_align(riga, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_END, LV_FLEX_ALIGN_END);
   display = display7::crea(riga, 84, t.accent, t.segOffAccent);
-  ui::etichetta(riga, "kHz", &lv_font_montserrat_26, t.text2);
-  chipBanda = ui::chip(card, &lv_font_montserrat_16);
+  ui::etichetta(riga, "kHz", &font_26, t.text2);
+  chipBanda = ui::chip(card, &font_16);
 
   lv_obj_t* info = ui::contenitore(sx, LV_FLEX_FLOW_ROW, 12);
   lv_obj_set_width(info, LV_PCT(100));
   lv_obj_set_flex_align(info, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
   lv_obj_set_style_pad_hor(info, 4, 0);
-  testoAccordata = ui::etichetta(info, "Antenna accordata su --", &lv_font_montserrat_16, t.text2);
-  testoPosizione = ui::etichetta(info, "Posizione --", &lv_font_montserrat_16, t.text2);
+  testoAccordata = ui::etichetta(info, "Antenna accordata su —", &font_16, t.text2);
+  testoPosizione = ui::etichetta(info, "Posizione —", &font_16, t.text2);
 
   lv_obj_t* tasti = ui::contenitore(sx, LV_FLEX_FLOW_ROW, 10);
   lv_obj_set_width(tasti, LV_PCT(100));
-  btn40 = ui::pulsante(tasti, "40 m", &lv_font_montserrat_22, ui::Stile::NORMALE);
-  btn20 = ui::pulsante(tasti, "20 m", &lv_font_montserrat_22, ui::Stile::NORMALE);
+  btn40 = ui::pulsante(tasti, "40 m", &font_22, ui::Stile::NORMALE);
+  btn20 = ui::pulsante(tasti, "20 m", &font_22, ui::Stile::NORMALE);
   for (lv_obj_t* b : {btn40, btn20}) {
     lv_obj_set_height(b, 62);
     lv_obj_set_flex_grow(b, 1);
@@ -212,14 +212,14 @@ void crea(lv_obj_t* c) {
   lv_obj_add_event_cb(btn40, premiBanda, LV_EVENT_CLICKED, (void*)1);
   lv_obj_add_event_cb(btn20, premiBanda, LV_EVENT_CLICKED, nullptr);
   const int passi[] = {-5, -1, 1, 5};
-  const char* etichettePassi[] = {"-5", "-1", "+1", "+5"};
+  const char* etichettePassi[] = {"−5", "−1", "+1", "+5"};
   for (int i = 0; i < 4; i++) {
-    lv_obj_t* b = ui::pulsante(tasti, etichettePassi[i], &lv_font_montserrat_20, ui::Stile::SCHEDA);
+    lv_obj_t* b = ui::pulsante(tasti, etichettePassi[i], &font_20, ui::Stile::SCHEDA);
     lv_obj_set_size(b, 80, 62);
     lv_obj_add_event_cb(b, premiPasso, LV_EVENT_CLICKED, (void*)(intptr_t)passi[i]);
   }
 
-  btnTune = ui::pulsante(sx, "TUNE", &lv_font_montserrat_30, ui::Stile::PRIMARIO);
+  btnTune = ui::pulsante(sx, "TUNE", &font_30, ui::Stile::PRIMARIO);
   lv_obj_set_width(btnTune, LV_PCT(100));
   lv_obj_set_flex_grow(btnTune, 1);
   lv_obj_set_style_radius(btnTune, 12, 0);
@@ -242,7 +242,7 @@ void crea(lv_obj_t* c) {
   lv_obj_set_style_radius(bm, 12, LV_PART_ITEMS);
   lv_obj_set_style_shadow_width(bm, 0, LV_PART_ITEMS);
   lv_obj_set_style_text_color(bm, t.text, LV_PART_ITEMS);
-  lv_obj_set_style_text_font(bm, &lv_font_montserrat_34, LV_PART_ITEMS);
+  lv_obj_set_style_text_font(bm, &font_34, LV_PART_ITEMS);
   lv_obj_set_style_bg_color(bm, lv_color_mix(t.text, t.surface2, 60), LV_PART_ITEMS | LV_STATE_PRESSED);
   lv_obj_add_event_cb(bm, premiTasto, LV_EVENT_VALUE_CHANGED, nullptr);
 
@@ -262,7 +262,7 @@ void aggiorna(const link_antenna::Stato& s) {
                           (unsigned long)(lv_color_to32(t.text) & 0xFFFFFF), buf);
     lv_label_set_recolor(testoAccordata, true);
   } else {
-    lv_label_set_text(testoAccordata, "Antenna accordata su --");
+    lv_label_set_text(testoAccordata, "Antenna accordata su —");
   }
   if (s.collegato) {
     long p = (long)s.r.posizione;
@@ -272,7 +272,7 @@ void aggiorna(const link_antenna::Stato& s) {
                           (unsigned long)(lv_color_to32(t.text) & 0xFFFFFF), buf);
     lv_label_set_recolor(testoPosizione, true);
   } else {
-    lv_label_set_text(testoPosizione, "Posizione --");
+    lv_label_set_text(testoPosizione, "Posizione —");
   }
 }
 

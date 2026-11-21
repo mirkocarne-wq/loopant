@@ -61,7 +61,7 @@ void evidenziaBanda() {
   formattaKhz(infoBanda()->max_hz, b, sizeof(b));
   lv_label_set_text(asseMin, a);
   lv_label_set_text_fmt(asseMax, "%s kHz", b);
-  lv_label_set_text_fmt(titoloGrafico, "Posizione / frequenza - %s", infoBanda()->nome);
+  lv_label_set_text_fmt(titoloGrafico, "Posizione ↔ frequenza · %s", infoBanda()->nome);
   // frequenza proposta: centro banda
   uint32_t centro = (infoBanda()->min_hz + infoBanda()->max_hz) / 2;
   char f[16];
@@ -127,7 +127,7 @@ void creaTastiera() {
   lv_obj_set_style_bg_color(tastiera, t.surface, 0);
   lv_obj_set_style_bg_color(tastiera, t.surface2, LV_PART_ITEMS);
   lv_obj_set_style_text_color(tastiera, t.text, LV_PART_ITEMS);
-  lv_obj_set_style_text_font(tastiera, &lv_font_montserrat_24, LV_PART_ITEMS);
+  lv_obj_set_style_text_font(tastiera, &font_24, LV_PART_ITEMS);
   lv_obj_add_flag(tastiera, LV_OBJ_FLAG_HIDDEN);
   lv_obj_add_event_cb(tastiera, tastieraFatto, LV_EVENT_READY, nullptr);
   lv_obj_add_event_cb(tastiera, tastieraFatto, LV_EVENT_CANCEL, nullptr);
@@ -141,7 +141,7 @@ void ricostruisciTabella(const link_antenna::Tabella& tab) {
     lv_chart_set_value_by_id2(grafico, serie, i, LV_CHART_POINT_NONE, LV_CHART_POINT_NONE);
 
   uint8_t n = tab.banda == banda ? tab.totale : 0;
-  if (!tab.completa && tab.banda == banda) lv_label_set_text(statoTabella, "Lettura dei punti dall'antenna...");
+  if (!tab.completa && tab.banda == banda) lv_label_set_text(statoTabella, "Lettura dei punti dall'antenna…");
   else if (n == 0) lv_label_set_text(statoTabella, "Nessun punto salvato in questa banda");
   else if (n == 1) lv_label_set_text(statoTabella, "1 punto: ne serve almeno un altro");
   else lv_label_set_text_fmt(statoTabella, "%u punti", n);
@@ -175,12 +175,12 @@ void ricostruisciTabella(const link_antenna::Tabella& tab) {
     char a[16], b[16];
     formattaKhz(tab.freq_hz[i], a, sizeof(a));
     formattaPassi((long)tab.posizione[i], b, sizeof(b));
-    lv_obj_t* lf = ui::etichetta(r, "", &lv_font_montserrat_18, t.text);
+    lv_obj_t* lf = ui::etichetta(r, "", &font_18, t.text);
     lv_label_set_text_fmt(lf, "%s kHz", a);
     lv_obj_set_flex_grow(lf, 1);
-    lv_obj_t* lp = ui::etichetta(r, b, &lv_font_montserrat_18, t.text2);
+    lv_obj_t* lp = ui::etichetta(r, b, &font_18, t.text2);
     lv_obj_set_width(lp, 110);
-    lv_obj_t* del = ui::pulsante(r, LV_SYMBOL_TRASH, &lv_font_montserrat_18, ui::Stile::SCHEDA);
+    lv_obj_t* del = ui::pulsante(r, LV_SYMBOL_TRASH, &font_18, ui::Stile::SCHEDA);
     lv_obj_set_size(del, 48, 44);
     lv_obj_set_style_text_color(del, t.dangerText, 0);
     lv_obj_set_style_border_width(del, 0, 0);
@@ -201,13 +201,13 @@ void crea(lv_obj_t* c) {
   lv_obj_t* testa = ui::contenitore(c, LV_FLEX_FLOW_ROW, 14);
   lv_obj_set_width(testa, LV_PCT(100));
   lv_obj_set_flex_align(testa, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-  lv_obj_t* back = ui::pulsante(testa, LV_SYMBOL_LEFT " Impostazioni", &lv_font_montserrat_16, ui::Stile::NORMALE);
+  lv_obj_t* back = ui::pulsante(testa, LV_SYMBOL_LEFT " Impostazioni", &font_16, ui::Stile::NORMALE);
   lv_obj_set_size(back, 160, 44);
   lv_obj_add_event_cb(back, indietro, LV_EVENT_CLICKED, nullptr);
-  lv_obj_t* titolo = ui::etichetta(testa, "Calibrazione antenna", &lv_font_montserrat_22, t.text);
+  lv_obj_t* titolo = ui::etichetta(testa, "Calibrazione antenna", &font_22, t.text);
   lv_obj_set_flex_grow(titolo, 1);
-  btn40 = ui::pulsante(testa, "40 m", &lv_font_montserrat_18, ui::Stile::NORMALE);
-  btn20 = ui::pulsante(testa, "20 m", &lv_font_montserrat_18, ui::Stile::NORMALE);
+  btn40 = ui::pulsante(testa, "40 m", &font_18, ui::Stile::NORMALE);
+  btn20 = ui::pulsante(testa, "20 m", &font_18, ui::Stile::NORMALE);
   for (lv_obj_t* b : {btn40, btn20}) lv_obj_set_size(b, 110, 44);
   lv_obj_add_event_cb(btn40, scegliBanda, LV_EVENT_CLICKED, (void*)1);
   lv_obj_add_event_cb(btn20, scegliBanda, LV_EVENT_CLICKED, nullptr);
@@ -222,22 +222,22 @@ void crea(lv_obj_t* c) {
 
   lv_obj_t* pos = ui::scheda(sx);
   lv_obj_set_width(pos, LV_PCT(100));
-  ui::titoletto(pos, "POSIZIONE MOTORE - PASSI");
+  ui::titoletto(pos, "POSIZIONE MOTORE · PASSI");
   displayPos = display7::crea(pos, 48, t.accent, t.segOffAccent);
   display7::testo(displayPos, "___ ___");
-  testoMm = ui::etichetta(pos, "Arrivo sempre dal verso crescente", &lv_font_montserrat_14, t.text2);
+  testoMm = ui::etichetta(pos, "Arrivo sempre dal verso crescente", &font_14, t.text2);
 
   lv_obj_t* jog = ui::contenitore(sx, LV_FLEX_FLOW_ROW_WRAP, 8);
   lv_obj_set_width(jog, LV_PCT(100));
   const int passi[] = {-1000, -100, -10, 10, 100, 1000};
-  const char* nomi[] = {"-1000", "-100", "-10", "+10", "+100", "+1000"};
+  const char* nomi[] = {"−1000", "−100", "−10", "+10", "+100", "+1000"};
   for (int i = 0; i < 6; i++) {
-    lv_obj_t* b = ui::pulsante(jog, nomi[i], &lv_font_montserrat_22, ui::Stile::NORMALE);
+    lv_obj_t* b = ui::pulsante(jog, nomi[i], &font_22, ui::Stile::NORMALE);
     lv_obj_set_size(b, 134, 54);
     lv_obj_add_event_cb(b, premiJog, LV_EVENT_CLICKED, (void*)(intptr_t)passi[i]);
   }
 
-  ui::etichetta(sx, "Frequenza del dip sul NanoVNA (kHz)", &lv_font_montserrat_14, t.text2);
+  ui::etichetta(sx, "Frequenza del dip sul NanoVNA (kHz)", &font_14, t.text2);
   lv_obj_t* salva = ui::contenitore(sx, LV_FLEX_FLOW_ROW, 10);
   lv_obj_set_width(salva, LV_PCT(100));
   campoFreq = lv_textarea_create(salva);
@@ -252,9 +252,9 @@ void crea(lv_obj_t* c) {
   lv_obj_set_style_border_width(campoFreq, 2, 0);
   lv_obj_set_style_radius(campoFreq, 10, 0);
   lv_obj_set_style_text_color(campoFreq, t.text, 0);
-  lv_obj_set_style_text_font(campoFreq, &lv_font_montserrat_24, 0);
+  lv_obj_set_style_text_font(campoFreq, &font_24, 0);
   lv_obj_add_event_cb(campoFreq, apriTastiera, LV_EVENT_CLICKED, nullptr);
-  lv_obj_t* bs = ui::pulsante(salva, "Salva punto", &lv_font_montserrat_18, ui::Stile::PRIMARIO);
+  lv_obj_t* bs = ui::pulsante(salva, "Salva punto", &font_18, ui::Stile::PRIMARIO);
   lv_obj_set_size(bs, 150, 54);
   lv_obj_add_event_cb(bs, premiSalva, LV_EVENT_CLICKED, nullptr);
 
@@ -266,7 +266,7 @@ void crea(lv_obj_t* c) {
   lv_obj_t* gr = ui::scheda(dx);
   lv_obj_set_width(gr, LV_PCT(100));
   lv_obj_set_style_pad_row(gr, 4, 0);
-  titoloGrafico = ui::etichetta(gr, "", &lv_font_montserrat_16, t.text);
+  titoloGrafico = ui::etichetta(gr, "", &font_16, t.text);
   grafico = lv_chart_create(gr);
   lv_obj_set_size(grafico, LV_PCT(100), 110);
   lv_chart_set_type(grafico, LV_CHART_TYPE_SCATTER);
@@ -281,14 +281,14 @@ void crea(lv_obj_t* c) {
   lv_obj_t* assi = ui::contenitore(gr, LV_FLEX_FLOW_ROW, 0);
   lv_obj_set_width(assi, LV_PCT(100));
   lv_obj_set_flex_align(assi, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-  asseMin = ui::etichetta(assi, "", &lv_font_montserrat_12, t.text2);
-  asseMax = ui::etichetta(assi, "", &lv_font_montserrat_12, t.text2);
+  asseMin = ui::etichetta(assi, "", &font_12, t.text2);
+  asseMax = ui::etichetta(assi, "", &font_12, t.text2);
 
   lv_obj_t* tb = ui::scheda(dx);
   lv_obj_set_width(tb, LV_PCT(100));
   lv_obj_set_flex_grow(tb, 1);
   lv_obj_set_style_pad_row(tb, 4, 0);
-  statoTabella = ui::etichetta(tb, "", &lv_font_montserrat_14, t.text2);
+  statoTabella = ui::etichetta(tb, "", &font_14, t.text2);
   elenco = ui::contenitore(tb, LV_FLEX_FLOW_COLUMN, 2);
   lv_obj_set_width(elenco, LV_PCT(100));
   lv_obj_set_flex_grow(elenco, 1);

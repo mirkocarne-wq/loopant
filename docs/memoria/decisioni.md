@@ -28,6 +28,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Toolchain del pannello | Arduino, core ESP32 3.1.1 + LVGL 8.4 (arduino-cli o Arduino IDE 2) | Scelta dell'utente; è quella degli esempi Waveshare |
 | Driver del pannello | Driver degli esempi Waveshare (15_LVGL_SLIDER) copiati in `src/waveshare/` | Funzionano sulla scheda; licenza Apache 2.0 |
 | Cifre a 7 segmenti | Widget LVGL che disegna i segmenti con poligoni | Nessun font da convertire; stessa geometria del mockup |
+| Font del pannello | Montserrat Medium 12-34 con Latin-1, generati con lv_font_conv; font integrati di LVGL disattivati | Testi in italiano corretto; circa 150 KB di flash in più |
 
 ## Scartate
 | Alternativa | Motivo |

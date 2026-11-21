@@ -35,7 +35,7 @@ lv_obj_t* etichetta(lv_obj_t* parent, const char* testo, const lv_font_t* font, 
 }
 
 lv_obj_t* titoletto(lv_obj_t* parent, const char* testo) {
-  lv_obj_t* l = etichetta(parent, testo, &lv_font_montserrat_14, tema::corrente().text2);
+  lv_obj_t* l = etichetta(parent, testo, &font_14, tema::corrente().text2);
   lv_obj_set_style_text_letter_space(l, 1, 0);
   return l;
 }

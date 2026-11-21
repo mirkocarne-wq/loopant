@@ -76,7 +76,7 @@ void osserva(const link_antenna::Stato& s) {
     case proto::Stato::FERMO:
       if (prima == proto::Stato::IN_MOVIMENTO || prima == proto::Stato::AZZERAMENTO) {
         if (s.r.freq_hz)
-          snprintf(buf, sizeof(buf), "%.1f kHz - posizione %ld", s.r.freq_hz / 1000.0, (long)s.r.posizione);
+          snprintf(buf, sizeof(buf), "%.1f kHz · posizione %ld", s.r.freq_hz / 1000.0, (long)s.r.posizione);
         else
           snprintf(buf, sizeof(buf), "Posizione %ld", (long)s.r.posizione);
         aggiungi(Tipo::ACCORDATA, buf);

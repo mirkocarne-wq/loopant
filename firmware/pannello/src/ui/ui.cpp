@@ -66,8 +66,8 @@ void creaBarra(lv_obj_t* scr) {
   lv_obj_set_style_pad_left(barra, 20, 0);
   lv_obj_set_style_pad_right(barra, 16, 0);
 
-  etichetta(barra, imp.nominativo[0] ? imp.nominativo : "[NOMINATIVO]", &lv_font_montserrat_22, t.text);
-  etichetta(barra, imp.locator[0] ? imp.locator : "[LOCATOR]", &lv_font_montserrat_14, t.text2);
+  etichetta(barra, imp.nominativo[0] ? imp.nominativo : "[NOMINATIVO]", &font_22, t.text);
+  etichetta(barra, imp.locator[0] ? imp.locator : "[LOCATOR]", &font_14, t.text2);
 
   lv_obj_t* spazio = contenitore(barra, LV_FLEX_FLOW_ROW);
   lv_obj_set_flex_grow(spazio, 1);
@@ -76,7 +76,7 @@ void creaBarra(lv_obj_t* scr) {
   lv_obj_set_flex_align(ora, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_END, LV_FLEX_ALIGN_END);
   orologio = display7::crea(ora, 26, t.text, t.segOffText);
   display7::testo(orologio, "--:--");
-  etichetta(ora, "UTC", &lv_font_montserrat_14, t.text2);
+  etichetta(ora, "UTC", &font_14, t.text2);
 
   lv_obj_t* ant = contenitore(barra, LV_FLEX_FLOW_ROW, 8);
   lv_obj_set_flex_align(ant, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -86,13 +86,13 @@ void creaBarra(lv_obj_t* scr) {
   lv_obj_set_style_radius(puntoAntenna, LV_RADIUS_CIRCLE, 0);
   lv_obj_set_style_bg_opa(puntoAntenna, LV_OPA_COVER, 0);
   lv_obj_set_style_bg_color(puntoAntenna, t.text2, 0);
-  testoAntenna = etichetta(ant, "Antenna", &lv_font_montserrat_16, t.text);
+  testoAntenna = etichetta(ant, "Antenna", &font_16, t.text);
 
-  chipStato = chip(barra, &lv_font_montserrat_14);
+  chipStato = chip(barra, &font_14);
   lv_label_set_text(chipStato, "IN ATTESA");
   coloriChip(chipStato, t.surface2, t.text2);
 
-  lv_obj_t* stop = pulsante(barra, LV_SYMBOL_STOP "  STOP", &lv_font_montserrat_20, Stile::PERICOLO);
+  lv_obj_t* stop = pulsante(barra, LV_SYMBOL_STOP "  STOP", &font_20, Stile::PERICOLO);
   lv_obj_set_size(stop, 132, 48);
   lv_obj_set_style_radius(stop, 8, 0);
   lv_obj_add_event_cb(stop, premiStop, LV_EVENT_CLICKED, nullptr);
@@ -189,7 +189,7 @@ void creaSchede(lv_obj_t* scr) {
     lv_obj_set_style_bg_color(b, t.surface2, LV_STATE_PRESSED);
     lv_obj_t* l = lv_label_create(b);
     lv_label_set_text_fmt(l, "%s  %s", PAGINE[i].simbolo, PAGINE[i].nome);
-    lv_obj_set_style_text_font(l, &lv_font_montserrat_16, 0);
+    lv_obj_set_style_text_font(l, &font_16, 0);
     lv_obj_center(l);
     lv_obj_add_event_cb(b, premiScheda, LV_EVENT_CLICKED, (void*)(uintptr_t)i);
     schede[i] = b;

@@ -43,8 +43,8 @@ lv_obj_t* riga(lv_obj_t* parent, const char* nome) {
   lv_obj_t* r = ui::contenitore(parent, LV_FLEX_FLOW_ROW, 8);
   lv_obj_set_width(r, LV_PCT(100));
   lv_obj_set_flex_align(r, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-  ui::etichetta(r, nome, &lv_font_montserrat_16, t.text2);
-  return ui::etichetta(r, "--", &lv_font_montserrat_16, t.text);
+  ui::etichetta(r, nome, &font_16, t.text2);
+  return ui::etichetta(r, "--", &font_16, t.text);
 }
 
 lv_obj_t* casella(lv_obj_t* parent, const char* nome) {
@@ -57,8 +57,8 @@ lv_obj_t* casella(lv_obj_t* parent, const char* nome) {
   lv_obj_set_style_pad_ver(c, 8, 0);
   lv_obj_set_width(c, LV_PCT(47));
   lv_obj_set_flex_grow(c, 1);
-  lv_obj_t* v = ui::etichetta(c, "--", &lv_font_montserrat_26, t.text);
-  ui::etichetta(c, nome, &lv_font_montserrat_14, t.text2);
+  lv_obj_t* v = ui::etichetta(c, "--", &font_26, t.text);
+  ui::etichetta(c, nome, &font_14, t.text2);
   return v;
 }
 
@@ -92,7 +92,7 @@ void crea(lv_obj_t* c) {
   lv_obj_set_size(puntoColl, 14, 14);
   lv_obj_set_style_radius(puntoColl, LV_RADIUS_CIRCLE, 0);
   lv_obj_set_style_bg_opa(puntoColl, LV_OPA_COVER, 0);
-  testoColl = ui::etichetta(stato, "--", &lv_font_montserrat_24, t.text);
+  testoColl = ui::etichetta(stato, "--", &font_24, t.text);
   valSegnale = riga(col, "Segnale");
   barraSegnale = lv_bar_create(col);
   lv_obj_set_size(barraSegnale, LV_PCT(100), 10);
@@ -103,14 +103,14 @@ void crea(lv_obj_t* c) {
   valUltima = riga(col, "Ultima risposta");
 
   // Motore
-  lv_obj_t* mot = colonna(sopra, "MOTORE - PASSI");
+  lv_obj_t* mot = colonna(sopra, "MOTORE · PASSI");
   displayPos = display7::crea(mot, 34, t.accent, t.segOffAccent);
   display7::testo(displayPos, "___ ___");
   valDriver = riga(mot, "Driver");
   lv_obj_t* fc = ui::contenitore(mot, LV_FLEX_FLOW_ROW, 8);
   lv_obj_set_width(fc, LV_PCT(100));
-  chipFcMin = ui::chip(fc, &lv_font_montserrat_14);
-  chipFcMax = ui::chip(fc, &lv_font_montserrat_14);
+  chipFcMin = ui::chip(fc, &font_14);
+  chipFcMax = ui::chip(fc, &font_14);
   for (lv_obj_t* x : {chipFcMin, chipFcMax}) {
     lv_obj_set_flex_grow(x, 1);
     lv_obj_set_style_text_align(x, LV_TEXT_ALIGN_CENTER, 0);
@@ -134,17 +134,17 @@ void crea(lv_obj_t* c) {
   lv_obj_set_style_pad_row(ev, 4, 0);
   lv_obj_add_flag(ev, LV_OBJ_FLAG_SCROLLABLE);
   ui::titoletto(ev, "ULTIMI EVENTI");
-  nessunEvento = ui::etichetta(ev, "Nessun evento dall'accensione", &lv_font_montserrat_16, t.text2);
+  nessunEvento = ui::etichetta(ev, "Nessun evento dall'accensione", &font_16, t.text2);
   for (uint8_t i = 0; i < eventi::MAX_EVENTI; i++) {
     lv_obj_t* r = ui::contenitore(ev, LV_FLEX_FLOW_ROW, 12);
     lv_obj_set_width(r, LV_PCT(100));
     lv_obj_set_flex_align(r, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    oreEventi[i] = ui::etichetta(r, "", &lv_font_montserrat_16, t.text2);
+    oreEventi[i] = ui::etichetta(r, "", &font_16, t.text2);
     lv_obj_set_width(oreEventi[i], 64);
-    chipEventi[i] = ui::chip(r, &lv_font_montserrat_12);
+    chipEventi[i] = ui::chip(r, &font_12);
     lv_obj_set_width(chipEventi[i], 118);
     lv_obj_set_style_text_align(chipEventi[i], LV_TEXT_ALIGN_CENTER, 0);
-    testiEventi[i] = ui::etichetta(r, "", &lv_font_montserrat_16, t.text);
+    testiEventi[i] = ui::etichetta(r, "", &font_16, t.text);
     righeEventi[i] = r;
     lv_obj_add_flag(r, LV_OBJ_FLAG_HIDDEN);
   }
@@ -157,9 +157,9 @@ void crea(lv_obj_t* c) {
   lv_obj_set_style_border_color(pw, t.border, 0);
   lv_obj_set_style_border_width(pw, 2, 0);
   ui::titoletto(pw, "POTENZA E ROS");
-  ui::etichetta(pw, "-- W    ROS --", &lv_font_montserrat_28, t.text2);
-  lv_obj_t* nota = ui::etichetta(pw, "Disponibile con il wattmetro (2x AD8307 + ADS1115).",
-                                 &lv_font_montserrat_14, t.text2);
+  ui::etichetta(pw, "— W    ROS —", &font_28, t.text2);
+  lv_obj_t* nota = ui::etichetta(pw, "Disponibile con il wattmetro (2× AD8307 + ADS1115).",
+                                 &font_14, t.text2);
   lv_label_set_long_mode(nota, LV_LABEL_LONG_WRAP);
   lv_obj_set_width(nota, LV_PCT(100));
 }
@@ -198,14 +198,14 @@ void aggiorna(const link_antenna::Stato& s) {
     display7::testo(displayPos, buf);
     lv_label_set_text(valDriver, (s.r.flag & proto::FLAG_DRIVER) ? "Abilitato" : "Disabilitato");
     bool fmin = s.r.flag & proto::FLAG_FC_MIN, fmax = s.r.flag & proto::FLAG_FC_MAX;
-    lv_label_set_text(chipFcMin, fmin ? "FC MIN - premuto" : "FC MIN - libero");
-    lv_label_set_text(chipFcMax, fmax ? "FC MAX - premuto" : "FC MAX - libero");
+    lv_label_set_text(chipFcMin, fmin ? "FC MIN · premuto" : "FC MIN · libero");
+    lv_label_set_text(chipFcMax, fmax ? "FC MAX · premuto" : "FC MAX · libero");
     ui::coloriChip(chipFcMin, fmin ? t.accentBg : t.surface2, fmin ? t.accent : t.text);
     ui::coloriChip(chipFcMax, fmax ? t.accentBg : t.surface2, fmax ? t.accent : t.text);
     lv_label_set_text(valVersione, (s.r.flag & proto::FLAG_VERSIONE_TX) ? "TX" : "RX");
   } else {
-    lv_label_set_text(chipFcMin, "FC MIN - --");
-    lv_label_set_text(chipFcMax, "FC MAX - --");
+    lv_label_set_text(chipFcMin, "FC MIN · —");
+    lv_label_set_text(chipFcMax, "FC MAX · —");
     ui::coloriChip(chipFcMin, t.surface2, t.text2);
     ui::coloriChip(chipFcMax, t.surface2, t.text2);
   }

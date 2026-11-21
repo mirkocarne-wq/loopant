@@ -29,6 +29,8 @@ src/display7.*          widget display a 7 segmenti (poligoni LVGL, nessun font 
 src/link_antenna.*      ESP-NOW verso l'antenna (usa ../lib/Comune)
 src/console.*           comandi da seriale
 src/eventi.*            registro eventi e contatori (Diagnostica)
+src/font/               font Montserrat 12-34 con lettere accentate (generati, non modificare a mano)
+strumenti/genera_font.sh  rigenera i font con lv_font_conv 1.5.3
 src/ui/                 barra, schede e schermate
 src/waveshare/          driver degli esempi Waveshare (Apache 2.0, vedi NOTICE.md)
 ```
@@ -60,6 +62,17 @@ La porta è quella del connettore USB-C "USB TO UART" (CH343); il nome cambia da
    Partition Scheme **16M Flash (3MB APP/9.9MB FATFS)**, USB CDC On Boot **Disabled**.
 6. Aprire `pannello.ino` e caricare.
 
+## Font
+I font in `src/font/` sono Montserrat Medium (SIL Open Font License 1.1) con i simboli di LVGL
+(Font Awesome 5 Free, SIL OFL 1.1), presi dalla libreria lvgl 8.4 (`scripts/built_in_font/`).
+Contengono ASCII, Latin-1 (à è é ì ò ù · ° ×) e – — ’ … − → ↔. Per aggiungere caratteri:
+```bash
+npm install lv_font_conv@1.5.3
+```
+```bash
+LV_FONT_CONV=node_modules/.bin/lv_font_conv strumenti/genera_font.sh <percorso>/lvgl/scripts/built_in_font
+```
+
 ## Primo avvio
 Dalla console seriale (115200 baud):
 ```
@@ -70,8 +83,6 @@ ora 2026-11-21 14:30         ora UTC, finché non c'è l'NTP
 Sull'antenna va impostato il MAC del pannello (stampato all'avvio e mostrato in Impostazioni).
 
 ## Limiti noti di questa versione
-- I font Montserrat inclusi in LVGL hanno solo i caratteri ASCII: niente lettere accentate, "·" e "—".
-  Vanno generati con `lv_font_conv` includendo il set Latin-1.
 - Icone delle schede: per ora i simboli integrati in LVGL; quelle del mockup vanno convertite in immagini.
 - Temi a fosfori: niente bagliore e righe di scansione (costosi in LVGL), niente font monospazio.
 - La luminosità (PWM dell'IO expander) non è ancora usata: il verso del valore è da verificare sulla scheda.
