@@ -24,13 +24,18 @@ firmware/
     src/movimento.*     motore, finecorsa, azzeramento, recupero del gioco
     src/calibrazione.*  tabella posizione ↔ frequenza in NVS
     src/main.cpp        gestione comandi, heartbeat, console seriale
-  controllo/          pannello in casa (Waveshare 7B): da scrivere dopo i requisiti
+  pannello/           pannello in casa (Waveshare 7B), Arduino core 3.1.1 + LVGL 8.4
+    src/link_antenna.*  ESP-NOW verso l'antenna: heartbeat, ripetizioni, stato
+    src/display7.*      widget display a 7 segmenti
+    src/ui/             barra, schede, schermate
+    src/waveshare/      driver Waveshare (Apache 2.0)
 ```
 
 ## Toolchain
 - Unità antenna: **PlatformIO** con framework **Arduino** (piattaforma `espressif32@6.9.0`, core 2.0.17).
   Librerie: FastAccelStepper 2.0.1 (impulsi STEP), TMCStepper 0.7.3 (UART del TMC2209).
-- Pannello: core Arduino **3.x** + LVGL 8.4 (come gli esempi Waveshare); ambiente di sviluppo da scegliere.
+- Pannello: **Arduino**, core ESP32 **3.1.1** + LVGL 8.4.0 (come gli esempi Waveshare), con arduino-cli
+  (`firmware/pannello/compila.sh`) o Arduino IDE 2. Istruzioni in `firmware/pannello/README.md`.
 
 ## Build
 ```bash

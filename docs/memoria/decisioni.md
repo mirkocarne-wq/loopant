@@ -25,6 +25,9 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Screensaver | Selezionabile: Orologio, Frequenza, Grey line, Spento | Richiesta dell'utente |
 | Decoder sul pannello | CW e RTTY (RTTY con baud, shift, mark, stop, Reverse, UOS, AFC impostabili) | Richiesta dell'utente; fattibile sull'ESP32-S3 |
 | Propagazione | Grey line e alba/tramonto calcolati in locale; indici solari via WiFi | La grey line non richiede Internet |
+| Toolchain del pannello | Arduino, core ESP32 3.1.1 + LVGL 8.4 (arduino-cli o Arduino IDE 2) | Scelta dell'utente; è quella degli esempi Waveshare |
+| Driver del pannello | Driver degli esempi Waveshare (15_LVGL_SLIDER) copiati in `src/waveshare/` | Funzionano sulla scheda; licenza Apache 2.0 |
+| Cifre a 7 segmenti | Widget LVGL che disegna i segmenti con poligoni | Nessun font da convertire; stessa geometria del mockup |
 
 ## Scartate
 | Alternativa | Motivo |

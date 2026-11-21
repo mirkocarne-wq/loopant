@@ -22,20 +22,23 @@ docs/memoria/      decisioni prese/scartate e punti aperti
 docs/archivio/     documento originale del 20/11/2026 (non aggiornato)
 firmware/lib/Comune/   codice condiviso: protocollo ESP-NOW, bande, collegamento, chiavi
 firmware/antenna/      firmware unità antenna (ESP32 DevKit 38 pin), PlatformIO, ambienti tx e rx
+firmware/pannello/     firmware pannello in casa (Waveshare 7B), Arduino core 3.1.1 + LVGL 8.4
 ```
-Il firmware del **pannello in casa** (Waveshare ESP32-S3-Touch-LCD-7B) non è ancora scritto.
-Requisiti e mockup sono approvati: `docs/software/03-unita-controllo.md` (schermate, temi, screensaver),
-`08-decoder.md` (CW/RTTY) e `09-propagazione.md` (grey line, indici solari).
+Il firmware del **pannello in casa** (Waveshare ESP32-S3-Touch-LCD-7B) è alla prima versione (stato in
+`firmware/pannello/README.md`). Requisiti e mockup approvati: `docs/software/03-unita-controllo.md`
+(schermate, temi, screensaver), `08-decoder.md` (CW/RTTY) e `09-propagazione.md` (grey line, indici solari).
+Le stringhe dell'interfaccia del pannello per ora devono essere **solo ASCII** (font Montserrat integrati in LVGL).
 
 ## Build
 ```bash
 cd firmware/antenna && pio run -e tx   # versione TX (NEMA11 + TMC2209)
 cd firmware/antenna && pio run -e rx   # versione RX (SERVO42D in STEP/DIR)
+firmware/pannello/compila.sh           # pannello, con arduino-cli (core esp32 3.1.1, lvgl 8.4.0)
 ```
 Le chiavi ESP-NOW reali vanno in `firmware/lib/Comune/src/segreti.h` (non versionato);
 senza, si compila con le chiavi di esempio e un avviso.
-Il pannello 7B richiede il core Arduino ESP32 **3.x** (gli esempi Waveshare usano `esp_lcd` e `i2c_master` di IDF 5):
-la piattaforma PlatformIO ufficiale `espressif32` usata per l'antenna ha il core 2.0.17.
+Il pannello 7B usa il core Arduino ESP32 **3.1.1** (gli esempi Waveshare usano `esp_lcd` e `i2c_master` di IDF 5);
+l'antenna resta su PlatformIO `espressif32@6.9.0` (core 2.0.17). Non usare `Wire` sul pannello: l'I2C è del driver Waveshare.
 
 ## Regole che il firmware deve rispettare
 - **Avvicinarsi alla posizione target sempre dallo stesso verso**: il gioco del riduttore

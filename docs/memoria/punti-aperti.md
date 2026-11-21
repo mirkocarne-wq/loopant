@@ -20,13 +20,16 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [ ] Prova del SERVO42D via CAN e via STEP/DIR.
 - [ ] Prova del collegamento ESP-NOW con heartbeat e cifratura tra le due schede.
 - [x] Requisiti e mockup del pannello 7B approvati (docs/software/03-unita-controllo.md).
-- [ ] Firmware del pannello 7B: driver schermo/touch, schermate LVGL, temi.
+- [x] Firmware del pannello 7B, prima versione: driver, collegamento, barra, schede, Sintonia, temi, Impostazioni di base (compila).
+- [ ] Pannello: prova sulla scheda vera (schermo, touch, collegamento con l'antenna).
+- [ ] Pannello: schermate Memorie, Propagazione, Decoder, Diagnostica, Calibrazione, screensaver.
+- [ ] Pannello: font con lettere accentate, "·" e "—" (Montserrat Latin-1 con lv_font_conv); icone del mockup.
+- [ ] Pannello: verso del PWM della retroilluminazione (IO expander) per la luminosità.
 - [ ] Ingresso audio per il decoder CW/RTTY sul 7B (modulo I2S o ingresso analogico, schema elettrico).
-- [ ] Font per LVGL: cifre a 7 segmenti (es. DSEG7) e monospazio per i temi a fosfori, con lv_font_conv.
+- [ ] Font per LVGL: monospazio per i temi a fosfori, con lv_font_conv (le cifre a 7 segmenti sono già un widget).
 - [ ] Mappa per la grey line in flash (Natural Earth), una per tema.
 - [ ] Indici solari via WiFi: fonte (feed hamqsl.com?), formato, condizioni d'uso; canale ESP-NOW = canale del router.
 - [ ] Ora esatta sul pannello: NTP via WiFi o impostazione manuale (nessun RTC documentato).
 - [ ] Verificare band plan IARU R1 e frequenze delle memorie predefinite.
 - [ ] UART per il futuro CI-V sul 7B (schema elettrico).
-- [ ] Toolchain del pannello: serve il core Arduino 3.x (Arduino IDE 2, pioarduino o ESP-IDF).
 - [ ] Procedura di calibrazione e tabella posizione ↔ frequenza.

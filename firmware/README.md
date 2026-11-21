@@ -4,7 +4,7 @@
 |---|---|---|
 | `lib/Comune/` | Protocollo ESP-NOW, bande, collegamento cifrato, chiavi | scritto |
 | `antenna/` | Unità antenna (ESP32 DevKit 38 pin), ambienti `tx` e `rx` | scritto, compila; da provare sul banco |
-| `controllo/` | Pannello in casa (Waveshare ESP32-S3-Touch-LCD-7B) | da scrivere dopo i requisiti |
+| `pannello/` | Pannello in casa (Waveshare ESP32-S3-Touch-LCD-7B), Arduino core 3.1.1 + LVGL 8.4 | prima versione, compila; da provare sulla scheda |
 
 Documentazione: [`docs/software/`](../docs/software/README.md).
 

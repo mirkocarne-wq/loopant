@@ -19,6 +19,15 @@ un numero sopra 100 000 viene letto in Hz.
 
 I comandi da console non attivano il controllo dell'heartbeat.
 
-## Unità di controllo
-Gli stessi comandi `goto`, `stop`, `zero`, `jog`, `cal`, `calcanc`, `stato`, `mac`, `aiuto`,
-inviati all'antenna via ESP-NOW. Qui `mac` imposta il MAC dell'unità antenna.
+## Pannello in casa (unità di controllo)
+I comandi `goto`, `stop`, `zero`, `jog`, `cal`, `calcanc` vengono inviati all'antenna via ESP-NOW.
+
+| Comando | Effetto |
+|---|---|
+| `stato` | Stato del collegamento e ultima risposta dell'antenna |
+| `mac <AA:BB:CC:DD:EE:FF>` | Salva il MAC dell'unità antenna (riavvio necessario) |
+| `call <nominativo>` | Nominativo nella barra in alto |
+| `loc <locator>` | Locator |
+| `tema <0-3>` | 0 Notte, 1 Giorno, 2 Fosfori verdi, 3 Fosfori ambra |
+| `ora <AAAA-MM-GG HH:MM>` | Imposta l'ora UTC (finché non c'è l'NTP) |
+| `aiuto` | Elenco comandi |
