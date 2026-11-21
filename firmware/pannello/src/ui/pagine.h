@@ -14,6 +14,17 @@ void crea(lv_obj_t* contenuto);
 void aggiorna(const link_antenna::Stato& s);
 }  // namespace pag_impostazioni
 
+namespace pag_diagnostica {
+void crea(lv_obj_t* contenuto);
+void aggiorna(const link_antenna::Stato& s);
+}  // namespace pag_diagnostica
+
+namespace pag_calibrazione {
+void crea(lv_obj_t* contenuto);
+void aggiorna(const link_antenna::Stato& s);
+void mostrata();
+}  // namespace pag_calibrazione
+
 // Schermate non ancora realizzate (Memorie, Propagazione, Decoder, Diagnostica)
 namespace pag_segnaposto {
 void crea(lv_obj_t* contenuto, const char* nome, const char* descrizione);

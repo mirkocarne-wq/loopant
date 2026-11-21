@@ -37,7 +37,7 @@ void aiuto() {
 void stato() {
   link_antenna::Stato s = link_antenna::stato();
   Serial.printf("Collegamento: %s, ultima risposta %lu ms fa, comandi ripetuti %lu/%lu\n",
-                s.collegato ? "attivo" : "assente", (unsigned long)s.etaMs, (unsigned long)s.persi,
+                s.collegato ? "attivo" : "assente", (unsigned long)s.etaMs, (unsigned long)s.ripetuti,
                 (unsigned long)s.inviati);
   if (s.ricevuta)
     Serial.printf("Antenna: %s, errore: %s, posizione %ld, freq %.1f kHz\n", proto::nomeStato(s.r.stato),

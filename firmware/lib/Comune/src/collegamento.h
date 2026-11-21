@@ -5,6 +5,7 @@
 
 struct Pacchetto {
   uint8_t len;
+  int8_t rssi;  // dBm; 0 se non disponibile (core Arduino 2.x)
   uint8_t dati[64];
 };
 

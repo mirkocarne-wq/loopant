@@ -11,6 +11,7 @@ un numero sopra 100 000 viene letto in Hz.
 | `zero` | Azzeramento sul finecorsa |
 | `jog <passi>` | Sposta di N passi (anche negativi) |
 | `cal <freq>` | Salva la posizione attuale per quella frequenza |
+| `calelim <freq>` | Elimina il punto più vicino a quella frequenza (entro 1 kHz) |
 | `calcanc <freq>` | Cancella la tabella della banda |
 | `tabella` | Stampa le tabelle di calibrazione |
 | `stato` | Stato, errore, posizione, finecorsa |

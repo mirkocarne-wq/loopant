@@ -54,6 +54,11 @@ void inviaRisposta(uint16_t seqComando) {
   r.banda = (uint8_t)bande::di(freqCorrente);
   r.posizione = movimento::posizione();
   r.freq_hz = freqCorrente;
+  r.flag = (movimento::finecorsaMin() ? proto::FLAG_FC_MIN : 0) |
+           (movimento::finecorsaMax() ? proto::FLAG_FC_MAX : 0) |
+           (movimento::inMovimento() ? proto::FLAG_DRIVER : 0) |
+           (VERSIONE_TX ? proto::FLAG_VERSIONE_TX : 0) |
+           (movimento::azzerato() ? proto::FLAG_AZZERATA : 0);
   radio.invia(&r, sizeof(r));
   statoUltimoInvio = r.stato;
 }
@@ -86,7 +91,29 @@ void vaiAFrequenza(uint32_t f) {
   }
 }
 
+void inviaPunto(const proto::Comando& c) {
+  proto::RispostaCal r = {};
+  r.versione = proto::VERSIONE;
+  r.tipo = proto::Tipo::RISPOSTA_CAL;
+  r.seq = ++seqRisposta;
+  r.seq_comando = c.seq;
+  bande::Banda b = bande::di(c.freq_hz);
+  r.banda = (uint8_t)b;
+  r.totale = calibrazione::numeroPunti(b);
+  r.indice = (uint8_t)c.valore;
+  uint32_t f = 0;
+  int32_t pos = 0;
+  calibrazione::punto(b, r.indice, f, pos);
+  r.freq_hz = f;  // campi packed: niente riferimenti diretti
+  r.posizione = pos;
+  radio.invia(&r, sizeof(r));
+}
+
 void esegui(const proto::Comando& c, bool daRadio) {
+  if (c.tipo == proto::Tipo::CAL_LEGGI) {  // risponde con il punto, non con lo stato
+    if (daRadio) inviaPunto(c);
+    return;
+  }
   switch (c.tipo) {
     case proto::Tipo::GOTO:
       if (movimento::inMovimento()) movimento::ferma();
@@ -131,6 +158,11 @@ void esegui(const proto::Comando& c, bool daRadio) {
 
     case proto::Tipo::CAL_CANCELLA:
       calibrazione::cancella(bande::di(c.freq_hz));
+      break;
+
+    case proto::Tipo::CAL_ELIMINA:
+      cancellaErrori();
+      if (!calibrazione::eliminaPunto(c.freq_hz)) erroreComando = proto::Errore::COMANDO_NON_VALIDO;
       break;
 
     case proto::Tipo::STATO:
@@ -182,7 +214,7 @@ void stampaStato() {
 
 void aiuto() {
   Serial.println(
-      "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calcanc <kHz> |\n"
+      "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calelim <kHz> | calcanc <kHz> |\n"
       "         tabella | stato | mac <AA:BB:CC:DD:EE:FF> | aiuto");
 }
 
@@ -208,6 +240,9 @@ void eseguiRiga(char* riga) {
     c.freq_hz = leggiFrequenza(arg);
   } else if (!strcmp(cmd, "calcanc") && arg) {
     c.tipo = proto::Tipo::CAL_CANCELLA;
+    c.freq_hz = leggiFrequenza(arg);
+  } else if (!strcmp(cmd, "calelim") && arg) {
+    c.tipo = proto::Tipo::CAL_ELIMINA;
     c.freq_hz = leggiFrequenza(arg);
   } else if (!strcmp(cmd, "tabella")) {
     calibrazione::stampa(Serial);

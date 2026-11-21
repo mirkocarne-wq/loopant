@@ -22,7 +22,8 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [x] Requisiti e mockup del pannello 7B approvati (docs/software/03-unita-controllo.md).
 - [x] Firmware del pannello 7B, prima versione: driver, collegamento, barra, schede, Sintonia, temi, Impostazioni di base (compila).
 - [ ] Pannello: prova sulla scheda vera (schermo, touch, collegamento con l'antenna).
-- [ ] Pannello: schermate Memorie, Propagazione, Decoder, Diagnostica, Calibrazione, screensaver.
+- [x] Pannello: Calibrazione e Diagnostica (protocollo v2: flag, CAL_LEGGI, CAL_ELIMINA), compilano.
+- [ ] Pannello: schermate Memorie, Propagazione, Decoder, screensaver.
 - [ ] Pannello: font con lettere accentate, "·" e "—" (Montserrat Latin-1 con lv_font_conv); icone del mockup.
 - [ ] Pannello: verso del PWM della retroilluminazione (IO expander) per la luminosità.
 - [ ] Ingresso audio per il decoder CW/RTTY sul 7B (modulo I2S o ingresso analogico, schema elettrico).

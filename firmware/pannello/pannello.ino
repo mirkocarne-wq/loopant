@@ -10,6 +10,7 @@
 #include <protocollo.h>
 
 #include "src/console.h"
+#include "src/eventi.h"
 #include "src/impostazioni.h"
 #include "src/link_antenna.h"
 #include "src/tema.h"
@@ -38,6 +39,7 @@ void setup() {
 
 void loop() {
   link_antenna::aggiorna();
+  eventi::osserva(link_antenna::stato());
   console::aggiorna();
   delay(5);
 }

@@ -9,8 +9,10 @@ Firmware Arduino (core ESP32 **3.x**) + LVGL 8.4. Requisiti: [docs/software/03-u
 | Collegamento ESP-NOW con l'antenna: heartbeat, ripetizioni, stato | scritto, compila |
 | Barra in alto (nominativo, orologio, antenna, stato, STOP) e schede | scritto, compila |
 | Sintonia | scritta, compila |
-| Impostazioni: nominativo, locator, tema, MAC | prima versione |
-| Memorie, Propagazione, Decoder, Diagnostica, Calibrazione, screensaver | segnaposto |
+| Impostazioni: nominativo, locator, tema, MAC, accesso a Calibrazione | prima versione |
+| Calibrazione: jog, salva punto, grafico e tabella letti dall'antenna, eliminazione | scritta, compila |
+| Diagnostica: collegamento (segnale, ripetizioni), motore e finecorsa, contatori, eventi | scritta, compila |
+| Memorie, Propagazione, Decoder, screensaver | segnaposto |
 | Console seriale | scritta |
 
 **Non ancora provato sulla scheda.**
@@ -26,6 +28,7 @@ src/tema.*              i quattro temi del mockup
 src/display7.*          widget display a 7 segmenti (poligoni LVGL, nessun font esterno)
 src/link_antenna.*      ESP-NOW verso l'antenna (usa ../lib/Comune)
 src/console.*           comandi da seriale
+src/eventi.*            registro eventi e contatori (Diagnostica)
 src/ui/                 barra, schede e schermate
 src/waveshare/          driver degli esempi Waveshare (Apache 2.0, vedi NOTICE.md)
 ```

@@ -82,6 +82,34 @@ void cancella(bande::Banda b) {
   scrivi(i);
 }
 
+uint8_t numeroPunti(bande::Banda b) {
+  int i = indice(b);
+  return i < 0 ? 0 : tabelle[i].n;
+}
+
+bool punto(bande::Banda b, uint8_t j, uint32_t& f, int32_t& pos) {
+  int i = indice(b);
+  if (i < 0 || j >= tabelle[i].n) return false;
+  f = tabelle[i].p[j].freq_hz;
+  pos = tabelle[i].p[j].posizione;
+  return true;
+}
+
+bool eliminaPunto(uint32_t f) {
+  int i = indice(bande::di(f));
+  if (i < 0) return false;
+  Tabella& t = tabelle[i];
+  for (uint8_t j = 0; j < t.n; j++) {
+    if ((uint32_t)abs((int32_t)(t.p[j].freq_hz - f)) <= TOLLERANZA_HZ) {
+      for (uint8_t k = j; k + 1 < t.n; k++) t.p[k] = t.p[k + 1];
+      t.n--;
+      scrivi(i);
+      return true;
+    }
+  }
+  return false;
+}
+
 bool calibrata(bande::Banda b) {
   int i = indice(b);
   return i >= 0 && tabelle[i].n >= 2;

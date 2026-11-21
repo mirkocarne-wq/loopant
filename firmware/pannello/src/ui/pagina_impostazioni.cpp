@@ -70,6 +70,8 @@ lv_obj_t* campo(lv_obj_t* parent, const char* nome, const char* valore, uint32_t
   return ta;
 }
 
+void apriCalibrazione(lv_event_t*) { ui::vaiA(ui::CALIBRAZIONE); }
+
 void scegliTema(lv_event_t* e) {
   uint8_t i = (uint8_t)(uintptr_t)lv_event_get_user_data(e);
   impostazioni::get().tema = i;
@@ -125,6 +127,9 @@ void crea(lv_obj_t* c) {
   Collegamento::scriviMac(mio, mac);
   lv_obj_t* l = ui::etichetta(an, "", &lv_font_montserrat_14, t.text2);
   lv_label_set_text_fmt(l, "MAC di questo pannello: %s\nPer ora il MAC dell'antenna si imposta dalla console: mac AA:BB:...", mac);
+  lv_obj_t* cal = ui::pulsante(an, "Calibrazione antenna  " LV_SYMBOL_RIGHT, &lv_font_montserrat_18, ui::Stile::NORMALE);
+  lv_obj_set_size(cal, LV_PCT(100), 52);
+  lv_obj_add_event_cb(cal, apriCalibrazione, LV_EVENT_CLICKED, nullptr);
 
   // Tema
   lv_obj_t* te = ui::scheda(dx);

@@ -22,23 +22,21 @@ void segnapostoPropagazione(lv_obj_t* c) {
 void segnapostoDecoder(lv_obj_t* c) {
   pag_segnaposto::crea(c, "Decoder CW / RTTY", "Serve prima l'ingresso audio dalla radio.");
 }
-void segnapostoDiagnostica(lv_obj_t* c) {
-  pag_segnaposto::crea(c, "Diagnostica", "Collegamento, motore, contatori, ultimi eventi.");
-}
 void nessunAggiornamento(const link_antenna::Stato&) {}
 
-const Pagina PAGINE[] = {
-    {"Sintonia", LV_SYMBOL_GPS, pag_sintonia::crea, pag_sintonia::aggiorna},
-    {"Memorie", LV_SYMBOL_LIST, segnapostoMemorie, nessunAggiornamento},
-    {"Propagazione", LV_SYMBOL_WIFI, segnapostoPropagazione, nessunAggiornamento},
-    {"Decoder", LV_SYMBOL_KEYBOARD, segnapostoDecoder, nessunAggiornamento},
-    {"Diagnostica", LV_SYMBOL_BARS, segnapostoDiagnostica, nessunAggiornamento},
-    {"Impostazioni", LV_SYMBOL_SETTINGS, pag_impostazioni::crea, pag_impostazioni::aggiorna},
+const Pagina PAGINE[NUM_PAGINE] = {
+    {"Sintonia", LV_SYMBOL_GPS, pag_sintonia::crea, pag_sintonia::aggiorna, nullptr},
+    {"Memorie", LV_SYMBOL_LIST, segnapostoMemorie, nessunAggiornamento, nullptr},
+    {"Propagazione", LV_SYMBOL_WIFI, segnapostoPropagazione, nessunAggiornamento, nullptr},
+    {"Decoder", LV_SYMBOL_KEYBOARD, segnapostoDecoder, nessunAggiornamento, nullptr},
+    {"Diagnostica", LV_SYMBOL_BARS, pag_diagnostica::crea, pag_diagnostica::aggiorna, nullptr},
+    {"Impostazioni", LV_SYMBOL_SETTINGS, pag_impostazioni::crea, pag_impostazioni::aggiorna, nullptr},
+    {"Calibrazione", LV_SYMBOL_SETTINGS, pag_calibrazione::crea, pag_calibrazione::aggiorna,
+     pag_calibrazione::mostrata},
 };
-constexpr uint8_t NUM_PAGINE = sizeof(PAGINE) / sizeof(PAGINE[0]);
 
 lv_obj_t* pagine[NUM_PAGINE];
-lv_obj_t* schede[NUM_PAGINE];
+lv_obj_t* schede[NUM_SCHEDE];
 uint8_t attiva = 0;
 
 lv_obj_t* orologio;
@@ -150,15 +148,21 @@ void aggiornaBarra(const link_antenna::Stato& s) {
 
 void mostra(uint8_t indice) {
   const Tema& t = tema::corrente();
+  if (indice >= NUM_PAGINE) indice = SINTONIA;
   attiva = indice;
+  // la Calibrazione sta "dentro" Impostazioni
+  uint8_t scheda = indice == CALIBRAZIONE ? (uint8_t)IMPOSTAZIONI : indice;
   for (uint8_t i = 0; i < NUM_PAGINE; i++) {
-    bool sel = i == indice;
-    if (sel) lv_obj_clear_flag(pagine[i], LV_OBJ_FLAG_HIDDEN);
+    if (i == indice) lv_obj_clear_flag(pagine[i], LV_OBJ_FLAG_HIDDEN);
     else lv_obj_add_flag(pagine[i], LV_OBJ_FLAG_HIDDEN);
+  }
+  for (uint8_t i = 0; i < NUM_SCHEDE; i++) {
+    bool sel = i == scheda;
     lv_obj_set_style_bg_color(schede[i], sel ? t.surface2 : t.surface, 0);
     lv_obj_set_style_text_color(schede[i], sel ? t.accent : t.text2, 0);
     lv_obj_set_style_border_color(schede[i], sel ? t.accent : t.surface, 0);
   }
+  if (PAGINE[indice].mostrata) PAGINE[indice].mostrata();
 }
 
 void premiScheda(lv_event_t* e) { mostra((uint8_t)(uintptr_t)lv_event_get_user_data(e)); }
@@ -174,7 +178,7 @@ void creaSchede(lv_obj_t* scr) {
   lv_obj_set_style_border_color(barra, t.border, 0);
   lv_obj_set_style_border_width(barra, 1, 0);
 
-  for (uint8_t i = 0; i < NUM_PAGINE; i++) {
+  for (uint8_t i = 0; i < NUM_SCHEDE; i++) {
     lv_obj_t* b = lv_btn_create(barra);
     lv_obj_remove_style_all(b);
     lv_obj_set_height(b, LV_PCT(100));
@@ -239,5 +243,7 @@ void inizia() {
 }
 
 void richiediRicostruzione() { daRicostruire = true; }
+
+void vaiA(uint8_t pagina) { mostra(pagina); }
 
 }  // namespace ui

@@ -15,6 +15,9 @@ void inizia();  // carica dalla flash
 bool salvaPunto(uint32_t freq_hz, int32_t posizione);
 void cancella(bande::Banda b);
 bool calibrata(bande::Banda b);  // almeno 2 punti
+uint8_t numeroPunti(bande::Banda b);
+bool punto(bande::Banda b, uint8_t indice, uint32_t& freq_hz, int32_t& posizione);  // in ordine di frequenza
+bool eliminaPunto(uint32_t freq_hz);  // il punto entro TOLLERANZA_HZ
 bool posizionePer(uint32_t freq_hz, int32_t& posizione);
 void stampa(Print& out);
 

@@ -10,21 +10,22 @@ QueueHandle_t coda = nullptr;
 uint8_t macPeer[6] = {0};
 bool peerOk = false;
 
-void elabora(const uint8_t* mac, const uint8_t* dati, int len) {
+void elabora(const uint8_t* mac, const uint8_t* dati, int len, int8_t rssi) {
   if (!coda || len <= 0 || len > (int)sizeof(Pacchetto::dati)) return;
   if (memcmp(mac, macPeer, 6) != 0) return;  // solo dal peer configurato
   Pacchetto p;
   p.len = (uint8_t)len;
+  p.rssi = rssi;
   memcpy(p.dati, dati, len);
   xQueueSend(coda, &p, 0);
 }
 
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
 void suRicezione(const esp_now_recv_info_t* info, const uint8_t* dati, int len) {
-  elabora(info->src_addr, dati, len);
+  elabora(info->src_addr, dati, len, info->rx_ctrl ? (int8_t)info->rx_ctrl->rssi : 0);
 }
 #else
-void suRicezione(const uint8_t* mac, const uint8_t* dati, int len) { elabora(mac, dati, len); }
+void suRicezione(const uint8_t* mac, const uint8_t* dati, int len) { elabora(mac, dati, len, 0); }
 #endif
 
 bool macNullo(const uint8_t m[6]) {

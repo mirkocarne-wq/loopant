@@ -5,7 +5,8 @@
 
 namespace proto {
 
-constexpr uint8_t VERSIONE = 1;
+// Versione 2: flag nella risposta, lettura ed eliminazione dei punti di calibrazione.
+constexpr uint8_t VERSIONE = 2;
 
 enum class Tipo : uint8_t {
   GOTO = 1,          // vai alla frequenza freq_hz
@@ -16,8 +17,18 @@ enum class Tipo : uint8_t {
   JOG = 6,           // movimento relativo di 'valore' passi
   CAL_SALVA = 7,     // associa la posizione attuale a freq_hz
   CAL_CANCELLA = 8,  // cancella la tabella della banda di freq_hz
-  RISPOSTA = 0x80,   // antenna -> controllo
+  CAL_LEGGI = 9,     // chiede il punto numero 'valore' della banda di freq_hz
+  CAL_ELIMINA = 10,  // elimina il punto più vicino a freq_hz (entro 1 kHz)
+  RISPOSTA = 0x80,      // antenna -> controllo: stato
+  RISPOSTA_CAL = 0x81,  // antenna -> controllo: un punto di calibrazione
 };
+
+// Bit di Risposta::flag
+constexpr uint8_t FLAG_FC_MIN = 1 << 0;      // finecorsa MIN premuto
+constexpr uint8_t FLAG_FC_MAX = 1 << 1;      // finecorsa MAX premuto
+constexpr uint8_t FLAG_DRIVER = 1 << 2;      // driver abilitato (motore in coppia)
+constexpr uint8_t FLAG_VERSIONE_TX = 1 << 3; // antenna TX (altrimenti RX)
+constexpr uint8_t FLAG_AZZERATA = 1 << 4;    // posizione nota
 
 enum class Stato : uint8_t {
   NON_AZZERATA = 0,
@@ -56,6 +67,20 @@ struct __attribute__((packed)) Risposta {
   uint8_t banda;  // 40, 20 oppure 0
   int32_t posizione;
   uint32_t freq_hz;
+  uint8_t flag;   // FLAG_*
+};
+
+// Risposta a CAL_LEGGI. totale = 0: banda senza punti (indice e valori non significativi).
+struct __attribute__((packed)) RispostaCal {
+  uint8_t versione;
+  Tipo tipo;  // RISPOSTA_CAL
+  uint16_t seq;
+  uint16_t seq_comando;
+  uint8_t banda;
+  uint8_t indice;
+  uint8_t totale;
+  uint32_t freq_hz;
+  int32_t posizione;
 };
 
 inline const char* nomeStato(Stato s) {
