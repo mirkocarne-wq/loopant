@@ -39,7 +39,6 @@ firmware/
 
 ## Build
 ```bash
-cd firmware/antenna && pio run            # compila l'unità antenna (versione TX)
-cd firmware/antenna && pio run -e rx      # compila l'unità antenna (versione RX, SERVO42D)
-pio run -t upload && pio device monitor   # carica e apre la console seriale
+firmware/antenna/compila.sh                  # unità antenna: firmware unico, tipo TX o RX scelto dal pannello
+firmware/antenna/compila.sh carica <porta>   # compila e carica (console a 115200 baud)
 ```

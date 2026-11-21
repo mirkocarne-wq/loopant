@@ -7,7 +7,8 @@ namespace proto {
 
 // Versione 2: flag nella risposta, lettura ed eliminazione dei punti di calibrazione.
 // Versione 3: comando IMPOSTA (driver del motore STEP/DIR o CAN), flag FLAG_CAN, errore MOTORE_CAN.
-// Versione 4: associazione con il pulsante BOOT dell'antenna (pacchetti Associa in broadcast).
+// Versione 4: associazione con il pulsante BOOT dell'antenna (pacchetti Associa in broadcast);
+//             parametro TIPO_ANTENNA (firmware unico per TX e RX).
 constexpr uint8_t VERSIONE = 4;
 
 enum class Tipo : uint8_t {
@@ -44,6 +45,7 @@ enum class Parametro : uint32_t {
   MODO_MOTORE = 1,  // 0 = STEP/DIR, 1 = CAN (solo antenna RX con SERVO42D)
   CAN_ID = 2,       // indirizzo del SERVO42D, 1-2047
   CAN_KBIT = 3,     // velocità del bus: 125, 250, 500 o 1000
+  TIPO_ANTENNA = 4, // 1 = TX (NEMA11 + TMC2209), 0 = RX (SERVO42D); l'antenna risponde e poi si riavvia
 };
 
 enum class Stato : uint8_t {

@@ -30,6 +30,9 @@ lv_obj_t* campoPassword;
 lv_obj_t* testoRete;
 lv_obj_t* testoLuce;
 lv_obj_t* boxCan;
+lv_obj_t* boxRx;  // driver del motore: solo antenna RX
+uint8_t gruppoTipo = 0;
+uint32_t cambioTipoAlle = 0;  // millis della richiesta di cambio tipo (0 = nessuna)
 lv_obj_t* testoCanId;
 lv_obj_t* statoMotore;
 lv_obj_t* sezioneAntenna;
@@ -65,7 +68,7 @@ struct Gruppo {
   lv_obj_t* pulsanti[4];
   void (*cambiato)();
 };
-Gruppo gruppi[8];
+Gruppo gruppi[10];  // id in 4 bit: al massimo 16
 uint8_t numGruppi = 0;
 
 void evidenzia(Gruppo& g) {
@@ -218,7 +221,18 @@ void scegliTema(lv_event_t* e) {
 
 void apriCalibrazione(lv_event_t*) { ui::vaiA(ui::CALIBRAZIONE); }
 
-// --- Driver del motore dell'antenna RX --------------------------------------------------------
+// --- Tipo di antenna e driver del motore dell'antenna RX -------------------------------------
+
+void mostraRx() {
+  if (motore_antenna::scelte().tipo == 0) lv_obj_clear_flag(boxRx, LV_OBJ_FLAG_HIDDEN);
+  else lv_obj_add_flag(boxRx, LV_OBJ_FLAG_HIDDEN);
+}
+
+void tipoCambiato() {
+  mostraRx();
+  cambioTipoAlle = millis();
+  motore_antenna::inviaTipo();
+}
 
 void mostraCan() {
   if (motore_antenna::scelte().modo == 1) lv_obj_clear_flag(boxCan, LV_OBJ_FLAG_HIDDEN);
@@ -533,15 +547,22 @@ void crea(lv_obj_t* c) {
   Collegamento::macLocale(mio);
   Collegamento::scriviMac(mio, mac);
   l = ui::etichetta(an, "", &font_14, t.text2);
-  lv_label_set_text_fmt(l, "MAC di questo pannello: %s\nIl MAC dell'antenna si imposta dalla console: mac AA:BB:…", mac);
+  lv_label_set_text_fmt(l, "MAC di questo pannello: %s\nAssociazione: tieni premuto BOOT sull'antenna per 3 s.", mac);
   static const char* const MODI_MOTORE[] = {"STEP/DIR", "CAN"};
   static const uint8_t V_MODI_MOTORE[] = {0, 1};
   static const char* const KBIT[] = {"125", "250", "500", "1000"};
   static const uint8_t V_KBIT[] = {0, 1, 2, 3};
   motore_antenna::Scelte& mot = motore_antenna::scelte();
-  ui::etichetta(an, "Driver del motore (solo antenna RX con SERVO42D)", &font_14, t.text2);
-  gruppo(an, MODI_MOTORE, V_MODI_MOTORE, 2, &mot.modo, modoCambiato);
-  boxCan = ui::contenitore(an, LV_FLEX_FLOW_COLUMN, 6);
+  static const char* const TIPI[] = {"RX · SERVO42D", "TX · NEMA11 + TMC2209"};
+  static const uint8_t V_TIPI[] = {0, 1};
+  ui::etichetta(an, "Tipo di antenna (firmware unico; al cambio l'antenna si riavvia)", &font_14, t.text2);
+  gruppoTipo = numGruppi;
+  gruppo(an, TIPI, V_TIPI, 2, &mot.tipo, tipoCambiato);
+  boxRx = ui::contenitore(an, LV_FLEX_FLOW_COLUMN, 6);
+  lv_obj_set_width(boxRx, LV_PCT(100));
+  ui::etichetta(boxRx, "Driver del motore del SERVO42D", &font_14, t.text2);
+  gruppo(boxRx, MODI_MOTORE, V_MODI_MOTORE, 2, &mot.modo, modoCambiato);
+  boxCan = ui::contenitore(boxRx, LV_FLEX_FLOW_COLUMN, 6);
   lv_obj_set_width(boxCan, LV_PCT(100));
   lv_obj_t* rid = ui::contenitore(boxCan, LV_FLEX_FLOW_ROW, 8);
   lv_obj_set_width(rid, LV_PCT(100));
@@ -564,6 +585,7 @@ void crea(lv_obj_t* c) {
   lv_label_set_long_mode(statoMotore, LV_LABEL_LONG_WRAP);
   lv_obj_set_width(statoMotore, LV_PCT(100));
   mostraCan();
+  mostraRx();
   lv_obj_t* cal = ui::pulsante(an, "Calibrazione antenna  " LV_SYMBOL_RIGHT, &font_18, ui::Stile::NORMALE);
   lv_obj_set_size(cal, LV_PCT(100), 52);
   lv_obj_add_event_cb(cal, apriCalibrazione, LV_EVENT_CLICKED, nullptr);
@@ -664,10 +686,27 @@ void crea(lv_obj_t* c) {
 
 void aggiorna(const link_antenna::Stato& s) {
   char buf[96];
-  if (!s.collegato) {
+  // Il tipo vero è quello dichiarato dall'antenna: la scelta lo segue, tranne subito dopo una richiesta di cambio
+  // (l'antenna si riavvia in un paio di secondi).
+  motore_antenna::Scelte& mot = motore_antenna::scelte();
+  bool attesaTipo = cambioTipoAlle && millis() - cambioTipoAlle < 10000;
+  if (s.collegato) {
+    uint8_t tipoAntenna = (s.r.flag & proto::FLAG_VERSIONE_TX) ? 1 : 0;
+    if (tipoAntenna == mot.tipo) {
+      cambioTipoAlle = 0;
+      attesaTipo = false;
+    } else if (!attesaTipo) {
+      mot.tipo = tipoAntenna;
+      evidenzia(gruppi[gruppoTipo]);
+      mostraRx();
+    }
+  }
+  if (attesaTipo) {
+    lv_label_set_text(statoMotore, "Cambio del tipo di antenna: l'antenna si riavvia, poi serve un nuovo azzeramento.");
+  } else if (!s.collegato) {
     lv_label_set_text(statoMotore, "Antenna non collegata: la scelta verrà inviata quando risponde.");
   } else if (s.r.flag & proto::FLAG_VERSIONE_TX) {
-    lv_label_set_text(statoMotore, "Antenna TX: il motore usa sempre STEP/DIR (TMC2209).");
+    lv_label_set_text(statoMotore, "Antenna TX: motore sempre in STEP/DIR (TMC2209). Calibrazione separata da quella RX.");
   } else {
     bool can = s.r.flag & proto::FLAG_CAN;
     bool uguale = can == (motore_antenna::scelte().modo == 1);

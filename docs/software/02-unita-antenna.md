@@ -3,14 +3,21 @@
 Hardware: vedi [tecnico/06-elettronica.md](../tecnico/06-elettronica.md). Codice: `firmware/antenna/`.
 
 ## Versioni
-Si compila con arduino-cli e il core esp32 **3.1.1**, lo stesso del pannello: `firmware/antenna/compila.sh tx|rx`
-(con `carica <porta>` carica anche). Librerie: FastAccelStepper 2.0.1, TMCStepper 0.7.3, U8g2.
-`platformio.ini` resta per chi usa PlatformIO (core 2.0.17), ma non è più provato.
+**Firmware unico** per le due antenne. Si compila con arduino-cli e il core esp32 **3.1.1**, lo stesso del pannello:
+`firmware/antenna/compila.sh` (con `carica <porta>` carica anche). Librerie: FastAccelStepper 2.0.1, TMCStepper 0.7.3,
+U8g2. `platformio.ini` resta per chi usa PlatformIO (core 2.0.17), ma non è più provato.
 
-| Versione di `compila.sh` | Versione | Motore | Driver |
+| Tipo | Antenna | Motore | Driver |
 |---|---|---|---|
-| `tx` (predefinito) | TX 100 W | NEMA11, attuatore lineare T6×1, corsa 150 mm | TMC2209 (STEP/DIR/EN + UART) |
-| `rx` | RX | NEMA17 + riduttore 20:1 sul variabile | SERVO42D in STEP/DIR/EN **oppure** via CAN, a scelta dal pannello |
+| TX | TX 100 W | NEMA11, attuatore lineare T6×1, corsa 150 mm | TMC2209 (STEP/DIR/EN + UART) |
+| RX | RX | NEMA17 + riduttore 20:1 sul variabile | SERVO42D in STEP/DIR/EN **oppure** via CAN, a scelta dal pannello |
+
+- Il tipo si sceglie dal pannello (Impostazioni → Antenna) o dalla console (`tipo tx|rx`) e resta in NVS; al primo
+  avvio è RX (corsa e velocità minori, più prudente). Al cambio l'antenna risponde e si riavvia: driver, CAN e
+  meccanica ripartono con il tipo nuovo e serve un nuovo azzeramento.
+- Meccanica dei due tipi: tabelle `cfg::TX` e `cfg::RX` in `include/config.h`.
+- Le tabelle di calibrazione sono separate per tipo (NVS `cal_tx` e `cal_rx`): le posizioni delle due meccaniche
+  non sono confrontabili. Provato il 21/11/2026: RX → TX dalla console e TX → RX dal pannello.
 
 ## Display OLED
 Facoltativo (SSD1306 128×64 su SDA 21 / SCL 22, vedi [tecnico/06-elettronica.md](../tecnico/06-elettronica.md)).

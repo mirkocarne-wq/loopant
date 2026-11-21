@@ -1,4 +1,4 @@
-// Driver CAN per il SERVO42D (antenna RX): transceiver Waveshare SN65HVD230 su GPIO 22/23.
+// Driver CAN per il SERVO42D (antenna RX): transceiver Waveshare SN65HVD230 su GPIO 17/16.
 //
 // Protocollo (da verificare sul manuale ufficiale MKS SERVO42D/57D CAN V1.0.3; formato ricavato dalla
 // libreria della comunità MKSServoCAN): frame standard con identificatore = indirizzo del SERVO42D,
@@ -17,7 +17,6 @@
 namespace can42d {
 namespace {
 
-#if !VERSIONE_TX
 enum class Fase : uint8_t { INATTIVO, VERSO_RECUPERO, VERSO_TARGET, AZZERAMENTO, FERMATA };
 
 uint16_t indirizzo = cfg::CAN_ID_PREDEFINITO;
@@ -72,7 +71,7 @@ void abilita(bool si) {
 }
 
 uint16_t rpm() {  // velocità in giri/min del motore, dagli impulsi al secondo di config.h
-  uint32_t r = (uint32_t)cfg::VELOCITA_HZ * 60UL / (200UL * cfg::MICROPASSI);
+  uint32_t r = (uint32_t)cfg::RX.velocitaHz * 60UL / (200UL * cfg::RX.micropassi);
   return (uint16_t)(r > 3000 ? 3000 : (r < 1 ? 1 : r));
 }
 
@@ -152,7 +151,7 @@ void ricevi(const twai_message_t& m) {
         int64_t v = 0;
         for (int i = 1; i <= 6; i++) v = (v << 8) | m.data[i];
         if (v & ((int64_t)1 << 47)) v |= ~(((int64_t)1 << 48) - 1);
-        pos_ = (int32_t)(v * (200LL * cfg::MICROPASSI) / 0x4000);
+        pos_ = (int32_t)(v * (200LL * cfg::RX.micropassi) / 0x4000);
       }
       break;
     case 0xF1:  // 1 = fermo: rete di sicurezza se la risposta "arrivato" si è persa
@@ -168,11 +167,9 @@ void ricevi(const twai_message_t& m) {
       break;
   }
 }
-#endif  // !VERSIONE_TX
 
 }  // namespace
 
-#if !VERSIONE_TX
 
 void configura(uint16_t id, uint16_t k) {
   indirizzo = id;
@@ -220,7 +217,7 @@ void fine() {
 
 bool vaiA(int32_t pos) {
   if (!installato || !azzerato_ || fase == Fase::AZZERAMENTO) return false;
-  target = constrain(pos, cfg::POS_MIN, cfg::POS_MAX);
+  target = constrain(pos, cfg::RX.posMin(), cfg::RX.posMax());
   abilita(true);
   inizioFase = millis();
   if (target > pos_) {
@@ -228,7 +225,7 @@ bool vaiA(int32_t pos) {
     muoviA(target);
   } else {  // si arriva sempre dal verso crescente: prima sotto il target, poi su
     fase = Fase::VERSO_RECUPERO;
-    muoviA(target - cfg::RECUPERO_GIOCO_PASSI);
+    muoviA(target - cfg::RX.recuperoGiocoPassi);
   }
   return true;
 }
@@ -291,26 +288,5 @@ bool finecorsaMax() { return false; }
 bool driverAbilitato() { return fase != Fase::INATTIVO; }
 proto::Errore errore() { return errore_; }
 void cancellaErrore() { errore_ = proto::Errore::NESSUNO; }
-
-#else  // antenna TX: niente CAN
-
-void configura(uint16_t, uint16_t) {}
-void inizia() {}
-void fine() {}
-bool vaiA(int32_t) { return false; }
-void azzera() {}
-void ferma() {}
-void aggiorna() {}
-bool inMovimento() { return false; }
-bool inAzzeramento() { return false; }
-bool azzerato() { return false; }
-int32_t posizione() { return 0; }
-bool finecorsaMin() { return false; }
-bool finecorsaMax() { return false; }
-bool driverAbilitato() { return false; }
-proto::Errore errore() { return proto::Errore::NESSUNO; }
-void cancellaErrore() {}
-
-#endif
 
 }  // namespace can42d

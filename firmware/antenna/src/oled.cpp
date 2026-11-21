@@ -38,7 +38,7 @@ void sbloccaBus() {
 
 bool diversi(const Dati& a, const Dati& b) {
   return a.stato != b.stato || a.errore != b.errore || a.freqHz != b.freqHz || a.posizione != b.posizione ||
-         a.driver != b.driver || a.can != b.can || a.peerValido != b.peerValido || a.collegato != b.collegato ||
+         a.driver != b.driver || a.tx != b.tx || a.can != b.can || a.peerValido != b.peerValido || a.collegato != b.collegato ||
          a.rssi != b.rssi || a.associa != b.associa || a.canale != b.canale || strcmp(a.pannello, b.pannello) != 0;
 }
 
@@ -74,7 +74,7 @@ void destra(int y, const char* t) { u8g2.drawUTF8(128 - u8g2.getUTF8Width(t), y,
 // Fascia gialla (righe 0-15): versione e collegamento
 void fascia(const Dati& d) {
   u8g2.setFont(u8g2_font_6x13B_tf);
-  u8g2.drawStr(0, 12, VERSIONE_TX ? "LOOPANT TX" : "LOOPANT RX");
+  u8g2.drawStr(0, 12, d.tx ? "LOOPANT TX" : "LOOPANT RX");
   char t[16];
   if (!d.peerValido) snprintf(t, sizeof(t), "NO MAC");
   else if (!d.collegato) snprintf(t, sizeof(t), "SCOLLEGATO");
@@ -163,7 +163,7 @@ void schermataNormale(const Dati& d) {
   snprintf(t, sizeof(t), "pos %ld", (long)d.posizione);
   u8g2.drawStr(0, 62, t);
   if (d.driver) destra(62, "MOTORE ON");
-  else if (!VERSIONE_TX) destra(62, d.can ? "CAN" : "STEP/DIR");
+  else if (!d.tx) destra(62, d.can ? "CAN" : "STEP/DIR");
 }
 
 void compito(void*) {

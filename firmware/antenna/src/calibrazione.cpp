@@ -39,8 +39,8 @@ double x(uint32_t f) {  // 1/f² con f in MHz
 
 }  // namespace
 
-void inizia() {
-  nvs.begin("calibra", false);
+void inizia(bool tx) {
+  nvs.begin(tx ? "cal_tx" : "cal_rx", false);
   for (size_t i = 0; i < bande::NUMERO; i++) {
     char k[8];
     chiave(i, k);

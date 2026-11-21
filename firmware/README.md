@@ -3,14 +3,15 @@
 | Cartella | Contenuto | Stato |
 |---|---|---|
 | `lib/Comune/` | Protocollo ESP-NOW, bande, collegamento cifrato, chiavi | scritto |
-| `antenna/` | Unità antenna (ESP32 DevKit 30 pin, WROOM-32), ambienti `tx` e `rx` | scritto, compila; da provare sul banco |
-| `pannello/` | Pannello in casa (Waveshare ESP32-S3-Touch-LCD-7B), Arduino core 3.1.1 + LVGL 8.4 | prima versione, compila; da provare sulla scheda |
+| `antenna/` | Unità antenna (ESP32 DevKit 30 pin, WROOM-32), firmware unico per TX e RX, arduino-cli + core 3.1.1 | collegamento, display, associazione e CAN provati; motore da provare sul banco |
+| `pannello/` | Pannello in casa (Waveshare ESP32-S3-Touch-LCD-7B), Arduino core 3.1.1 + LVGL 8.4 | provato sulla scheda con l'antenna |
 
 Documentazione: [`docs/software/`](../docs/software/README.md).
 
 ```bash
-cd antenna && pio run -e tx                          # compila la versione TX
-cd antenna && pio run -e tx -t upload -t monitor     # carica e apre la console
+antenna/compila.sh                      # compila l'unità antenna (tipo TX o RX scelto dal pannello)
+antenna/compila.sh carica <porta>       # compila e carica
+pannello/compila.sh carica <porta>      # pannello
 ```
 
 Prima dell'uso reale copiare `lib/Comune/src/segreti.esempio.h` in `lib/Comune/src/segreti.h`

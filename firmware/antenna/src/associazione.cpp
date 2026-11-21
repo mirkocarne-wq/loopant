@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include "protocollo.h"
+#include "tipo_antenna.h"
 
 namespace associazione {
 namespace {
@@ -70,7 +71,7 @@ void inviaRichiesta(Collegamento& radio) {
   a.tipo = proto::Tipo::ASSOCIA_RICHIESTA;
   a.magia = proto::MAGIA_ASSOCIA;
   a.canale = canale_;
-  a.flag = VERSIONE_TX ? proto::FLAG_VERSIONE_TX : 0;
+  a.flag = tipo_antenna::tx() ? proto::FLAG_VERSIONE_TX : 0;
   radio.inviaATutti(&a, sizeof(a));
   ultimoInvio = millis();
 }

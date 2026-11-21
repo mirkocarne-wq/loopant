@@ -11,7 +11,7 @@ namespace calibrazione {
 constexpr uint8_t MAX_PUNTI = 16;
 constexpr uint32_t TOLLERANZA_HZ = 1000;  // un punto entro 1 kHz sostituisce quello esistente
 
-void inizia();  // carica dalla flash
+void inizia(bool tx);  // carica dalla flash la tabella del tipo di antenna (TX e RX hanno posizioni diverse)
 bool salvaPunto(uint32_t freq_hz, int32_t posizione);
 void cancella(bande::Banda b);
 bool calibrata(bande::Banda b);  // almeno 2 punti

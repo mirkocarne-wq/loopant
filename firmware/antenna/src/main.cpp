@@ -12,6 +12,7 @@
 #include "movimento.h"
 #include "oled.h"
 #include "protocollo.h"
+#include "tipo_antenna.h"
 #include "segreti_scelti.h"
 
 namespace {
@@ -33,6 +34,7 @@ uint32_t freqCorrente = 0;
 proto::Errore erroreComando = proto::Errore::NESSUNO;
 
 proto::Stato statoUltimoInvio = proto::Stato::NON_AZZERATA;
+bool riavvioRichiesto = false;  // cambio del tipo di antenna: riavvio dopo la risposta
 
 // --------------------------------------------------------------------------------------------
 
@@ -64,7 +66,7 @@ proto::Risposta preparaRisposta(uint16_t seqComando) {
            (movimento::finecorsaMax() ? proto::FLAG_FC_MAX : 0) |
            (movimento::driverAbilitato() ? proto::FLAG_DRIVER : 0) |
            (movimento::modo() == movimento::Modo::CAN ? proto::FLAG_CAN : 0) |
-           (VERSIONE_TX ? proto::FLAG_VERSIONE_TX : 0) |
+           (tipo_antenna::tx() ? proto::FLAG_VERSIONE_TX : 0) |
            (movimento::azzerato() ? proto::FLAG_AZZERATA : 0);
   return r;
 }
@@ -191,6 +193,13 @@ void esegui(const proto::Comando& c, bool daRadio) {
         case proto::Parametro::CAN_KBIT:
           ok = movimento::impostaCan(movimento::canId(), (uint16_t)c.valore);
           break;
+        case proto::Parametro::TIPO_ANTENNA:
+          ok = (c.valore == 0 || c.valore == 1) && !movimento::inMovimento() && !targetInSospeso;
+          if (ok && (c.valore == 1) != tipo_antenna::tx()) {
+            tipo_antenna::salva(c.valore == 1);
+            riavvioRichiesto = true;
+          }
+          break;
       }
       if (!ok) erroreComando = proto::Errore::COMANDO_NON_VALIDO;
       break;
@@ -297,6 +306,7 @@ void aggiornaOled() {
   d.freqHz = freqCorrente;
   d.posizione = movimento::posizione();
   d.driver = movimento::driverAbilitato();
+  d.tx = tipo_antenna::tx();
   d.can = movimento::modo() == movimento::Modo::CAN;
   d.peerValido = radio.peerValido();
   d.collegato = ultimoMessaggioRadio != 0 && millis() - ultimoMessaggioRadio < cfg::TIMEOUT_HEARTBEAT_MS;
@@ -321,6 +331,7 @@ void stampaStato() {
                 (long)movimento::posizione(), freqCorrente / 1000.0, movimento::finecorsaMin(),
                 movimento::finecorsaMax());
   Serial.printf("ESP-NOW: canale %u\n", canale);
+  Serial.printf("Antenna: %s\n", tipo_antenna::tx() ? "TX (NEMA11 + TMC2209)" : "RX (SERVO42D)");
   if (movimento::modo() == movimento::Modo::CAN)
     Serial.printf("Motore: CAN (SERVO42D indirizzo %u, %u kbit/s)\n", movimento::canId(), movimento::canKbit());
   else
@@ -331,7 +342,7 @@ void aiuto() {
   Serial.println(
       "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calelim <kHz> | calcanc <kHz> |\n"
       "         tabella | stato | mac <AA:BB:CC:DD:EE:FF> | canale <1-13> | associa |\n"
-      "         motore stepdir|can | canid <1-2047> | cankbit <125|250|500|1000> (solo RX) | aiuto");
+      "         tipo tx|rx | motore stepdir|can | canid <1-2047> | cankbit <125|250|500|1000> (solo RX) | aiuto");
 }
 
 void eseguiRiga(char* riga) {
@@ -357,6 +368,10 @@ void eseguiRiga(char* riga) {
   } else if (!strcmp(cmd, "calcanc") && arg) {
     c.tipo = proto::Tipo::CAL_CANCELLA;
     c.freq_hz = leggiFrequenza(arg);
+  } else if (!strcmp(cmd, "tipo") && arg) {
+    c.tipo = proto::Tipo::IMPOSTA;
+    c.freq_hz = (uint32_t)proto::Parametro::TIPO_ANTENNA;
+    c.valore = !strcmp(arg, "tx") ? 1 : 0;
   } else if (!strcmp(cmd, "motore") && arg) {
     c.tipo = proto::Tipo::IMPOSTA;
     c.freq_hz = (uint32_t)proto::Parametro::MODO_MOTORE;
@@ -430,11 +445,12 @@ void leggiConsole() {
 void setup() {
   Serial.begin(115200);
   delay(200);
-  Serial.printf("\nloopant - unità antenna (versione %s)\n", VERSIONE_TX ? "TX" : "RX");
+  tipo_antenna::inizia();
+  Serial.printf("\nloopant - unità antenna %s\n", tipo_antenna::tx() ? "TX (NEMA11 + TMC2209)" : "RX (SERVO42D)");
 
   nvs.begin("loopant", false);
   movimento::inizia();
-  calibrazione::inizia();
+  calibrazione::inizia(tipo_antenna::tx());
   associazione::inizia();
 
   uint8_t peer[6] = {0};
@@ -473,6 +489,12 @@ void loop() {
   leggiConsole();
   aggiornaAssociazione();
   aggiornaOled();
+
+  if (riavvioRichiesto) {  // nuovo tipo di antenna: la risposta è già partita
+    Serial.println("Tipo di antenna cambiato: riavvio");
+    delay(300);
+    ESP.restart();
+  }
 
   // invio spontaneo quando cambia lo stato
   if (radio.peerValido() && statoAttuale() != statoUltimoInvio) inviaRisposta(0);

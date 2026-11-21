@@ -14,6 +14,7 @@ struct Dati {
   uint32_t freqHz;     // 0 = frequenza non nota
   int32_t posizione;   // passi
   bool driver;         // driver del motore abilitato
+  bool tx;             // antenna TX (altrimenti RX)
   bool can;            // motore comandato via CAN (solo RX)
   bool peerValido;     // MAC del pannello impostato
   bool collegato;      // messaggi dal pannello negli ultimi secondi

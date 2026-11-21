@@ -17,7 +17,8 @@ i messaggi con versione diversa vengono ignorati.
 
 Versione 2 (21/11/2026): campo `flag` nella risposta, comandi `CAL_LEGGI` e `CAL_ELIMINA`, messaggio `RISPOSTA_CAL`.
 Versione 3 (21/11/2026): comando `IMPOSTA` (driver del motore STEP/DIR o CAN), flag `CAN`, errore `MOTORE_CAN`.
-Versione 4 (21/11/2026): associazione con il pulsante BOOT (messaggi `ASSOCIA_*`).
+Versione 4 (21/11/2026): associazione con il pulsante BOOT (messaggi `ASSOCIA_*`); parametro 4 di `IMPOSTA`
+(tipo di antenna, firmware unico).
 
 ### Comando (controllo → antenna)
 | Campo | Tipo | Note |
@@ -40,7 +41,7 @@ Versione 4 (21/11/2026): associazione con il pulsante BOOT (messaggi `ASSOCIA_*`
 | `CAL_CANCELLA` | 8 | Cancella la tabella della banda di `freq_hz` |
 | `CAL_LEGGI` | 9 | Chiede il punto numero `valore` (da 0) della banda di `freq_hz`; risposta `RISPOSTA_CAL` |
 | `CAL_ELIMINA` | 10 | Elimina il punto più vicino a `freq_hz` (entro 1 kHz) |
-| `IMPOSTA` | 11 | Imposta il parametro `freq_hz` al valore `valore`: 1 = driver del motore (0 STEP/DIR, 1 CAN), 2 = indirizzo CAN del SERVO42D (1-2047), 3 = velocità del bus (125/250/500/1000 kbit/s). Solo antenna RX |
+| `IMPOSTA` | 11 | Imposta il parametro `freq_hz` al valore `valore`: 1 = driver del motore (0 STEP/DIR, 1 CAN), 2 = indirizzo CAN del SERVO42D (1-2047), 3 = velocità del bus (125/250/500/1000 kbit/s), solo antenna RX; 4 = tipo di antenna (0 RX, 1 TX): l'antenna risponde e si riavvia |
 
 ### Risposta (antenna → controllo)
 | Campo | Tipo | Note |

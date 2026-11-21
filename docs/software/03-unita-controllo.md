@@ -95,7 +95,7 @@ Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione
 |---|---|---|
 | I1 | **Nominativo** e **locator** (mostrati nella barra in alto e nello screensaver; il locator dà la posizione per la propagazione) | [D] |
 | I2 | **Tema**: scelta con miniature (sezione D) | [D] |
-| I3 | Antenna: MAC, canale, **Pairing**, accesso a **Calibrazione antenna** | [D] |
+| I3 | Antenna: MAC, **tipo TX/RX** (firmware unico, segue quello dichiarato dall'antenna), driver del SERVO42D (STEP/DIR o CAN, solo RX), **Pairing**, accesso a **Calibrazione antenna** | [D] |
 | I4 | **Screensaver**: stile Orologio / Frequenza / Grey line / Spento; parte dopo Mai / 5 / 15 / 30 min; anteprima | [D] |
 | I5 | Luminosità; ora nella barra UTC / locale / entrambe | [D] |
 | I6 | WiFi: pulsante **Cerca reti**, elenco delle reti trovate (segnale, protetta/aperta), tocco sulla rete, password con tastiera e collegamento; campo manuale per le reti nascoste | [D] |

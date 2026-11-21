@@ -28,6 +28,7 @@ proto::Errore errore();
 void cancellaErrore();
 
 // Driver del motore (solo antenna RX: il TX usa sempre STEP/DIR). Salvato in NVS.
+// Il tipo di antenna (TX/RX) è in tipo_antenna.h.
 // false se non si può cambiare (antenna TX o motore in movimento). Dopo il cambio serve un nuovo azzeramento.
 bool impostaModo(Modo m);
 Modo modo();

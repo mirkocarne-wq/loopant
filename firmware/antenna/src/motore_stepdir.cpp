@@ -5,12 +5,12 @@
 #include <Arduino.h>
 #include <FastAccelStepper.h>
 
-#include "config.h"
-
-#if VERSIONE_TX
 #include <TMCStepper.h>
-static TMC2209Stepper driver(&Serial2, cfg::R_SENSE, cfg::TMC_INDIRIZZO);
-#endif
+
+#include "config.h"
+#include "tipo_antenna.h"
+
+static TMC2209Stepper driver(&Serial2, cfg::R_SENSE, cfg::TMC_INDIRIZZO);  // solo antenna TX
 
 namespace stepdir {
 namespace {
@@ -35,6 +35,8 @@ bool azzerato_ = false;
 proto::Errore errore_ = proto::Errore::NESSUNO;
 int32_t target = 0;
 int32_t inizioAzzeramento = 0;
+
+const cfg::Meccanica& M() { return tipo_antenna::meccanica(); }
 
 bool attivo(int pin) { return digitalRead(pin) == (cfg::FC_ATTIVO_BASSO ? LOW : HIGH); }
 
@@ -61,7 +63,6 @@ bool fermo() { return !stepper->isRunning(); }
 
 bool azzeramento(Fase f) { return f >= Fase::AZ_CERCA; }
 
-#if VERSIONE_TX
 uint32_t ultimoSg = 0;
 void controllaBlocco() {
   if (cfg::SOGLIA_BLOCCO == 0 || millis() - ultimoSg < 50) return;
@@ -70,7 +71,6 @@ void controllaBlocco() {
       driver.SG_RESULT() < cfg::SOGLIA_BLOCCO)
     interrompi(proto::Errore::BLOCCO);
 }
-#endif
 
 }  // namespace
 
@@ -78,22 +78,22 @@ void inizia() {
   pinMode(cfg::PIN_FC_MIN, INPUT_PULLUP);
   pinMode(cfg::PIN_FC_MAX, INPUT_PULLUP);
 
-#if VERSIONE_TX
-  Serial2.begin(115200, SERIAL_8N1, cfg::PIN_TMC_RX, cfg::PIN_TMC_TX);
-  driver.begin();
-  driver.pdn_disable(true);       // PDN_UART usato come UART
-  driver.I_scale_analog(false);
-  driver.mstep_reg_select(true);  // micropassi da registro
-  driver.toff(4);
-  driver.blank_time(24);
-  driver.rms_current(cfg::CORRENTE_MA);
-  driver.microsteps(cfg::MICROPASSI);
-  driver.en_spreadCycle(false);  // stealthChop
-  driver.pwm_autoscale(true);
-  driver.TCOOLTHRS(0xFFFFF);     // SG_RESULT valido a tutte le velocità
-  uint8_t esito = driver.test_connection();
-  if (esito) Serial.printf("ATTENZIONE: TMC2209 non risponde sull'UART (codice %u)\n", esito);
-#endif
+  if (tipo_antenna::tx()) {  // TMC2209 configurato via UART
+    Serial2.begin(115200, SERIAL_8N1, cfg::PIN_TMC_RX, cfg::PIN_TMC_TX);
+    driver.begin();
+    driver.pdn_disable(true);       // PDN_UART usato come UART
+    driver.I_scale_analog(false);
+    driver.mstep_reg_select(true);  // micropassi da registro
+    driver.toff(4);
+    driver.blank_time(24);
+    driver.rms_current(cfg::CORRENTE_MA);
+    driver.microsteps(M().micropassi);
+    driver.en_spreadCycle(false);  // stealthChop
+    driver.pwm_autoscale(true);
+    driver.TCOOLTHRS(0xFFFFF);     // SG_RESULT valido a tutte le velocità
+    uint8_t esito = driver.test_connection();
+    if (esito) Serial.printf("ATTENZIONE: TMC2209 non risponde sull'UART (codice %u)\n", esito);
+  }
 
   motore.init();
   stepper = motore.stepperConnectToPin(cfg::PIN_STEP);
@@ -104,19 +104,19 @@ void inizia() {
   stepper->setDirectionPin(cfg::PIN_DIR);
   stepper->setEnablePin(cfg::PIN_EN, true);  // attivo basso
   stepper->setAutoEnable(false);
-  stepper->setAcceleration(cfg::ACCELERAZIONE);
+  stepper->setAcceleration(M().accelerazione);
   stepper->disableOutputs();
 }
 
 bool vaiA(int32_t pos) {
   if (!stepper || !azzerato_ || azzeramento(fase)) return false;
-  target = constrain(pos, cfg::POS_MIN, cfg::POS_MAX);
+  target = constrain(pos, M().posMin(), M().posMax());
   stepper->enableOutputs();
   if (target > stepper->getCurrentPosition()) {
-    avvia(target, cfg::VELOCITA_HZ);
+    avvia(target, M().velocitaHz);
     fase = Fase::VERSO_TARGET;
   } else {
-    avvia(target - cfg::RECUPERO_GIOCO_PASSI, cfg::VELOCITA_HZ);
+    avvia(target - M().recuperoGiocoPassi, M().velocitaHz);
     fase = Fase::VERSO_RECUPERO;
   }
   return true;
@@ -126,11 +126,11 @@ void azzera() {
   if (!stepper) return;
   azzerato_ = false;
   stepper->enableOutputs();
-  stepper->setSpeedInHz(cfg::VELOCITA_AZZERAMENTO_HZ);
+  stepper->setSpeedInHz(M().velocitaAzzeramentoHz);
   if (finecorsaMin()) {
     // già sul finecorsa: si stacca e poi si riavvicina lentamente
     stepper->setCurrentPosition(0);
-    avvia(cfg::STACCO_PASSI, cfg::VELOCITA_AZZERAMENTO_HZ);
+    avvia(M().staccoPassi, M().velocitaAzzeramentoHz);
     fase = Fase::AZ_STACCA;
     return;
   }
@@ -161,9 +161,7 @@ void aggiorna() {
     return;
   }
 
-#if VERSIONE_TX
-  if (fase == Fase::VERSO_TARGET || fase == Fase::VERSO_RECUPERO) controllaBlocco();
-#endif
+  if (tipo_antenna::tx() && (fase == Fase::VERSO_TARGET || fase == Fase::VERSO_RECUPERO)) controllaBlocco();
 
   switch (fase) {
     case Fase::INATTIVO:
@@ -171,7 +169,7 @@ void aggiorna() {
 
     case Fase::VERSO_RECUPERO:
       if (fermo()) {
-        avvia(target, cfg::VELOCITA_HZ);
+        avvia(target, M().velocitaHz);
         fase = Fase::VERSO_TARGET;
       }
       break;
@@ -185,7 +183,7 @@ void aggiorna() {
       if (finecorsaMin()) {
         stepper->forceStop();
         fase = Fase::AZ_ATTESA_1;
-      } else if (inizioAzzeramento - stepper->getCurrentPosition() > cfg::AZZERAMENTO_MAX_PASSI) {
+      } else if (inizioAzzeramento - stepper->getCurrentPosition() > M().azzeramentoMaxPassi()) {
         interrompi(proto::Errore::AZZERAMENTO_FALLITO);
       }
       break;
@@ -193,7 +191,7 @@ void aggiorna() {
     case Fase::AZ_ATTESA_1:
       if (fermo()) {
         stepper->setCurrentPosition(0);
-        avvia(cfg::STACCO_PASSI, cfg::VELOCITA_AZZERAMENTO_HZ);
+        avvia(M().staccoPassi, M().velocitaAzzeramentoHz);
         fase = Fase::AZ_STACCA;
       }
       break;
@@ -204,7 +202,7 @@ void aggiorna() {
           interrompi(proto::Errore::AZZERAMENTO_FALLITO);
           break;
         }
-        stepper->setSpeedInHz(cfg::VELOCITA_LENTA_HZ);
+        stepper->setSpeedInHz(M().velocitaLentaHz);
         stepper->runBackward();
         fase = Fase::AZ_LENTO;
       }
@@ -214,7 +212,7 @@ void aggiorna() {
       if (finecorsaMin()) {
         stepper->forceStop();
         fase = Fase::AZ_ATTESA_2;
-      } else if (stepper->getCurrentPosition() < -cfg::STACCO_PASSI) {
+      } else if (stepper->getCurrentPosition() < -M().staccoPassi) {
         interrompi(proto::Errore::AZZERAMENTO_FALLITO);
       }
       break;
@@ -222,7 +220,7 @@ void aggiorna() {
     case Fase::AZ_ATTESA_2:
       if (fermo()) {
         stepper->setCurrentPosition(0);  // zero dove il motore si è fermato davvero
-        avvia(cfg::STACCO_PASSI, cfg::VELOCITA_AZZERAMENTO_HZ);
+        avvia(M().staccoPassi, M().velocitaAzzeramentoHz);
         fase = Fase::AZ_FINE;
       }
       break;

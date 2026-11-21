@@ -1,6 +1,6 @@
 # Programmi di prova per il banco
 
-Si caricano al posto del firmware dell'antenna; dopo la prova ricaricare il firmware con `../compila.sh tx|rx carica <porta>`.
+Si caricano al posto del firmware dell'antenna; dopo la prova ricaricare il firmware con `../compila.sh carica <porta>`.
 Le impostazioni in NVS (pannello associato, canale, calibrazione) restano.
 
 | Programma | Cosa prova | Come |

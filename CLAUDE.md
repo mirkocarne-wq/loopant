@@ -21,7 +21,7 @@ docs/software/     software: architettura, unità antenna, pannello (requisiti),
 docs/memoria/      decisioni prese/scartate e punti aperti
 docs/archivio/     documento originale del 20/11/2026 (non aggiornato)
 firmware/lib/Comune/   codice condiviso: protocollo ESP-NOW, bande, collegamento, chiavi
-firmware/antenna/      firmware unità antenna (ESP32 DevKit 30 pin, WROOM-32), arduino-cli, versioni tx e rx
+firmware/antenna/      firmware unità antenna (ESP32 DevKit 30 pin, WROOM-32), arduino-cli, unico per TX e RX
 firmware/pannello/     firmware pannello in casa (Waveshare 7B), Arduino core 3.1.1 + LVGL 8.4
 ```
 Il firmware del **pannello in casa** (Waveshare ESP32-S3-Touch-LCD-7B) ha tutte le schermate del mockup, non ancora
@@ -32,8 +32,7 @@ usare solo quei caratteri; per aggiungerne altri modificare e rilanciare `firmwa
 
 ## Build
 ```bash
-firmware/antenna/compila.sh tx         # antenna TX (NEMA11 + TMC2209); "tx carica <porta>" carica
-firmware/antenna/compila.sh rx         # antenna RX (SERVO42D in STEP/DIR o CAN)
+firmware/antenna/compila.sh            # antenna, firmware unico (tipo TX/RX dal pannello); "carica <porta>" carica
 firmware/pannello/compila.sh           # pannello, con arduino-cli (core esp32 3.1.1, lvgl 8.4.0)
 firmware/pannello/test/esegui_test.sh  # test sul PC: sole, locator, indici, decoder CW/RTTY
 firmware/pannello/simulatore/compila.sh <lvgl>  # interfaccia sul PC, schermate PNG (controllare dopo ogni modifica)
