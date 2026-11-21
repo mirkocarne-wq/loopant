@@ -1,7 +1,8 @@
-// Associazione con il pannello tramite il pulsante BOOT (GPIO 0) del DevKit.
-// Pressione di 3 s: l'antenna invia richieste in broadcast canale per canale finché un pannello risponde,
-// poi resta sul suo canale e aspetta la conferma dell'utente sul pannello. Pressione breve: annulla la ricerca,
-// altrimenti riaccende il display. Non premere BOOT durante l'accensione: la scheda entra in programmazione.
+// Associazione di un'unità remota (antenna o nodo audio) con il pannello.
+// Pressione di 3 s sul pulsante (o avvia()): l'unità invia richieste in broadcast canale per canale finché un
+// pannello risponde, poi resta sul suo canale e aspetta la conferma dell'utente sul pannello. Pressione breve:
+// annulla la ricerca, altrimenti pressioneBreve() restituisce true (per esempio per riaccendere il display).
+// Antenna: pulsante BOOT (GPIO 0), da non premere durante l'accensione (la scheda entra in programmazione).
 #pragma once
 #include <stdint.h>
 
@@ -18,7 +19,9 @@ enum class Fase : uint8_t {
   FALLITA,    // nessun pannello entro il tempo massimo, o annullata
 };
 
-void inizia();
+// pinPulsante: attivo basso, -1 = nessun pulsante; flag: Associa::flag della richiesta (FLAG_VERSIONE_TX,
+// FLAG_NODO_AUDIO)
+void inizia(int pinPulsante, uint8_t flag);
 void avvia();  // come la pressione lunga (comando "associa" della console)
 
 // Dal loop. 'consentita': motore fermo (la ricerca cambia canale e interrompe i comandi).

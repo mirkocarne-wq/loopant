@@ -18,15 +18,16 @@ if [[ ! -f "$COSTRUZIONE/lvgl/.fatto" ]]; then
   done
   touch "$COSTRUZIONE/lvgl/.fatto"
 fi
-for f in "$PANNELLO"/src/font/*.c; do gcc $FLAGS -c "$f" -o "$COSTRUZIONE/font/$(basename "$f" .c).o"; done
+for f in "$PANNELLO"/../lib/Grafica/src/font/*.c; do gcc $FLAGS -c "$f" -o "$COSTRUZIONE/font/$(basename "$f" .c).o"; done
 
 SORGENTI=(
   "$QUI/simulatore.cpp"
   "$PANNELLO"/src/ui/*.cpp
-  "$PANNELLO"/src/{display7,icona,motore_antenna,tema,mappa,sole,locator,eventi,memorie,impostazioni,ora,indici,geo,qrz}.cpp
+  "$PANNELLO"/../lib/Grafica/src/display7.cpp
+  "$PANNELLO"/src/{icona,motore_antenna,tema,mappa,sole,locator,eventi,memorie,impostazioni,ora,indici,geo,qrz}.cpp
 )
 g++ -std=c++17 -O1 -DLV_CONF_INCLUDE_SIMPLE -DIRAM_ATTR= -I"$QUI/stub" -I"$PANNELLO/src" -I"$PANNELLO" \
-  -I"$PANNELLO/../lib/Comune/src" -I"$LVGL" "${SORGENTI[@]}" \
+  -I"$PANNELLO/../lib/Comune/src" -I"$PANNELLO/../lib/Grafica/src" -I"$LVGL" "${SORGENTI[@]}" \
   "$COSTRUZIONE"/lvgl/*.o "$COSTRUZIONE"/font/*.o -lm -o "$COSTRUZIONE/simulatore"
 
 "$COSTRUZIONE/simulatore" "$USCITA" >/dev/null

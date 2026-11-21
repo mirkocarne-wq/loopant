@@ -7,7 +7,7 @@
 #include <initializer_list>
 
 #include "../bandplan.h"
-#include "../display7.h"
+#include <Grafica.h>
 #include "../impostazioni.h"
 #include "../tema.h"
 #include "comuni.h"

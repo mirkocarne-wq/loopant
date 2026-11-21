@@ -13,3 +13,4 @@ typedef int portMUX_TYPE;
 #define portENTER_CRITICAL(x) ((void)(x))
 #define portEXIT_CRITICAL(x) ((void)(x))
 #define IRAM_ATTR
+typedef void* QueueHandle_t;  // collegamento.h

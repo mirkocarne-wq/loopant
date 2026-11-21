@@ -1,0 +1,7 @@
+{
+  "name": "Decoder",
+  "version": "0.1.0",
+  "description": "Decoder CW e RTTY e decimatore audio, C++ puro",
+  "frameworks": "arduino",
+  "platforms": "*"
+}

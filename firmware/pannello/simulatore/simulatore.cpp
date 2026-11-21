@@ -34,7 +34,6 @@ uint32_t millis() { return msVirtuali; }
 bool Collegamento::inizia(const uint8_t*, const uint8_t*, const uint8_t*, uint8_t) { return true; }
 bool Collegamento::invia(const void*, size_t) { return true; }
 bool Collegamento::ricevi(Pacchetto&) { return false; }
-bool Collegamento::peerValido() const { return true; }
 void Collegamento::macLocale(uint8_t out[6]) {
   const uint8_t m[6] = {0x24, 0x58, 0x7C, 0x00, 0x00, 0x01};
   memcpy(out, m, 6);

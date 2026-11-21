@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Genera i font del pannello (Montserrat Medium + simboli LVGL) con le lettere accentate.
+# Genera i font del pannello e della manopola (Montserrat Medium + simboli LVGL) con le lettere accentate,
+# in firmware/lib/Grafica/src/font.
 # Uso: genera_font.sh <cartella con Montserrat-Medium.ttf e FontAwesome5-Solid+Brands+Regular.woff>
 #   (sono nella libreria lvgl 8.4: lvgl/scripts/built_in_font/)
 # Richiede lv_font_conv 1.5.3 (npm install lv_font_conv@1.5.3) nel PATH o in LV_FONT_CONV.
 set -euo pipefail
 SORGENTI="${1:?cartella dei font mancante}"
 CONV="${LV_FONT_CONV:-lv_font_conv}"
-cd "$(dirname "$0")/../src/font"
+cd "$(dirname "$0")/../../lib/Grafica/src/font"
 
 # ASCII, Latin-1 (à è é ì ò ù · ° ×), – — ’ … − → ↔ •
 CARATTERI="0x20-0x7E,0xA0-0xFF,0x2013,0x2014,0x2019,0x2026,0x2212,0x2192,0x2194,0x2022"

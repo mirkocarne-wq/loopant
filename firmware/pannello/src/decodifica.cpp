@@ -1,12 +1,11 @@
 #include "decodifica.h"
 
 #include <Arduino.h>
+#include <Decoder.h>
 #include <string.h>
 
 #include "audio.h"
 #include "config.h"
-#include "decoder/cw.h"
-#include "decoder/rtty.h"
 #include "impostazioni.h"
 
 namespace decodifica {

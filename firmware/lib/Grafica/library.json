@@ -1,0 +1,7 @@
+{
+  "name": "Grafica",
+  "version": "0.1.0",
+  "description": "Font con lettere accentate e cifre a 7 segmenti per LVGL 8.4",
+  "frameworks": "arduino",
+  "platforms": "espressif32"
+}

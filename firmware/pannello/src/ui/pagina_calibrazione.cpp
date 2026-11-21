@@ -8,7 +8,7 @@
 
 #include <initializer_list>
 
-#include "../display7.h"
+#include <Grafica.h>
 #include "../tema.h"
 #include "comuni.h"
 #include "pagine.h"

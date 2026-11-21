@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "../bandplan.h"
-#include "../display7.h"
+#include <Grafica.h>
 #include "../impostazioni.h"
 #include "../locator.h"
 #include "../mappa.h"

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "font/font.h"
+#include <Grafica.h>
 #include "geo.h"
 #include "mappa_dati.h"
 #include "sole.h"

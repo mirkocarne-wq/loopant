@@ -4,7 +4,7 @@
 
 #include "../config.h"
 #include "../decodifica.h"
-#include "../display7.h"
+#include <Grafica.h>
 #include "../impostazioni.h"
 #include "../tema.h"
 #include "comuni.h"

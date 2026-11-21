@@ -4,7 +4,7 @@
 #include <time.h>
 
 #include "../config.h"
-#include "../display7.h"
+#include <Grafica.h>
 #include "../icona.h"
 #include "../impostazioni.h"
 #include "../ora.h"

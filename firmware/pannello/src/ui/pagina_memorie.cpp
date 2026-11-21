@@ -5,7 +5,7 @@
 
 #include <initializer_list>
 
-#include "../display7.h"
+#include <Grafica.h>
 #include "../impostazioni.h"
 #include "../memorie.h"
 #include "../tema.h"

@@ -11,6 +11,8 @@ FLAGS="-DLV_CONF_INCLUDE_SIMPLE -I${QUI}"
 
 arduino-cli compile --fqbn "$FQBN" \
   --library "${QUI}/../lib/Comune" \
+  --library "${QUI}/../lib/Decoder" \
+  --library "${QUI}/../lib/Grafica" \
   --build-property "compiler.cpp.extra_flags=${FLAGS}" \
   --build-property "compiler.c.extra_flags=${FLAGS}" \
   --warnings default \

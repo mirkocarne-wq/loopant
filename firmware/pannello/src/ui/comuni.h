@@ -3,7 +3,7 @@
 #pragma once
 #include <lvgl.h>
 
-#include "../font/font.h"
+#include <Grafica.h>
 #include "../tema.h"
 
 namespace ui {

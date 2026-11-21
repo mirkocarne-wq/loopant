@@ -4,7 +4,7 @@
 
 #include <initializer_list>
 
-#include "../display7.h"
+#include <Grafica.h>
 #include "../eventi.h"
 #include "../tema.h"
 #include "comuni.h"

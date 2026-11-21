@@ -12,6 +12,7 @@
 #include "movimento.h"
 #include "oled.h"
 #include "protocollo.h"
+#include "ricerca_canale.h"
 #include "tipo_antenna.h"
 #include "segreti_scelti.h"
 
@@ -255,22 +256,13 @@ void cercaCanale() {
   ultimaRicerca = ora;
 
   proto::Risposta r = preparaRisposta(0);
-  for (uint8_t i = 0; i < 13; i++) {
-    uint8_t ch = (canale - 1 + i) % 13 + 1;
-    esp_wifi_set_channel(ch, WIFI_SECOND_CHAN_NONE);
-    for (int tentativo = 0; tentativo < 2; tentativo++) {
-      r.seq = ++seqRisposta;
-      if (!radio.inviaConConferma(&r, sizeof(r), cfg::RICERCA_CANALE_ACK_MS)) continue;
-      statoUltimoInvio = r.stato;
-      if (ch != canale) {
-        Serial.printf("Pannello trovato sul canale %u (prima %u): salvato\n", ch, canale);
-        canale = ch;
-        nvs.putUChar("canale", ch);
-      }
-      return;
-    }
+  uint8_t prima = canale;
+  if (!ricerca_canale::cerca(radio, canale, &r, sizeof(r), cfg::RICERCA_CANALE_ACK_MS)) return;  // pannello spento
+  statoUltimoInvio = r.stato;
+  if (canale != prima) {
+    Serial.printf("Pannello trovato sul canale %u (prima %u): salvato\n", canale, prima);
+    nvs.putUChar("canale", canale);
   }
-  esp_wifi_set_channel(canale, WIFI_SECOND_CHAN_NONE);  // pannello spento: si resta sul canale salvato
 }
 
 // --- Associazione con il pulsante BOOT ---------------------------------------------------------
@@ -446,7 +438,7 @@ void setup() {
   nvs.begin("loopant", false);
   movimento::inizia();
   calibrazione::inizia(tipo_antenna::tx());
-  associazione::inizia();
+  associazione::inizia(0, tipo_antenna::tx() ? proto::FLAG_VERSIONE_TX : 0);  // pulsante BOOT
 
   uint8_t peer[6] = {0};
   nvs.getBytes("peer", peer, 6);

@@ -4,7 +4,7 @@
 #include <esp_adc/adc_continuous.h>
 #include <math.h>
 
-#include "decoder/decimatore.h"
+#include <Decoder.h>
 
 namespace audio {
 namespace {

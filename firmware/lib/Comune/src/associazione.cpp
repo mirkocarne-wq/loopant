@@ -3,14 +3,11 @@
 #include <Arduino.h>
 #include <esp_wifi.h>
 
-#include "config.h"
 #include "protocollo.h"
-#include "tipo_antenna.h"
 
 namespace associazione {
 namespace {
 
-constexpr int PIN_BOOT = 0;                 // pulsante BOOT del DevKit, attivo basso
 constexpr uint32_t PRESSIONE_LUNGA_MS = 3000;
 constexpr uint32_t ANTIRIMBALZO_MS = 30;
 constexpr uint32_t INVIO_MS = 150;          // richieste durante la ricerca
@@ -20,6 +17,8 @@ constexpr uint32_t DURATA_MAX_MS = 60000;   // per la ricerca e per l'attesa del
 constexpr uint32_t ESITO_MS = 5000;         // esito sul display
 constexpr uint8_t CANALI = 13;
 
+int pinPulsante = -1;
+uint8_t flagRichiesta = 0;
 Fase fase_ = Fase::INATTIVA;
 uint8_t canale_ = 0;
 uint8_t canaleIniziale = 1;
@@ -34,7 +33,8 @@ uint32_t inizioPressione = 0;
 enum class Evento : uint8_t { NESSUNO, BREVE, LUNGA };
 
 Evento leggiPulsante() {
-  bool giu = digitalRead(PIN_BOOT) == LOW;
+  if (pinPulsante < 0) return Evento::NESSUNO;
+  bool giu = digitalRead(pinPulsante) == LOW;
   uint32_t ora = millis();
   if (giu && !premuto) {
     premuto = true;
@@ -71,7 +71,7 @@ void inviaRichiesta(Collegamento& radio) {
   a.tipo = proto::Tipo::ASSOCIA_RICHIESTA;
   a.magia = proto::MAGIA_ASSOCIA;
   a.canale = canale_;
-  a.flag = tipo_antenna::tx() ? proto::FLAG_VERSIONE_TX : 0;
+  a.flag = flagRichiesta;
   radio.inviaATutti(&a, sizeof(a));
   ultimoInvio = millis();
 }
@@ -90,7 +90,11 @@ void parti() {
 
 }  // namespace
 
-void inizia() { pinMode(PIN_BOOT, INPUT_PULLUP); }
+void inizia(int pin, uint8_t flag) {
+  pinPulsante = pin;
+  flagRichiesta = flag;
+  if (pin >= 0) pinMode(pin, INPUT_PULLUP);
+}
 
 void avvia() { richiesta = true; }
 
