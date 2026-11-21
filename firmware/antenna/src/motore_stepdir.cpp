@@ -108,11 +108,11 @@ void inizia() {
   stepper->disableOutputs();
 }
 
-bool vaiA(int32_t pos) {
+bool vaiA(int32_t pos, bool recupero) {
   if (!stepper || !azzerato_ || azzeramento(fase)) return false;
   target = constrain(pos, M().posMin(), M().posMax());
   stepper->enableOutputs();
-  if (target > stepper->getCurrentPosition()) {
+  if (target > stepper->getCurrentPosition() || !recupero) {
     avvia(target, M().velocitaHz);
     fase = Fase::VERSO_TARGET;
   } else {

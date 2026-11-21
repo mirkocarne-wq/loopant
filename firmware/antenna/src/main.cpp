@@ -157,7 +157,7 @@ void esegui(const proto::Comando& c, bool daRadio) {
       }
       movimentoDaRadio = daRadio;
       freqCorrente = 0;  // la frequenza non è più nota
-      movimento::vaiA(movimento::posizione() + c.valore);
+      movimento::vaiA(movimento::posizione() + c.valore, c.freq_hz != proto::JOG_LIBERO);
       break;
 
     case proto::Tipo::CAL_SALVA:

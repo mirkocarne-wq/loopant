@@ -21,7 +21,7 @@ constexpr uint32_t SILENZIO_MS = 3000;
 Collegamento radio;
 Preferences nvs;
 portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
-Scelte scelte_ = {(uint8_t)proto::SorgenteAudio::MICROFONO, 20};
+Scelte scelte_ = {(uint8_t)proto::SorgenteAudio::MICROFONO, 5};
 uint8_t macPeer[6] = {0};
 uint16_t seq = 1;
 volatile bool inviaSubito = false;
@@ -83,7 +83,7 @@ void eseguiComandi(const proto::ManopolaStato& s) {
   bool pronta = a.collegato && a.r.stato == proto::Stato::FERMO && (a.r.flag & proto::FLAG_AZZERATA);
   int32_t da = s.scatti - scattiFatti;
   if (da && pronta) {
-    link_antenna::invia(proto::Tipo::JOG, 0, da * (int32_t)scelte_.passiScatto);
+    link_antenna::invia(proto::Tipo::JOG, proto::JOG_LIBERO, da * (int32_t)scelte_.passiScatto);  // senza andata e ritorno
     scattiFatti = s.scatti;
   } else if (da && a.collegato && a.r.stato != proto::Stato::IN_MOVIMENTO && !(a.r.flag & proto::FLAG_AZZERATA)) {
     scattiFatti = s.scatti;  // antenna non azzerata: il ritocco non ha senso, si scarta
@@ -104,9 +104,9 @@ void inizia() {
   nvs.begin("manopola", false);
   nvs.getBytes("peer", macPeer, 6);
   scelte_.sorgente = nvs.getUChar("sorgente", (uint8_t)proto::SorgenteAudio::MICROFONO);
-  scelte_.passiScatto = nvs.getUShort("passi", 20);
+  scelte_.passiScatto = nvs.getUShort("passi", 5);
   if (scelte_.sorgente > 2) scelte_.sorgente = (uint8_t)proto::SorgenteAudio::MICROFONO;
-  if (!scelte_.passiScatto) scelte_.passiScatto = 20;
+  if (!scelte_.passiScatto) scelte_.passiScatto = 5;
   radio.inizia(macPeer, segreti::PMK, segreti::LMK, cfg::CANALE_WIFI);
 }
 

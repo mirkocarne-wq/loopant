@@ -45,7 +45,7 @@ void aggiorna() {
   else stepdir::aggiorna();
 }
 
-bool vaiA(int32_t pos) { return can() ? can42d::vaiA(pos) : stepdir::vaiA(pos); }
+bool vaiA(int32_t pos, bool recupero) { return can() ? can42d::vaiA(pos, recupero) : stepdir::vaiA(pos, recupero); }
 void azzera() { can() ? can42d::azzera() : stepdir::azzera(); }
 void ferma() { can() ? can42d::ferma() : stepdir::ferma(); }
 bool inMovimento() { return can() ? can42d::inMovimento() : stepdir::inMovimento(); }

@@ -10,7 +10,7 @@
 #define INTERFACCIA_MOTORE                       \
   void inizia();                                 \
   void aggiorna();                               \
-  bool vaiA(int32_t pos);                        \
+  bool vaiA(int32_t pos, bool recupero);         \
   void azzera();                                 \
   void ferma();                                  \
   bool inMovimento();                            \

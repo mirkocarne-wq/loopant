@@ -11,7 +11,9 @@ namespace movimento {
 void inizia();
 void aggiorna();  // da chiamare a ogni giro del loop
 
-bool vaiA(int32_t pos);  // false se non azzerato; arriva sempre dal verso crescente
+// false se non azzerato. Con recupero (normale) arriva sempre dal verso crescente; senza, va diretto
+// (ritocco fine della manopola: niente andata e ritorno, il prossimo GOTO riallinea).
+bool vaiA(int32_t pos, bool recupero = true);
 void azzera();
 void ferma();  // con decelerazione
 

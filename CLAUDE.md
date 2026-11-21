@@ -53,6 +53,7 @@ Schermo del pannello: clock dei pixel 21 MHz e bounce buffer da 15 righe; a 30 M
 ## Regole che il firmware deve rispettare
 - **Avvicinarsi alla posizione target sempre dallo stesso verso**: il gioco del riduttore
   (30 arc-min ≈ 2,7 pF) diventa un offset costante assorbito dalla tabella di calibrazione.
+  Eccezione: il JOG libero della manopola (ritocco a orecchio) va diretto; il GOTO successivo riallinea.
 - **Zero sui finecorsa a ogni cambio banda** (il TX è in ciclo aperto, senza encoder).
 - **Driver disabilitato dopo ogni movimento** (motore libero, niente rumore HF durante l'ascolto).
 - **Heartbeat ESP-NOW ogni secondo**; al timeout: motore fermo e driver disabilitato.

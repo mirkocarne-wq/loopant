@@ -19,7 +19,7 @@ enum class Tipo : uint8_t {
   ZERO = 3,          // azzeramento sul finecorsa
   STATO = 4,         // richiesta stato
   HEARTBEAT = 5,     // mantiene vivo il collegamento
-  JOG = 6,           // movimento relativo di 'valore' passi
+  JOG = 6,           // movimento relativo di 'valore' passi (freq_hz = JOG_LIBERO: senza recupero del gioco)
   CAL_SALVA = 7,     // associa la posizione attuale a freq_hz
   CAL_CANCELLA = 8,  // cancella la tabella della banda di freq_hz
   CAL_LEGGI = 9,     // chiede il punto numero 'valore' della banda di freq_hz
@@ -36,6 +36,10 @@ enum class Tipo : uint8_t {
   MANOPOLA_IMPOSTA = 0x20,  // pannello -> manopola: decoder e dati dell'antenna per il display (ogni secondo)
   MANOPOLA_STATO = 0xA0,    // manopola -> pannello: decoder, testo, scatti e TUNE (10 volte al secondo)
 };
+
+// JOG con freq_hz = JOG_LIBERO: va diretto anche all'indietro, senza scendere sotto e risalire (ritocco fine
+// della manopola); il recupero del gioco lo rifà il GOTO successivo. JOG normale: freq_hz = 0.
+constexpr uint32_t JOG_LIBERO = 1;
 
 // Bit di Risposta::flag
 constexpr uint8_t FLAG_FC_MIN = 1 << 0;      // finecorsa MIN premuto

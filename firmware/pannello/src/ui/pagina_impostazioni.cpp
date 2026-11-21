@@ -243,12 +243,13 @@ void kbitCambiato() { motore_antenna::inviaCan(); }
 void sorgenteCambiata() { link_manopola::salvaScelte(); }
 
 void premiPassi(lv_event_t* e) {
-  static const uint16_t PASSI[] = {5, 10, 20, 50, 100, 200, 500};
+  static const uint16_t PASSI[] = {1, 2, 5, 10, 20, 50, 100, 200, 500};
+  const int ultimo = sizeof(PASSI) / sizeof(PASSI[0]) - 1;
   link_manopola::Scelte& m = link_manopola::scelte();
   int i = 0;
-  while (i < 6 && PASSI[i] < m.passiScatto) i++;
+  while (i < ultimo && PASSI[i] < m.passiScatto) i++;
   i += (int)(intptr_t)lv_event_get_user_data(e);
-  m.passiScatto = PASSI[i < 0 ? 0 : i > 6 ? 6 : i];
+  m.passiScatto = PASSI[i < 0 ? 0 : i > ultimo ? ultimo : i];
   lv_label_set_text_fmt(testoPassi, "%u", m.passiScatto);
   link_manopola::salvaScelte();
 }

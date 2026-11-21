@@ -65,7 +65,8 @@ Segue il tipo di antenna (decisione del 21/11/2026): non c'è una scelta separat
   (CRC, codici 0xFE/0x91/0xF1/0x31, risposte attive con 0x8C, parametri di azzeramento 0x90).
 
 ## Regole di movimento
-1. **Arrivo sempre dallo stesso verso** (verso crescente, lato opposto al finecorsa MIN).
+1. **Arrivo sempre dallo stesso verso** (verso crescente, lato opposto al finecorsa MIN). Unica eccezione: il JOG
+   libero del ritocco fine della manopola (`JOG_LIBERO`), che va diretto; il GOTO successivo riallinea.
    Se il target è sotto la posizione attuale, il motore scende di `RECUPERO_GIOCO_PASSI`
    sotto il target e poi risale. Così il gioco è sempre preso dalla stessa parte.
 2. **Azzeramento sul finecorsa MIN a ogni cambio banda**, e all'accensione al primo comando.

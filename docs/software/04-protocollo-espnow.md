@@ -93,6 +93,9 @@ non può comunque comandare l'antenna.
 
 Provata sulle schede il 21/11/2026: conferma automatica dalla console e associazione con il pulsante e la finestra.
 
+`JOG` con `freq_hz = JOG_LIBERO` (1): movimento diretto anche all'indietro, senza recupero del gioco (ritocco fine
+della manopola). Con `freq_hz = 0` il jog normale arriva sempre dal verso crescente.
+
 ### Manopola remota
 `MANOPOLA_IMPOSTA` (0x20, pannello → manopola, ogni secondo) e `MANOPOLA_STATO` (0xA0, manopola → pannello,
 10 volte al secondo); strutture in `protocollo.h`, uso in [12-manopola.md](12-manopola.md). L'associazione usa gli

@@ -40,6 +40,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Cifre a 7 segmenti | Widget LVGL che disegna i segmenti con poligoni | Nessun font da convertire; stessa geometria del mockup |
 | Font del pannello | Montserrat Medium 12-34 con Latin-1, generati con lv_font_conv; font integrati di LVGL disattivati | Testi in italiano corretto; circa 150 KB di flash in più |
 | Manopola remota | Waveshare ESP32-S3-Knob-Touch-LCD-1.8: decoder CW/RTTY dal microfono PDM, ritocco fine (JOG), frequenza e TUNE, display ruotato di 180°; passa sempre dal pannello; associazione automatica senza pulsante | Scatoletta vicino alla radio; un solo «capo» per l'antenna |
+| Ritocco fine della manopola | JOG libero (senza recupero del gioco), 1-500 passi per scatto, predefinito 5; calibrazione e GOTO restano con il recupero | Con il recupero ogni scatto all'indietro faceva andata e ritorno |
 | Librerie comuni | `lib/Decoder` (decoder e decimatore) e `lib/Grafica` (font e 7 segmenti) per pannello e manopola; collegamento ESP-NOW con un'istanza per peer | Stesso codice sulle due schede |
 | Ingresso audio del decoder | ADC1 su GPIO6 (connettore J8) con circuito d'ingresso: trasformatore 1:1, MCP6002, passa-basso a 3,4 kHz; ADC a 32 kHz con FIR e riduzione a 8 kHz | Unico ADC1 libero (J8); qualità sufficiente per decodificare, pochi euro, nessuna scheda in più |
 | Algoritmi del decoder | C++ puro con test sul PC (segnali sintetici e rumore) | Si verificano senza hardware |

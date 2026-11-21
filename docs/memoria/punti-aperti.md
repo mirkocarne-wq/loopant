@@ -48,8 +48,9 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [x] Verso del PWM della retroilluminazione: 100 − luminosità è corretto (verificato sulla scheda).
 - [x] Ingresso audio del decoder: GPIO6 sul connettore J8 «GPIO» del 7B (schema Waveshare).
 - [x] Manopola remota (Waveshare ESP32-S3-Knob): hardware, associazione e decoder con il segnale di prova provati (21/11/2026).
-- [ ] Manopola: ritocco fine (JOG) e TUNE con l'antenna collegata; microfono con la radio vera.
-- [ ] Antenna da ricaricare con il firmware delle librerie comuni (collegamento a più peer, associazione in lib/Comune).
+- [x] Manopola: ritocco fine con l'antenna RX (JOG libero), provato il 21/11/2026.
+- [ ] Manopola: TUNE dopo la calibrazione; microfono con la radio vera.
+- [x] Antenna ricaricata con il firmware delle librerie comuni: collegamento con il pannello attivo (21/11/2026).
 - [ ] Ingresso J8 del pannello (circuito con MCP6002): facoltativo, ora c'è la manopola.
 - [ ] Font monospazio per i temi a fosfori: servono circa 1,4 MB di flash (partizione app più grande) e un font per tema in tutta l'interfaccia.
 - [ ] Mappa per la grey line in flash (Natural Earth), una per tema.

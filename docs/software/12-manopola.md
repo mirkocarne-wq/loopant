@@ -26,7 +26,9 @@ La manopola **passa sempre dal pannello**: è il pannello a comandare l'antenna 
   un contatore (il pannello prende quelli nuovi anche se perde pacchetti), contatore degli scatti, richieste di TUNE.
 - Pannello → manopola (`MANOPOLA_IMPOSTA`, ogni secondo, vale anche come heartbeat): impostazioni del decoder (quelle
   della pagina Decoder del pannello), sorgente, dati dell'antenna per il display, passi per scatto.
-- Scatti → `JOG` di (scatti × passi per scatto), solo ad antenna ferma e azzerata; TUNE → `GOTO`.
+- Scatti → `JOG` **libero** (`freq_hz = JOG_LIBERO`) di (scatti × passi per scatto), solo ad antenna ferma e
+  azzerata: va diretto anche all'indietro, senza scendere sotto e risalire. Il recupero del gioco lo rifà il GOTO
+  successivo (TUNE). Il jog della pagina Calibrazione resta con il recupero. TUNE → `GOTO`.
 - Associazione come l'antenna (finestra «Manopola trovata» sul pannello), ma **senza pulsante**: finché non è
   associata la manopola cerca il pannello da sola ogni 15 s. Poi ritrova il canale da sola se il router lo cambia.
 - Provato il 21/11/2026: associazione e testo del segnale di prova sul pannello e sulla manopola.
@@ -34,7 +36,7 @@ La manopola **passa sempre dal pannello**: è il pannello a comandare l'antenna 
 ## Uso [D]
 | Gesto | Effetto |
 |---|---|
-| Girare la manopola (RITOCCO FINE) | sposta il condensatore di N passi per scatto (N in Impostazioni → Manopola remota) |
+| Girare la manopola (RITOCCO FINE) | sposta il condensatore di N passi per scatto (N in Impostazioni → Manopola remota, 1-500, predefinito 5) |
 | Tocco breve sul display | passa tra RITOCCO FINE e FREQUENZA |
 | Girare la manopola (FREQUENZA) | 1 kHz per scatto, 10 kHz girando in fretta; oltre il bordo della banda si passa all'altra |
 | Tocco lungo (FREQUENZA) | TUNE sulla frequenza mostrata, poi si torna al ritocco fine |
@@ -51,13 +53,14 @@ generati sulla manopola (`generatore.*`), per provare senza la radio.
 - Con la manopola associata la pagina Decoder mostra testo e livelli della manopola («Manopola · microfono ·
   audio %»); l'ingresso J8 del pannello non si usa.
 - Impostazioni → **Manopola remota**: stato del collegamento, sorgente (Microfono, Segnale di prova), passi per scatto
-  (5-500, predefinito 20).
+  (1-500, predefinito 5).
 - Codice: `link_manopola.*`, `decodifica.*`, `ui/finestra_associazione.cpp`, `ui/pagina_impostazioni.cpp`.
 
 ## Console della manopola (USB, 115200)
 `stato` · `associa` · `dimentica` (dimentica il pannello) · `canale <1-13>`
 
 ## Da fare
-- Provare ritocco fine e TUNE con l'antenna collegata. [N]
+- Ritocco fine con l'antenna RX (SERVO42D via CAN): provato il 21/11/2026, fluido nei due versi.
+- TUNE dalla manopola: da provare dopo la calibrazione dell'antenna. [N]
 - Vibrazione a ogni scatto con il motore aptico DRV2605 della scheda. [N]
 - Livello del microfono e posizione della manopola rispetto all'altoparlante: da provare con la radio. [N]

@@ -215,12 +215,12 @@ void fine() {
   azzerato_ = false;
 }
 
-bool vaiA(int32_t pos) {
+bool vaiA(int32_t pos, bool recupero) {
   if (!installato || !azzerato_ || fase == Fase::AZZERAMENTO) return false;
   target = constrain(pos, cfg::RX.posMin(), cfg::RX.posMax());
   abilita(true);
   inizioFase = millis();
-  if (target > pos_) {
+  if (target > pos_ || !recupero) {
     fase = Fase::VERSO_TARGET;
     muoviA(target);
   } else {  // si arriva sempre dal verso crescente: prima sotto il target, poi su
