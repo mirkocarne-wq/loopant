@@ -22,7 +22,8 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [x] Unità antenna: prima versione scritta (PlatformIO, compila TX e RX), da provare sul banco.
 - [ ] Taratura sul banco: corrente NEMA11, R_SENSE, soglia StallGuard, passi della versione RX.
 - [x] Doppio driver del motore RX (STEP/DIR o CAN) scelto dal pannello: scritto, compila (protocollo v3).
-- [ ] Prova del SERVO42D via CAN (SN65HVD230, GPIO 22/23; 120 Ω a bordo e velocità del bus da verificare) e via STEP/DIR.
+- [x] Transceiver CAN SN65HVD230 su GPIO 17/16 (scheda di espansione S/V/G): provato con `prove/prova_can` il 21/11/2026, 10/10.
+- [ ] Prova del SERVO42D via CAN (120 Ω a bordo e velocità del bus da verificare) e via STEP/DIR.
 - [ ] Protocollo CAN del SERVO42D: verificare sul manuale ufficiale CRC e comandi 0xFE, 0x91, 0xF1, 0x31, 0x8C; parametri di azzeramento nel menu del driver.
 - [x] Collegamento ESP-NOW cifrato con heartbeat tra pannello e antenna, provato sulle schede il 21/11/2026 (canale 3 del router, chiavi di esempio).
 - [ ] Chiavi ESP-NOW vere (`segreti.h`) su pannello e antenna: oggi entrambi usano quelle di esempio.
