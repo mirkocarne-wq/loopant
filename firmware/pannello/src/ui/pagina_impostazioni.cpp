@@ -1,7 +1,10 @@
-// Schermata Impostazioni (requisiti I1-I5): stazione, tema, antenna, screensaver, schermo e ora, WiFi.
+// Schermata Impostazioni (requisiti I1-I6): stazione, tema, antenna, screensaver, schermo e ora,
+// WiFi con ricerca delle reti.
 #include <collegamento.h>
 #include <ctype.h>
 #include <string.h>
+
+#include <initializer_list>
 
 #include "../impostazioni.h"
 #include "../ora.h"
@@ -23,6 +26,23 @@ lv_obj_t* campoSsid;
 lv_obj_t* campoPassword;
 lv_obj_t* testoRete;
 lv_obj_t* testoLuce;
+
+// Finestra "Reti WiFi"
+lv_obj_t* finestra = nullptr;
+lv_obj_t* boxReti = nullptr;
+lv_obj_t* elencoReti = nullptr;  // nullptr quando si mostra la password
+lv_obj_t* statoReti = nullptr;
+lv_obj_t* campoPwdRete = nullptr;
+lv_obj_t* btnOcchio = nullptr;
+rete::Rete visibili[rete::MAX_RETI];
+uint8_t nVisibili = 0;
+uint32_t versioneVista = 0;
+bool eraInCorso = false;
+bool attesaMovimento = false;
+char reteScelta[33];
+
+void collegaScelta(const char* password);
+void mostraElenco();
 
 // --- Gruppi di pulsanti a scelta singola -----------------------------------------------------
 
@@ -81,6 +101,11 @@ void copia(char* dst, size_t n, const char* src, bool maiuscolo) {
 void conferma(lv_event_t* e) {
   lv_event_code_t code = lv_event_get_code(e);
   lv_obj_t* ta = lv_keyboard_get_textarea(tastiera);
+  if (ta && ta == campoPwdRete) {  // password della rete scelta nella ricerca
+    if (code == LV_EVENT_READY) collegaScelta(lv_textarea_get_text(ta));
+    else mostraElenco();
+    return;
+  }
   if (code == LV_EVENT_READY && ta) {
     Impostazioni& imp = impostazioni::get();
     const char* v = lv_textarea_get_text(ta);
@@ -156,6 +181,9 @@ void creaTastiera() {
   lv_obj_set_style_bg_color(tastiera, t.surface2, LV_PART_ITEMS);
   lv_obj_set_style_text_color(tastiera, t.text, LV_PART_ITEMS);
   lv_obj_set_style_text_font(tastiera, &font_20, LV_PART_ITEMS);
+  // tasti speciali (OK, maiuscole, frecce...) nei colori del tema
+  lv_obj_set_style_bg_color(tastiera, t.borderStrong, LV_PART_ITEMS | LV_STATE_CHECKED);
+  lv_obj_set_style_text_color(tastiera, t.text, LV_PART_ITEMS | LV_STATE_CHECKED);
   lv_obj_add_flag(tastiera, LV_OBJ_FLAG_HIDDEN);
   lv_obj_add_event_cb(tastiera, conferma, LV_EVENT_READY, nullptr);
   lv_obj_add_event_cb(tastiera, conferma, LV_EVENT_CANCEL, nullptr);
@@ -173,6 +201,214 @@ void apriCalibrazione(lv_event_t*) { ui::vaiA(ui::CALIBRAZIONE); }
 void anteprima(lv_event_t*) { screensaver::anteprima(); }
 void fusoCambiato() { ora::applicaFuso(); }
 void aggiornaIndici(lv_event_t*) { rete::aggiornaIndiciOra(); }
+
+// --- Ricerca delle reti WiFi ----------------------------------------------------------------
+
+void nascondiTastiera() {
+  if (!tastiera) return;
+  lv_keyboard_set_textarea(tastiera, nullptr);
+  lv_obj_add_flag(tastiera, LV_OBJ_FLAG_HIDDEN);
+}
+
+void chiudiReti(lv_event_t*) {
+  if (!finestra) return;
+  nascondiTastiera();
+  lv_obj_del(finestra);
+  finestra = boxReti = elencoReti = statoReti = campoPwdRete = btnOcchio = nullptr;
+}
+
+// La ricerca cambia canale: con l'antenna in movimento si aspetta (heartbeat di 3 s)
+void cerca(lv_event_t*) {
+  link_antenna::Stato s = link_antenna::stato();
+  attesaMovimento = s.collegato && (s.r.stato == proto::Stato::IN_MOVIMENTO || s.r.stato == proto::Stato::AZZERAMENTO);
+  if (attesaMovimento) {
+    if (statoReti) lv_label_set_text(statoReti, "Antenna in movimento: attendi che sia ferma, poi «Cerca di nuovo».");
+    return;
+  }
+  rete::avviaScansione();
+  versioneVista = 0xFFFFFFFF;  // ridisegna subito con "ricerca in corso"
+}
+
+void collegaScelta(const char* password) {
+  rete::collega(reteScelta, password);
+  lv_textarea_set_text(campoSsid, reteScelta);
+  lv_textarea_set_text(campoPassword, password);
+  chiudiReti(nullptr);  // per ultimo: la password può stare nel campo che viene eliminato
+}
+
+void premiCollega(lv_event_t*) {
+  if (campoPwdRete) collegaScelta(lv_textarea_get_text(campoPwdRete));
+}
+
+void tornaElenco(lv_event_t*) { mostraElenco(); }
+
+void apriTastieraRete(lv_event_t*) {
+  lv_keyboard_set_textarea(tastiera, campoPwdRete);
+  lv_obj_clear_flag(tastiera, LV_OBJ_FLAG_HIDDEN);
+  lv_obj_move_foreground(tastiera);
+}
+
+void mostraNascondi(lv_event_t*) {
+  bool nascosta = !lv_textarea_get_password_mode(campoPwdRete);
+  lv_textarea_set_password_mode(campoPwdRete, nascosta);
+  lv_label_set_text(lv_obj_get_child(btnOcchio, 0), nascosta ? LV_SYMBOL_EYE_OPEN : LV_SYMBOL_EYE_CLOSE);
+}
+
+void mostraPassword() {
+  const Tema& t = tema::corrente();
+  const Impostazioni& imp = impostazioni::get();
+  nascondiTastiera();
+  lv_obj_clean(boxReti);
+  elencoReti = statoReti = nullptr;
+  lv_obj_set_size(boxReti, 680, 222);
+  lv_obj_align(boxReti, LV_ALIGN_TOP_MID, 0, 12);  // sopra la tastiera
+
+  lv_obj_t* tit = ui::etichetta(boxReti, "", &font_22, t.text);
+  lv_label_set_text_fmt(tit, "Password per «%s»", reteScelta);
+  lv_label_set_long_mode(tit, LV_LABEL_LONG_DOT);
+  lv_obj_set_width(tit, LV_PCT(100));
+
+  lv_obj_t* riga = ui::contenitore(boxReti, LV_FLEX_FLOW_ROW, 10);
+  lv_obj_set_width(riga, LV_PCT(100));
+  campoPwdRete = lv_textarea_create(riga);
+  lv_textarea_set_one_line(campoPwdRete, true);
+  lv_textarea_set_password_mode(campoPwdRete, true);
+  lv_textarea_set_max_length(campoPwdRete, sizeof(imp.wifiPassword) - 1);
+  lv_textarea_set_placeholder_text(campoPwdRete, "Password della rete");
+  if (!strcmp(reteScelta, imp.wifiSsid)) lv_textarea_set_text(campoPwdRete, imp.wifiPassword);
+  else lv_textarea_set_text(campoPwdRete, "");
+  lv_obj_set_height(campoPwdRete, 52);
+  lv_obj_set_flex_grow(campoPwdRete, 1);
+  lv_obj_set_style_bg_color(campoPwdRete, t.bg, 0);
+  lv_obj_set_style_border_color(campoPwdRete, t.accent, 0);
+  lv_obj_set_style_border_width(campoPwdRete, 2, 0);
+  lv_obj_set_style_radius(campoPwdRete, 10, 0);
+  lv_obj_set_style_text_color(campoPwdRete, t.text, 0);
+  lv_obj_set_style_text_font(campoPwdRete, &font_22, 0);
+  lv_obj_add_event_cb(campoPwdRete, apriTastieraRete, LV_EVENT_CLICKED, nullptr);
+  btnOcchio = ui::pulsante(riga, LV_SYMBOL_EYE_OPEN, &font_20, ui::Stile::NORMALE);
+  lv_obj_set_size(btnOcchio, 64, 52);
+  lv_obj_add_event_cb(btnOcchio, mostraNascondi, LV_EVENT_CLICKED, nullptr);
+
+  lv_obj_t* nota = ui::etichetta(boxReti, "La password viene salvata nel pannello.", &font_14, t.text2);
+  (void)nota;
+
+  lv_obj_t* pulsanti = ui::contenitore(boxReti, LV_FLEX_FLOW_ROW, 10);
+  lv_obj_set_width(pulsanti, LV_PCT(100));
+  lv_obj_t* ind = ui::pulsante(pulsanti, LV_SYMBOL_LEFT "  Indietro", &font_18, ui::Stile::NORMALE);
+  lv_obj_t* col = ui::pulsante(pulsanti, LV_SYMBOL_OK "  Collega", &font_18, ui::Stile::PRIMARIO);
+  for (lv_obj_t* b : {ind, col}) {
+    lv_obj_set_height(b, 54);
+    lv_obj_set_flex_grow(b, 1);
+  }
+  lv_obj_add_event_cb(ind, tornaElenco, LV_EVENT_CLICKED, nullptr);
+  lv_obj_add_event_cb(col, premiCollega, LV_EVENT_CLICKED, nullptr);
+
+  apriTastieraRete(nullptr);
+  lv_obj_add_state(campoPwdRete, LV_STATE_FOCUSED);
+}
+
+void premiRete(lv_event_t* e) {
+  uint8_t i = (uint8_t)(uintptr_t)lv_event_get_user_data(e);
+  if (i >= nVisibili) return;
+  strncpy(reteScelta, visibili[i].ssid, sizeof(reteScelta) - 1);
+  reteScelta[sizeof(reteScelta) - 1] = 0;
+  if (visibili[i].protetta) mostraPassword();
+  else collegaScelta("");
+}
+
+void disegnaReti(bool inCorso) {
+  const Tema& t = tema::corrente();
+  const Impostazioni& imp = impostazioni::get();
+  lv_obj_clean(elencoReti);
+  for (uint8_t i = 0; i < nVisibili; i++) {
+    const rete::Rete& r = visibili[i];
+    lv_obj_t* b = lv_btn_create(elencoReti);
+    lv_obj_remove_style_all(b);
+    lv_obj_set_size(b, LV_PCT(100), 58);
+    lv_obj_set_style_bg_color(b, t.surface2, 0);
+    lv_obj_set_style_bg_color(b, lv_color_mix(t.text, t.surface2, 50), LV_STATE_PRESSED);
+    lv_obj_set_style_bg_opa(b, LV_OPA_COVER, 0);
+    lv_obj_set_style_radius(b, 10, 0);
+    lv_obj_set_style_pad_hor(b, 16, 0);
+    lv_obj_set_style_pad_column(b, 12, 0);
+    lv_obj_set_flex_flow(b, LV_FLEX_FLOW_ROW);
+    lv_obj_set_flex_align(b, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+    lv_color_t forza = r.rssi >= -60 ? t.ok : (r.rssi >= -75 ? t.accent : t.dangerText);
+    ui::etichetta(b, LV_SYMBOL_WIFI, &font_20, forza);
+    lv_obj_t* nome = ui::etichetta(b, r.ssid, &font_18, t.text);
+    lv_label_set_long_mode(nome, LV_LABEL_LONG_DOT);
+    lv_obj_set_flex_grow(nome, 1);
+    if (!strcmp(r.ssid, imp.wifiSsid)) {
+      lv_obj_t* c = ui::chip(b, &font_12);
+      lv_label_set_text(c, rete::collegata() ? "COLLEGATA" : "SALVATA");
+      ui::coloriChip(c, t.accentBg, t.accent);
+    }
+    lv_obj_t* p = ui::chip(b, &font_12);
+    lv_label_set_text(p, r.protetta ? "Protetta" : "Aperta");
+    ui::coloriChip(p, t.surface, r.protetta ? t.text : t.text2);
+    lv_obj_t* db = ui::etichetta(b, "", &font_14, t.text2);
+    lv_label_set_text_fmt(db, "−%d dBm", -r.rssi);
+    lv_obj_set_width(db, 76);
+    lv_obj_set_style_text_align(db, LV_TEXT_ALIGN_RIGHT, 0);
+    lv_obj_add_event_cb(b, premiRete, LV_EVENT_CLICKED, (void*)(uintptr_t)i);
+  }
+  if (attesaMovimento) return;
+  if (inCorso)
+    lv_label_set_text(statoReti, "Ricerca in corso… il collegamento con l'antenna si interrompe per qualche secondo.");
+  else if (!nVisibili)
+    lv_label_set_text(statoReti, "Nessuna rete trovata. Le reti nascoste si inseriscono a mano nel campo «Rete (SSID)».");
+  else
+    lv_label_set_text_fmt(statoReti, "%u reti trovate · tocca una rete per collegarti", nVisibili);
+}
+
+void mostraElenco() {
+  const Tema& t = tema::corrente();
+  nascondiTastiera();
+  lv_obj_clean(boxReti);
+  campoPwdRete = btnOcchio = nullptr;
+  lv_obj_set_size(boxReti, 700, 520);
+  lv_obj_align(boxReti, LV_ALIGN_CENTER, 0, 0);
+
+  lv_obj_t* testa = ui::contenitore(boxReti, LV_FLEX_FLOW_ROW, 10);
+  lv_obj_set_width(testa, LV_PCT(100));
+  lv_obj_set_flex_align(testa, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+  lv_obj_t* tit = ui::etichetta(testa, "Reti WiFi", &font_24, t.text);
+  lv_obj_set_flex_grow(tit, 1);
+  lv_obj_t* ag = ui::pulsante(testa, LV_SYMBOL_REFRESH "  Cerca di nuovo", &font_16, ui::Stile::NORMALE);
+  lv_obj_set_size(ag, 196, 44);
+  lv_obj_add_event_cb(ag, cerca, LV_EVENT_CLICKED, nullptr);
+  lv_obj_t* ch = ui::pulsante(testa, "Chiudi", &font_16, ui::Stile::NORMALE);
+  lv_obj_set_size(ch, 110, 44);
+  lv_obj_add_event_cb(ch, chiudiReti, LV_EVENT_CLICKED, nullptr);
+
+  statoReti = ui::etichetta(boxReti, "", &font_14, t.text2);
+  lv_label_set_long_mode(statoReti, LV_LABEL_LONG_WRAP);
+  lv_obj_set_width(statoReti, LV_PCT(100));
+
+  elencoReti = ui::contenitore(boxReti, LV_FLEX_FLOW_COLUMN, 6);
+  lv_obj_set_width(elencoReti, LV_PCT(100));
+  lv_obj_set_flex_grow(elencoReti, 1);
+  lv_obj_add_flag(elencoReti, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_set_scroll_dir(elencoReti, LV_DIR_VER);
+  versioneVista = 0xFFFFFFFF;  // ridisegna al prossimo aggiornamento
+}
+
+void apriReti(lv_event_t*) {
+  chiudiReti(nullptr);
+  finestra = lv_obj_create(lv_layer_top());
+  lv_obj_remove_style_all(finestra);
+  lv_obj_set_size(finestra, LV_PCT(100), LV_PCT(100));
+  lv_obj_set_style_bg_color(finestra, lv_color_black(), 0);
+  lv_obj_set_style_bg_opa(finestra, LV_OPA_50, 0);
+  lv_obj_add_flag(finestra, LV_OBJ_FLAG_CLICKABLE);  // blocca i tocchi sotto
+  lv_obj_clear_flag(finestra, LV_OBJ_FLAG_SCROLLABLE);
+  boxReti = ui::scheda(finestra);
+  lv_obj_set_style_pad_row(boxReti, 10, 0);
+  mostraElenco();
+  cerca(nullptr);
+}
 
 void luce(lv_event_t* e) {
   lv_obj_t* s = lv_event_get_target(e);
@@ -209,6 +445,7 @@ void crea(lv_obj_t* c) {
   Impostazioni& imp = impostazioni::get();
   lv_obj_set_style_pad_column(c, 16, 0);
   numGruppi = 0;
+  chiudiReti(nullptr);  // finestra di una costruzione precedente (cambio tema)
 
   lv_obj_t* sx = colonna(c);
   lv_obj_t* dx = colonna(c);
@@ -280,7 +517,7 @@ void crea(lv_obj_t* c) {
   lv_obj_t* lr = ui::contenitore(so, LV_FLEX_FLOW_ROW, 0);
   lv_obj_set_width(lr, LV_PCT(100));
   lv_obj_set_flex_align(lr, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-  ui::etichetta(lr, "Luminosità (verso da verificare)", &font_14, t.text2);
+  ui::etichetta(lr, "Luminosità", &font_14, t.text2);
   testoLuce = ui::etichetta(lr, "", &font_16, t.text);
   lv_label_set_text_fmt(testoLuce, "%u %%", imp.luminosita);
   lv_obj_t* sl = lv_slider_create(so);
@@ -310,8 +547,15 @@ void crea(lv_obj_t* c) {
                                  &font_12, t.text2);
   lv_label_set_long_mode(nota, LV_LABEL_LONG_WRAP);
   lv_obj_set_width(nota, LV_PCT(100));
-  lv_obj_t* ai = ui::pulsante(wf, "Aggiorna indici solari", &font_16, ui::Stile::SCHEDA);
-  lv_obj_set_size(ai, 240, 44);
+  lv_obj_t* pw = ui::contenitore(wf, LV_FLEX_FLOW_ROW, 10);
+  lv_obj_set_width(pw, LV_PCT(100));
+  lv_obj_t* cr = ui::pulsante(pw, LV_SYMBOL_WIFI "  Cerca reti", &font_16, ui::Stile::PRIMARIO);
+  lv_obj_t* ai = ui::pulsante(pw, "Aggiorna indici solari", &font_16, ui::Stile::SCHEDA);
+  for (lv_obj_t* b : {cr, ai}) {
+    lv_obj_set_height(b, 48);
+    lv_obj_set_flex_grow(b, 1);
+  }
+  lv_obj_add_event_cb(cr, apriReti, LV_EVENT_CLICKED, nullptr);
   lv_obj_add_event_cb(ai, aggiornaIndici, LV_EVENT_CLICKED, nullptr);
 
   creaTastiera();
@@ -321,6 +565,28 @@ void aggiorna(const link_antenna::Stato&) {
   char buf[96];
   rete::stato(buf, sizeof(buf));
   lv_label_set_text(testoRete, buf);
+
+  if (finestra && elencoReti) {
+    rete::Rete r[rete::MAX_RETI];
+    bool inCorso;
+    uint32_t v;
+    uint8_t n = rete::reti(r, rete::MAX_RETI, inCorso, v);
+    if (v != versioneVista || inCorso != eraInCorso) {
+      versioneVista = v;
+      eraInCorso = inCorso;
+      memcpy(visibili, r, sizeof(rete::Rete) * n);
+      nVisibili = n;
+      disegnaReti(inCorso);
+    }
+  }
+}
+
+void mostraReti() { apriReti(nullptr); }
+
+void scegliRete(uint8_t indice) {
+  lv_event_t e = {};
+  e.user_data = (void*)(uintptr_t)indice;
+  premiRete(&e);
 }
 
 }  // namespace pag_impostazioni

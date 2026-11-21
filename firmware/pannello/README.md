@@ -3,7 +3,8 @@
 Firmware Arduino (core ESP32 **3.x**) + LVGL 8.4. Requisiti: [docs/software/03-unita-controllo.md](../../docs/software/03-unita-controllo.md).
 
 ## Stato
-Tutte le schermate del mockup sono scritte e il firmware compila. **Non ancora provato sulla scheda.**
+Tutte le schermate del mockup sono scritte. **Provato sulla scheda il 21/11/2026**: schermo, touch, colori,
+luminosità e ricerca delle reti WiFi funzionano. Da provare: collegamento con l'antenna, decoder con segnali veri.
 
 | Parte | Stato |
 |---|---|
@@ -51,6 +52,7 @@ src/waveshare/          driver degli esempi Waveshare (Apache 2.0, vedi NOTICE.m
 ```
 
 ## Compilare con arduino-cli
+Funziona su Linux e macOS (provato con arduino-cli 1.6.0 da Homebrew).
 ```bash
 arduino-cli config add board_manager.additional_urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
 ```
@@ -94,7 +96,10 @@ sul 7B: **da verificare sullo schema**). Collegamento: [docs/tecnico/06-elettron
 Con `PIN_AUDIO = -1` il decoder è disattivato.
 
 ## WiFi (facoltativo)
-Serve solo per l'ora esatta (NTP) e gli indici solari. Si imposta in Impostazioni o dalla console (`wifi <ssid> <password>`).
+Serve solo per l'ora esatta (NTP) e gli indici solari. In Impostazioni: **Cerca reti**, si tocca la rete e si inserisce
+la password; oppure dalla console (`reti`, `wifi <ssid> <password>`). L'ESP32-S3 vede solo le reti a 2,4 GHz.
+Durante la ricerca la radio cambia canale e il collegamento con l'antenna si interrompe per qualche secondo:
+con l'antenna in movimento la ricerca non parte.
 Con il WiFi collegato il canale ESP-NOW diventa quello del router: **sull'antenna `CANALE_WIFI` deve essere uguale**.
 
 ## Font
@@ -120,7 +125,6 @@ Sull'antenna va impostato il MAC del pannello (stampato all'avvio e mostrato in 
 
 ## Limiti noti di questa versione
 - Temi a fosfori: niente bagliore e righe di scansione (costosi in LVGL), niente font monospazio.
-- Luminosità: si scrive 100 − luminosità nel PWM dell'IO expander (dedotto dagli esempi): verso da verificare.
 - Mappa: continenti molto semplificati, da sostituire con dati Natural Earth.
 - Indici solari: formato del feed hamqsl.com e condizioni d'uso da verificare.
 - Impostazioni salvate in formato v2: al primo avvio con questa versione si torna ai valori predefiniti.

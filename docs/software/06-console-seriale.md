@@ -32,5 +32,6 @@ I comandi `goto`, `stop`, `zero`, `jog`, `cal`, `calcanc` vengono inviati all'an
 | `tema <0-3>` | 0 Notte, 1 Giorno, 2 Fosfori verdi, 3 Fosfori ambra |
 | `ora <AAAA-MM-GG HH:MM>` | Imposta l'ora UTC (se non c'è il WiFi) |
 | `wifi <ssid> <password>` | WiFi di casa per NTP e indici solari |
+| `reti` | Ultime reti trovate e nuova ricerca (ripetere dopo qualche secondo) |
 | `rete` | Stato del WiFi |
 | `aiuto` | Elenco comandi |

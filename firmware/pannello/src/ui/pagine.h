@@ -14,6 +14,8 @@ uint32_t frequenzaDigitata();
 namespace pag_impostazioni {
 void crea(lv_obj_t* contenuto);
 void aggiorna(const link_antenna::Stato& s);
+void mostraReti();               // apre la finestra "Reti WiFi" (anche dal simulatore)
+void scegliRete(uint8_t indice);  // come toccare una rete dell'elenco (simulatore)
 }  // namespace pag_impostazioni
 
 namespace pag_memorie {

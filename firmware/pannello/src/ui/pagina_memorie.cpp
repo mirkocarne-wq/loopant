@@ -185,6 +185,9 @@ void nuovaMemoria(lv_event_t*) {
   lv_obj_set_style_bg_color(tastiera, t.surface2, LV_PART_ITEMS);
   lv_obj_set_style_text_color(tastiera, t.text, LV_PART_ITEMS);
   lv_obj_set_style_text_font(tastiera, &font_20, LV_PART_ITEMS);
+  // tasti speciali (OK, maiuscole, frecce...) nei colori del tema
+  lv_obj_set_style_bg_color(tastiera, t.borderStrong, LV_PART_ITEMS | LV_STATE_CHECKED);
+  lv_obj_set_style_text_color(tastiera, t.text, LV_PART_ITEMS | LV_STATE_CHECKED);
   lv_keyboard_set_textarea(tastiera, campoNome);
   if (valida) lv_obj_add_event_cb(tastiera, tastieraFatto, LV_EVENT_READY, nullptr);
   lv_obj_add_event_cb(tastiera, tastieraFatto, LV_EVENT_CANCEL, nullptr);

@@ -32,7 +32,8 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Ingresso audio del decoder | ADC1 su GPIO6 a 8 kHz (da verificare sullo schema) | Unico ADC1 apparentemente libero; nessun modulo in più |
 | Algoritmi del decoder | C++ puro con test sul PC (segnali sintetici e rumore) | Si verificano senza hardware |
 | Mappa della grey line | Disegnata in PSRAM con continenti semplificati; Natural Earth in futuro | LVGL 8 non riempie poligoni concavi |
-| Simulatore sul PC | Interfaccia vera compilata con LVGL su Linux, schermate PNG | Controllo dell'impaginazione senza scheda |
+| Simulatore sul PC | Interfaccia vera compilata con LVGL su Linux o macOS, schermate PNG | Controllo dell'impaginazione senza scheda |
+| Rete WiFi del pannello | Scelta con «Cerca reti» (elenco, tocco, password); niente ricerca con l'antenna in movimento | Più comodo che digitare l'SSID; la ricerca cambia canale e interrompe ESP-NOW |
 | WiFi del pannello | Facoltativo: NTP e indici solari (hamqsl.com); il peer ESP-NOW segue il canale corrente | L'antenna deve stare sul canale del router |
 
 ## Scartate

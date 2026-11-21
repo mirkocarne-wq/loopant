@@ -19,6 +19,7 @@
 #include "rete.h"
 #include "schermo.h"
 #include "tema.h"
+#include "ui/pagine.h"
 #include "ui/screensaver.h"
 #include "ui/ui.h"
 
@@ -77,6 +78,22 @@ void riavvia() {}
 bool collegata() { return true; }
 void stato(char* out, size_t n) { snprintf(out, n, "Collegato a [rete di casa] · canale 6 · 192.168.1.50"); }
 void aggiornaIndiciOra() {}
+void collega(const char* ssid, const char* password) {
+  snprintf(impostazioni::get().wifiSsid, sizeof(Impostazioni::wifiSsid), "%s", ssid);
+  snprintf(impostazioni::get().wifiPassword, sizeof(Impostazioni::wifiPassword), "%s", password);
+}
+static uint32_t versioneReti = 0;
+void avviaScansione() { versioneReti++; }
+uint8_t reti(Rete* out, uint8_t max, bool& inCorso, uint32_t& versione) {
+  const Rete esempio[] = {{"[rete di casa]", -48, true, 6}, {"[rete di casa]_5G", -55, true, 36},
+                          {"[vicino 1]", -67, true, 1},     {"[ospiti]", -71, false, 11},
+                          {"[vicino 2]", -79, true, 6},     {"[vicino 3]", -86, true, 13}};
+  uint8_t n = 0;
+  for (; n < sizeof(esempio) / sizeof(esempio[0]) && n < max; n++) out[n] = esempio[n];
+  inCorso = false;
+  versione = versioneReti;
+  return n;
+}
 }  // namespace rete
 
 namespace schermo {
@@ -225,6 +242,13 @@ int main(int argc, char** argv) {
         ui::richiediRicostruzione();
         avanza(300);
       }
+    }
+    if (tm == 0) {  // finestra "Reti WiFi" e password
+      ui::vaiA(ui::IMPOSTAZIONI);
+      pag_impostazioni::mostraReti();
+      salva("notte-6b-impostazioni-reti");
+      pag_impostazioni::scegliRete(0);
+      salva("notte-6c-impostazioni-password");
     }
     const char* stili[] = {"orologio", "frequenza", "greyline"};
     for (uint8_t s = 0; s < 3; s++) {

@@ -14,6 +14,10 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 ## Progetto
 - [ ] Disegno quotato della scatola RX e del gruppo TX.
 
+## Strumenti
+- [ ] macOS ha segnalato un malware durante il primo `pio run` (21/11/2026): file non identificato; il download si era
+  fermato a un file vuoto. Capire cosa è stato segnalato prima di rilanciare PlatformIO.
+
 ## Firmware
 - [x] Unità antenna: prima versione scritta (PlatformIO, compila TX e RX), da provare sul banco.
 - [ ] Taratura sul banco: corrente NEMA11, R_SENSE, soglia StallGuard, passi della versione RX.
@@ -21,13 +25,14 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [ ] Prova del collegamento ESP-NOW con heartbeat e cifratura tra le due schede.
 - [x] Requisiti e mockup del pannello 7B approvati (docs/software/03-unita-controllo.md).
 - [x] Firmware del pannello 7B, prima versione: driver, collegamento, barra, schede, Sintonia, temi, Impostazioni di base (compila).
-- [ ] Pannello: prova sulla scheda vera (schermo, touch, collegamento con l'antenna).
+- [x] Pannello sulla scheda vera (21/11/2026): schermo, touch, colori, luminosità, ricerca reti WiFi funzionano.
+- [ ] Pannello: collegamento ESP-NOW con l'antenna sulla scheda vera.
 - [x] Pannello: Calibrazione e Diagnostica (protocollo v2: flag, CAL_LEGGI, CAL_ELIMINA), compilano.
 - [x] Pannello: Memorie, Propagazione, Decoder CW/RTTY, screensaver, Impostazioni complete, WiFi/NTP/indici (compilano; algoritmi provati sul PC).
 - [ ] Decoder: prova con segnali veri dalla radio.
 - [x] Pannello: font con lettere accentate, "·" e "—" (Montserrat Latin-1 con lv_font_conv).
 - [x] Pannello: icone del mockup, disegnate con linee e archi LVGL.
-- [ ] Pannello: verso del PWM della retroilluminazione (IO expander): il firmware scrive 100 − luminosità, da verificare.
+- [x] Verso del PWM della retroilluminazione: 100 − luminosità è corretto (verificato sulla scheda).
 - [ ] Ingresso audio del decoder: GPIO6 da verificare sullo schema; circuito d'ingresso da provare.
 - [ ] Font monospazio per i temi a fosfori: servono circa 1,4 MB di flash (partizione app più grande) e un font per tema in tutta l'interfaccia.
 - [ ] Mappa per la grey line in flash (Natural Earth), una per tema.

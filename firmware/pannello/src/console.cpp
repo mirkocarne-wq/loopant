@@ -31,7 +31,7 @@ void aiuto() {
   Serial.println(
       "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calcanc <kHz> | stato |\n"
       "         mac <AA:BB:CC:DD:EE:FF> | call <nominativo> | loc <locator> | tema <0-3> |\n"
-      "         ora <AAAA-MM-GG HH:MM> (UTC) | wifi <ssid> <password> | rete | aiuto");
+      "         ora <AAAA-MM-GG HH:MM> (UTC) | wifi <ssid> <password> | reti | rete | aiuto");
 }
 
 void stato() {
@@ -97,6 +97,21 @@ void esegui(char* riga) {
     impostazioni::salva();
     rete::riavvia();
     Serial.println("WiFi salvato: connessione in corso");
+  } else if (!strcmp(cmd, "reti")) {
+    rete::Rete r[rete::MAX_RETI];
+    bool inCorso;
+    uint32_t v;
+    uint8_t n = rete::reti(r, rete::MAX_RETI, inCorso, v);
+    if (inCorso) {
+      Serial.println("Ricerca in corso: ripeti 'reti' tra qualche secondo");
+      return;
+    }
+    for (uint8_t i = 0; i < n; i++)
+      Serial.printf("%2u  %4d dBm  can %2u  %-8s  %s\n", i + 1, r[i].rssi, r[i].canale,
+                    r[i].protetta ? "protetta" : "aperta", r[i].ssid);
+    if (!n && v) Serial.println("Nessuna rete trovata");
+    rete::avviaScansione();
+    Serial.println(v ? "Nuova ricerca avviata" : "Ricerca avviata: ripeti 'reti' tra qualche secondo");
   } else if (!strcmp(cmd, "rete")) {
     char t[96];
     rete::stato(t, sizeof(t));

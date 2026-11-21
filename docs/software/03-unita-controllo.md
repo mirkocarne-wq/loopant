@@ -97,6 +97,7 @@ Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione
 | I3 | Antenna: MAC, canale, **Pairing**, accesso a **Calibrazione antenna** | [D] |
 | I4 | **Screensaver**: stile Orologio / Frequenza / Grey line / Spento; parte dopo Mai / 5 / 15 / 30 min; anteprima | [D] |
 | I5 | Luminosità; ora nella barra UTC / locale / entrambe | [D] |
+| I6 | WiFi: pulsante **Cerca reti**, elenco delle reti trovate (segnale, protetta/aperta), tocco sulla rete, password con tastiera e collegamento; campo manuale per le reti nascoste | [D] |
 
 ### C7. Calibrazione (da Impostazioni)
 | ID | Requisito | |
