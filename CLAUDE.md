@@ -42,6 +42,8 @@ Le chiavi ESP-NOW reali vanno in `firmware/lib/Comune/src/segreti.h` (non versio
 senza, si compila con le chiavi di esempio e un avviso.
 Il pannello 7B usa il core Arduino ESP32 **3.1.1** (gli esempi Waveshare usano `esp_lcd` e `i2c_master` di IDF 5);
 l'antenna resta su PlatformIO `espressif32@6.9.0` (core 2.0.17). Non usare `Wire` sul pannello: l'I2C è del driver Waveshare.
+Sul pannello LVGL alloca in **PSRAM** (`lv_conf.h`): non tornare a `malloc`, la RAM interna si esaurisce
+(controllare con il comando `mem`). Nel task di LVGL (stack 6 KB) le strutture grandi vanno dichiarate `static`.
 
 ## Regole che il firmware deve rispettare
 - **Avvicinarsi alla posizione target sempre dallo stesso verso**: il gioco del riduttore

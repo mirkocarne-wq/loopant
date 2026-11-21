@@ -21,6 +21,7 @@ const Pagina PAGINE[NUM_PAGINE] = {
     {"Memorie", LV_SYMBOL_LIST, pag_memorie::crea, pag_memorie::aggiorna, nullptr},
     {"Propagazione", LV_SYMBOL_WIFI, pag_propagazione::crea, pag_propagazione::aggiorna, pag_propagazione::mostrata},
     {"Decoder", LV_SYMBOL_KEYBOARD, pag_decoder::crea, pag_decoder::aggiorna, nullptr},
+    {"QRZ", LV_SYMBOL_GPS, pag_qrz::crea, pag_qrz::aggiorna, pag_qrz::mostrata},
     {"Diagnostica", LV_SYMBOL_BARS, pag_diagnostica::crea, pag_diagnostica::aggiorna, nullptr},
     {"Impostazioni", LV_SYMBOL_SETTINGS, pag_impostazioni::crea, pag_impostazioni::aggiorna, nullptr},
     {"Calibrazione", LV_SYMBOL_SETTINGS, pag_calibrazione::crea, pag_calibrazione::aggiorna,
@@ -193,12 +194,12 @@ void creaSchede(lv_obj_t* scr) {
     lv_obj_set_style_border_side(b, LV_BORDER_SIDE_TOP, 0);
     lv_obj_set_style_border_width(b, 3, 0);
     lv_obj_set_style_bg_color(b, t.surface2, LV_STATE_PRESSED);
-    lv_obj_t* riga = contenitore(b, LV_FLEX_FLOW_ROW, 8);
+    lv_obj_t* riga = contenitore(b, LV_FLEX_FLOW_ROW, 6);
     lv_obj_set_flex_align(riga, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_add_flag(riga, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_clear_flag(riga, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_center(riga);
-    icone[i] = icona::crea(riga, (icona::Tipo)i, 26, t.text2);
+    icone[i] = icona::crea(riga, (icona::Tipo)i, 24, t.text2);
     lv_obj_t* l = lv_label_create(riga);
     lv_label_set_text(l, PAGINE[i].nome);
     lv_obj_set_style_text_font(l, &font_16, 0);

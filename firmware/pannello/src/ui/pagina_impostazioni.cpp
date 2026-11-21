@@ -11,6 +11,8 @@
 #include "../ora.h"
 #include "../rete.h"
 #include "../schermo.h"
+#include "../server_web.h"
+#include "../servizio_qrz.h"
 #include "../tema.h"
 #include "comuni.h"
 #include "pagine.h"
@@ -31,6 +33,11 @@ lv_obj_t* boxCan;
 lv_obj_t* testoCanId;
 lv_obj_t* statoMotore;
 lv_obj_t* sezioneAntenna;
+lv_obj_t* campoQrzUtente;
+lv_obj_t* campoQrzPassword;
+lv_obj_t* campoQrzChiave;
+lv_obj_t* testoQrz;
+uint32_t versioneQrz = 0xFFFFFFFF;
 
 // Finestra "Reti WiFi"
 lv_obj_t* finestra = nullptr;
@@ -132,6 +139,13 @@ void conferma(lv_event_t* e) {
       copia(imp.wifiSsid, sizeof(imp.wifiSsid), v, false);
     } else if (ta == campoPassword) {
       copia(imp.wifiPassword, sizeof(imp.wifiPassword), v, false);
+    } else if (ta == campoQrzUtente || ta == campoQrzPassword || ta == campoQrzChiave) {
+      ImpostazioniQrz& q = impostazioni::qrz();
+      if (ta == campoQrzUtente) copia(q.utente, sizeof(q.utente), v, true);
+      else if (ta == campoQrzPassword) copia(q.password, sizeof(q.password), v, false);
+      else copia(q.chiave, sizeof(q.chiave), v, true);
+      impostazioni::salvaQrz();
+      servizio_qrz::credenzialiCambiate();
     }
     impostazioni::salva();
     if (ta == campoSsid || ta == campoPassword) rete::riavvia();
@@ -145,7 +159,7 @@ void conferma(lv_event_t* e) {
 void apriTastiera(lv_event_t* e) {
   lv_obj_t* ta = lv_event_get_target(e);
   lv_keyboard_set_textarea(tastiera, ta);
-  bool maiuscole = ta == campoNominativo || ta == campoLocator;
+  bool maiuscole = ta == campoNominativo || ta == campoLocator || ta == campoQrzUtente || ta == campoQrzChiave;
   lv_keyboard_set_mode(tastiera, maiuscole ? LV_KEYBOARD_MODE_TEXT_UPPER : LV_KEYBOARD_MODE_TEXT_LOWER);
   lv_obj_clear_flag(tastiera, LV_OBJ_FLAG_HIDDEN);
 }
@@ -229,6 +243,7 @@ void premiCanId(lv_event_t* e) {
 void anteprima(lv_event_t*) { screensaver::anteprima(); }
 void fusoCambiato() { ora::applicaFuso(); }
 void aggiornaIndici(lv_event_t*) { rete::aggiornaIndiciOra(); }
+void provaQrz(lv_event_t*) { servizio_qrz::provaAccesso(); }
 
 // --- Ricerca delle reti WiFi ----------------------------------------------------------------
 
@@ -553,6 +568,33 @@ void crea(lv_obj_t* c) {
   lv_obj_set_size(cal, LV_PCT(100), 52);
   lv_obj_add_event_cb(cal, apriCalibrazione, LV_EVENT_CLICKED, nullptr);
 
+  // QRZ.com
+  const ImpostazioniQrz& q = impostazioni::qrz();
+  lv_obj_t* qz = sezione(sx, "QRZ.COM");
+  lv_obj_t* rq = ui::contenitore(qz, LV_FLEX_FLOW_ROW, 10);
+  lv_obj_set_width(rq, LV_PCT(100));
+  campoQrzUtente = campo(rq, "Utente", q.utente, sizeof(q.utente) - 1, -1);
+  campoQrzPassword = campo(rq, "Password", q.password, sizeof(q.password) - 1, -1, true);
+  lv_obj_t* rk = ui::contenitore(qz, LV_FLEX_FLOW_ROW, 10);  // in una riga: nella colonna crescerebbe in altezza
+  lv_obj_set_width(rk, LV_PCT(100));
+  campoQrzChiave = campo(rk, "Chiave API del logbook (per «I miei QSO»)", q.chiave, sizeof(q.chiave) - 1, -1, true);
+  lv_obj_t* nq = ui::etichetta(qz,
+                               "Ricerca nominativi: utente e password. I miei QSO: chiave API (sito QRZ → Logbook → "
+                               "Settings) e abbonamento «XML Logbook Data».",
+                               &font_12, t.text2);
+  lv_label_set_long_mode(nq, LV_LABEL_LONG_WRAP);
+  lv_obj_set_width(nq, LV_PCT(100));
+  lv_obj_t* rp = ui::contenitore(qz, LV_FLEX_FLOW_ROW, 10);
+  lv_obj_set_width(rp, LV_PCT(100));
+  lv_obj_set_flex_align(rp, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+  lv_obj_t* pa = ui::pulsante(rp, "Prova accesso", &font_16, ui::Stile::SCHEDA);
+  lv_obj_set_size(pa, 160, 44);
+  lv_obj_add_event_cb(pa, provaQrz, LV_EVENT_CLICKED, nullptr);
+  testoQrz = ui::etichetta(rp, "", &font_14, t.text2);
+  lv_label_set_long_mode(testoQrz, LV_LABEL_LONG_WRAP);
+  lv_obj_set_flex_grow(testoQrz, 1);
+  versioneQrz = 0xFFFFFFFF;
+
   // Screensaver
   static const char* const STILI[] = {"Orologio", "Frequenza", "Grey line", "Spento"};
   static const uint8_t V_STILI[] = {0, 1, 2, 3};
@@ -634,7 +676,25 @@ void aggiorna(const link_antenna::Stato& s) {
     lv_label_set_text(statoMotore, buf);
   }
   rete::stato(buf, sizeof(buf));
-  lv_label_set_text(testoRete, buf);
+  char web[72];
+  server_web::indirizzo(web, sizeof(web));
+  if (web[0]) lv_label_set_text_fmt(testoRete, "%s\nPagina web: %s", buf, web);
+  else lv_label_set_text(testoRete, buf);
+
+  uint32_t vq = servizio_qrz::versioneRicerca();
+  if (vq != versioneQrz) {
+    versioneQrz = vq;
+    static servizio_qrz::Ricerca r;  // statica: lo stack del task di LVGL è piccolo
+    servizio_qrz::ricerca(r);
+    using servizio_qrz::Esito;
+    if (r.esito == Esito::IN_CORSO) lv_label_set_text(testoQrz, servizio_qrz::testo(r.esito));
+    else if (r.esito == Esito::ERRORE || r.esito == Esito::SENZA_CREDENZIALI || r.esito == Esito::SENZA_RETE)
+      lv_label_set_text(testoQrz, r.messaggio[0] ? r.messaggio : servizio_qrz::testo(r.esito));
+    else if (r.sessione)
+      lv_label_set_text_fmt(testoQrz, r.abbonato ? "Collegato · abbonamento fino a %s" : "Collegato · senza abbonamento%s",
+                            r.abbonato ? r.scadenza : "");
+    else lv_label_set_text(testoQrz, "");
+  }
 
   if (finestra && elencoReti) {
     rete::Rete r[rete::MAX_RETI];

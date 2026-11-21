@@ -19,6 +19,8 @@
 #include "ora.h"
 #include "rete.h"
 #include "schermo.h"
+#include "server_web.h"
+#include "servizio_qrz.h"
 #include "tema.h"
 #include "ui/pagine.h"
 #include "ui/screensaver.h"
@@ -96,6 +98,79 @@ uint8_t reti(Rete* out, uint8_t max, bool& inCorso, uint32_t& versione) {
   return n;
 }
 }  // namespace rete
+
+// --- QRZ finto (dati inventati) ---------------------------------------------------------------
+static bool qrzSenzaAbbonamento = false;
+namespace servizio_qrz {
+static Ricerca ric = {};
+static Logbook lb = {};
+void inizia() {}
+void credenzialiCambiate() {}
+void provaAccesso() {}
+void cerca(const char*) {
+  ric = {};
+  ric.esito = Esito::OK;
+  ric.sessione = true;
+  ric.abbonato = true;
+  snprintf(ric.scadenza, sizeof(ric.scadenza), "Fri Jan 1 12:00:00 2027");
+  qrz::Nominativo& n = ric.n;
+  snprintf(n.call, sizeof(n.call), "[DX CALL]");
+  snprintf(n.nome, sizeof(n.nome), "[Nome Cognome]");
+  snprintf(n.qth, sizeof(n.qth), "[Città], NY");
+  snprintf(n.paese, sizeof(n.paese), "United States");
+  snprintf(n.locator, sizeof(n.locator), "FN30as");
+  n.coordinate = true;
+  n.lat = 40.71;
+  n.lon = -74.01;
+  n.dxcc = 291;
+  n.cq = 5;
+  n.itu = 8;
+  snprintf(n.qsl, sizeof(n.qsl), "LoTW · eQSL");
+  ric.versione++;
+}
+void caricaQso(uint8_t banda) {
+  uint32_t v = lb.versione + 1;
+  lb = {};
+  lb.versione = v;
+  lb.banda = banda;
+  if (qrzSenzaAbbonamento) {
+    lb.esito = Esito::SERVE_ABBONAMENTO;
+    snprintf(lb.messaggio, sizeof(lb.messaggio),
+             "La lettura del logbook via API richiede l'abbonamento QRZ «XML Logbook Data»");
+    return;
+  }
+  lb.esito = Esito::OK;
+  lb.totale = 1234;
+  lb.confermati = 567;
+  lb.haConfermati = true;
+  const char* modi[] = {"FT8", "CW", "SSB", "FT4"};
+  for (uint16_t i = 0; i < 9; i++) {
+    qrz::Qso& q = lb.qso[i];
+    snprintf(q.call, sizeof(q.call), "[CALL %u]", i + 1);
+    snprintf(q.data, sizeof(q.data), "%02u/11/2026", 20 - i / 3);
+    snprintf(q.ora, sizeof(q.ora), "%02u:%02u", 18 - i, (i * 7) % 60);
+    bool b40 = i % 3 == 1;
+    snprintf(q.banda, sizeof(q.banda), "%s", b40 ? "40m" : (i == 5 ? "17m" : "20m"));
+    snprintf(q.modo, sizeof(q.modo), "%s", modi[i % 4]);
+    q.freq_hz = b40 ? 7030000 + i * 1000 : (i == 5 ? 18100000 : 14074000);
+    snprintf(q.rstTx, sizeof(q.rstTx), "%s", i % 4 == 1 ? "599" : "-10");
+    snprintf(q.rstRx, sizeof(q.rstRx), "%s", i % 4 == 1 ? "579" : "-14");
+    q.confermato = i % 2 == 0;
+  }
+  lb.n = 9;
+}
+uint32_t versioneRicerca() { return ric.versione; }
+uint32_t versioneLogbook() { return lb.versione; }
+void ricerca(Ricerca& out) { out = ric; }
+void logbook(Logbook& out) { out = lb; }
+const char* testo(Esito e) { return e == Esito::SERVE_ABBONAMENTO ? "Serve l'abbonamento QRZ" : ""; }
+}  // namespace servizio_qrz
+
+namespace server_web {
+void inizia() {}
+bool attivo() { return true; }
+void indirizzo(char* out, size_t n) { snprintf(out, n, "http://192.168.1.50 · http://loopant.local"); }
+}  // namespace server_web
 
 namespace schermo {
 void accendi() {}
@@ -222,7 +297,7 @@ int main(int argc, char** argv) {
   eventiDiEsempio();
   ui::inizia();
 
-  const char* nomi[] = {"sintonia", "memorie", "propagazione", "decoder", "diagnostica", "impostazioni", "calibrazione"};
+  const char* nomi[] = {"sintonia", "memorie", "propagazione", "decoder", "qrz", "diagnostica", "impostazioni", "calibrazione"};
   const char* temi[] = {"notte", "giorno", "fosfori-verdi", "fosfori-ambra"};
   for (uint8_t tm = 0; tm < tema::NUMERO; tm++) {
     imp.tema = tm;
@@ -252,18 +327,36 @@ int main(int argc, char** argv) {
       avanza(300);
       ui::vaiA(ui::IMPOSTAZIONI);
       pag_impostazioni::mostraAntenna();
-      salva("notte-6d-impostazioni-motore");
+      salva("notte-7d-impostazioni-motore");
       statoFinto.r.flag = flag;
       motore_antenna::scelte().modo = 0;
       ui::richiediRicostruzione();
       avanza(300);
     }
-    if (tm == 0) {  // finestra "Reti WiFi" e password
+    if (tm == 0) {  // QRZ: ricerca, logbook, logbook senza abbonamento
+      ui::vaiA(ui::QRZ);
+      pag_qrz::cerca("[DX CALL]");
+      salva("notte-5a-qrz-ricerca");
+      pag_qrz::mostraLogbook();
+      servizio_qrz::caricaQso(0);
+      salva("notte-5b-qrz-logbook");
+      qrzSenzaAbbonamento = true;
+      servizio_qrz::caricaQso(0);
+      salva("notte-5c-qrz-senza-abbonamento");
+      qrzSenzaAbbonamento = false;
+      pag_qrz::cerca("[DX CALL]");
+    }
+    if (tm == 0) {  // Impostazioni: colonna sinistra in fondo (QRZ.COM), finestra "Reti WiFi" e password
       ui::vaiA(ui::IMPOSTAZIONI);
+      // schermo: barra (figlio 0), poi una pagina per schermata; nella pagina la colonna sinistra è il figlio 0
+      lv_obj_t* colonna = lv_obj_get_child(lv_obj_get_child(lv_scr_act(), 1 + ui::IMPOSTAZIONI), 0);
+      lv_obj_scroll_to_y(colonna, LV_COORD_MAX, LV_ANIM_OFF);
+      salva("notte-7a-impostazioni-qrz");
+      lv_obj_scroll_to_y(colonna, 0, LV_ANIM_OFF);
       pag_impostazioni::mostraReti();
-      salva("notte-6b-impostazioni-reti");
+      salva("notte-7b-impostazioni-reti");
       pag_impostazioni::scegliRete(0);
-      salva("notte-6c-impostazioni-password");
+      salva("notte-7c-impostazioni-password");
     }
     const char* stili[] = {"orologio", "frequenza", "greyline"};
     for (uint8_t s = 0; s < 3; s++) {

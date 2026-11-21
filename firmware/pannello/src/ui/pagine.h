@@ -35,6 +35,14 @@ void crea(lv_obj_t* contenuto);
 void aggiorna(const link_antenna::Stato& s);
 }  // namespace pag_decoder
 
+namespace pag_qrz {
+void crea(lv_obj_t* contenuto);
+void aggiorna(const link_antenna::Stato& s);
+void mostrata();
+void cerca(const char* nominativo);  // apre la ricerca con questo nominativo (anche dal simulatore)
+void mostraLogbook();                // vista "I miei QSO" (anche dal simulatore)
+}  // namespace pag_qrz
+
 namespace pag_diagnostica {
 void crea(lv_obj_t* contenuto);
 void aggiorna(const link_antenna::Stato& s);

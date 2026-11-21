@@ -82,6 +82,10 @@ void disegna(lv_event_t* e) {
       pn.segmento(9, 12, 15, 12);
       pn.segmento(20, 12, 21.5f, 12);
       break;
+    case Tipo::QRZ:  // lente
+      pn.cerchio(10, 10, 6.5f);
+      pn.segmento(14.8f, 14.8f, 20.5f, 20.5f);
+      break;
     case Tipo::DIAGNOSTICA: {  // traccia
       const float xy[] = {3, 12, 7, 12, 10, 5, 14, 19, 17, 12, 21, 12};
       pn.spezzata(xy, 6);

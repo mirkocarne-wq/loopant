@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "font/font.h"
+#include "geo.h"
 #include "mappa_dati.h"
 #include "sole.h"
 #include "tema.h"
@@ -20,12 +21,34 @@ struct Dati {
   lv_obj_t* sole;
   lv_obj_t* stazione;
   lv_obj_t* etStazione;
+  lv_obj_t* contatto;  // stazione cercata (QRZ)
+  lv_obj_t* etContatto;
+  bool contattoValido;
+  float cLat, cLon;
 };
 
 inline void punto(Dati* d, int x, int y, lv_color_t c, uint8_t mix = 255) {
   if (x < 0 || y < 0 || x >= d->w || y >= d->h) return;
   lv_color_t& p = d->base[y * d->w + x];
   p = mix == 255 ? c : lv_color_mix(c, p, mix);
+}
+
+// Linea spessa 2 pixel sull'immagine mostrata (percorso verso la stazione cercata)
+void lineaPercorso(Dati* d, int x0, int y0, int x1, int y1, lv_color_t c) {
+  int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+  int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+  int err = dx + dy;
+  for (;;) {
+    for (int oy = 0; oy < 2; oy++)
+      for (int ox = 0; ox < 2; ox++) {
+        int x = x0 + ox, y = y0 + oy;
+        if (x >= 0 && y >= 0 && x < d->w && y < d->h) d->buf[y * d->w + x] = c;
+      }
+    if (x0 == x1 && y0 == y1) break;
+    int e2 = 2 * err;
+    if (e2 >= dy) { err += dy; x0 += sx; }
+    if (e2 <= dx) { err += dx; y0 += sy; }
+  }
 }
 
 void linea(Dati* d, int x0, int y0, int x1, int y1, lv_color_t c, uint8_t mix = 255) {
@@ -179,7 +202,42 @@ lv_obj_t* crea(lv_obj_t* parent, lv_coord_t w, bool citta) {
   lv_obj_set_style_radius(d->etStazione, 4, 0);
   lv_obj_add_flag(d->stazione, LV_OBJ_FLAG_HIDDEN);
   lv_obj_add_flag(d->etStazione, LV_OBJ_FLAG_HIDDEN);
+  if (w < 600) lv_obj_set_style_text_font(d->etStazione, &font_12, 0);
+
+  d->contatto = segno(c, 14, t.mapSea, t.infoText, 3);
+  d->etContatto = lv_label_create(c);
+  lv_obj_set_style_text_font(d->etContatto, w < 600 ? &font_12 : &font_14, 0);
+  lv_obj_set_style_text_color(d->etContatto, t.infoText, 0);
+  lv_obj_set_style_bg_color(d->etContatto, t.bg, 0);
+  lv_obj_set_style_bg_opa(d->etContatto, LV_OPA_COVER, 0);
+  lv_obj_set_style_pad_hor(d->etContatto, 6, 0);
+  lv_obj_set_style_radius(d->etContatto, 4, 0);
+  lv_obj_add_flag(d->contatto, LV_OBJ_FLAG_HIDDEN);
+  lv_obj_add_flag(d->etContatto, LV_OBJ_FLAG_HIDDEN);
   return c;
+}
+
+void contatto(lv_obj_t* m, bool valido, double lat, double lon, const char* etichetta) {
+  Dati* d = (Dati*)lv_obj_get_user_data(m);
+  if (!d) return;
+  d->contattoValido = valido;
+  d->cLat = (float)lat;
+  d->cLon = (float)lon;
+  if (!valido) {
+    lv_obj_add_flag(d->contatto, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(d->etContatto, LV_OBJ_FLAG_HIDDEN);
+    return;
+  }
+  lv_obj_clear_flag(d->contatto, LV_OBJ_FLAG_HIDDEN);
+  lv_obj_clear_flag(d->etContatto, LV_OBJ_FLAG_HIDDEN);
+  colloca(d->contatto, d, (float)lat, (float)lon);
+  lv_label_set_text(d->etContatto, etichetta);
+  lv_obj_update_layout(d->etContatto);
+  lv_coord_t x = (lv_coord_t)px(d, (float)lon), y = (lv_coord_t)py(d, (float)lat);
+  lv_coord_t lw = lv_obj_get_width(d->etContatto), lh = lv_obj_get_height(d->etContatto);
+  lv_coord_t ex = x + lw > d->w ? d->w - lw : x - 4;
+  lv_coord_t ey = y - 10 - lh < 0 ? y + 10 : y - 10 - lh;  // sopra il segno, se c'è spazio
+  lv_obj_set_pos(d->etContatto, ex < 0 ? 0 : ex, ey);
 }
 
 void aggiorna(lv_obj_t* m, time_t t, bool stazioneValida, double lat, double lon, const char* etichetta) {
@@ -203,6 +261,19 @@ void aggiorna(lv_obj_t* m, time_t t, bool stazioneValida, double lat, double lon
     }
   }
   colloca(d->sole, d, (float)p.declinazione, (float)p.lonSubsolare);
+
+  // percorso sul cerchio massimo verso la stazione cercata
+  if (stazioneValida && d->contattoValido) {
+    int xp = 0, yp = 0;
+    for (int i = 0; i <= 160; i++) {
+      double la, lo;
+      geo::intermedio(lat, lon, d->cLat, d->cLon, i / 160.0, la, lo);
+      int x = (int)px(d, (float)lo), y = (int)py(d, (float)la);
+      if (i && abs(x - xp) < d->w / 2) lineaPercorso(d, xp, yp, x, y, tm.infoText);  // salta il bordo della mappa
+      xp = x;
+      yp = y;
+    }
+  }
 
   if (stazioneValida) {
     lv_obj_clear_flag(d->stazione, LV_OBJ_FLAG_HIDDEN);

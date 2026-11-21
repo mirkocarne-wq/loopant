@@ -11,5 +11,7 @@
 | 07 | [Sviluppi futuri](07-sviluppi-futuri.md) | CI-V/CAT, wattmetro/ROS, sensori di posizione |
 | 08 | [Decoder CW/RTTY](08-decoder.md) | Ingresso audio, parametri CW e RTTY |
 | 09 | [Propagazione](09-propagazione.md) | Grey line calcolata, alba/tramonto, indici solari via WiFi |
+| 10 | [QRZ.com](10-qrz.md) | Ricerca nominativi, i miei QSO, abbonamento, HTTPS |
+| 11 | [Pagina web](11-pagina-web.md) | Stato, comandi e schermo del pannello dal browser |
 
 Il codice è in [`firmware/`](../../firmware/README.md).

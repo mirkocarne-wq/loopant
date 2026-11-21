@@ -36,6 +36,11 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Mappa della grey line | Disegnata in PSRAM con continenti semplificati; Natural Earth in futuro | LVGL 8 non riempie poligoni concavi |
 | Simulatore sul PC | Interfaccia vera compilata con LVGL su Linux o macOS, schermate PNG | Controllo dell'impaginazione senza scheda |
 | Rete WiFi del pannello | Scelta con «Cerca reti» (elenco, tocco, password); niente ricerca con l'antenna in movimento | Più comodo che digitare l'SSID; la ricerca cambia canale e interrompe ESP-NOW |
+| QRZ.com | Ricerca nominativi (XML Data) con o senza abbonamento; logbook (Logbook API) con abbonamento; HTTPS con certificati verificati | Richiesta dell'utente |
+| Schede del pannello | Sette: aggiunta QRZ tra Decoder e Diagnostica | Spazio sufficiente con icona 24 px |
+| Memoria di LVGL | In PSRAM con heap_caps_malloc | Con malloc la RAM interna si esauriva (820 byte liberi) |
+| Pagina web | Server sulla porta 80 + mDNS loopant.local; stato, comandi, schermo in BMP, tocco remoto; senza password | Richiesta dell'utente; rete di casa fidata |
+| Console | Su entrambe le USB-C (USB CDC On Boot + Serial0) | L'utente ha due porte; la USB nativa non riavvia la scheda |
 | WiFi del pannello | Facoltativo: NTP e indici solari (hamqsl.com); il peer ESP-NOW segue il canale corrente | L'antenna deve stare sul canale del router |
 
 ## Scartate

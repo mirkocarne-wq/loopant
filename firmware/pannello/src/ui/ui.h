@@ -13,6 +13,7 @@ enum Pag : uint8_t {
   MEMORIE,
   PROPAGAZIONE,
   DECODER,
+  QRZ,
   DIAGNOSTICA,
   IMPOSTAZIONI,
   CALIBRAZIONE,  // si apre da Impostazioni

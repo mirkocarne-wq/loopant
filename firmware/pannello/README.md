@@ -20,7 +20,9 @@ luminosità e ricerca delle reti WiFi funzionano. Da provare: collegamento con l
 | Calibrazione (da Impostazioni) | scritta |
 | Screensaver Orologio, Frequenza, Grey line, Spento | scritto |
 | WiFi facoltativo: NTP e indici solari (hamqsl.com) | scritto |
-| Console seriale | scritta |
+| QRZ.com: ricerca nominativi (con o senza abbonamento), i miei QSO | scritta; HTTPS provato, da provare con un account |
+| Pagina web (stato, comandi, vista e tocco dello schermo) | scritta e provata dal Mac |
+| Console seriale, su entrambe le USB-C | scritta |
 
 ## Struttura
 ```
@@ -41,6 +43,9 @@ src/mappa.*             mappa con grey line disegnata in PSRAM (mappa_dati.h: co
 src/indici.* rete.*     indici solari, WiFi, NTP
 src/ora.* schermo.*     ora UTC/locale, retroilluminazione
 src/audio.*             ingresso audio (ADC continuo a 8 kHz)
+src/qrz.* geo.*         risposte di QRZ (C++ puro), distanza e direzione
+src/servizio_qrz.*      QRZ.com via HTTPS (task sul core 0)
+src/server_web.* pagina_web.h tocco_remoto.*  pagina web e tocco da remoto
 src/decoder/            algoritmi CW e RTTY (C++ puro, provati sul PC)
 src/decodifica.*        decoder sul pannello: impostazioni, testo ricevuto
 test/                   test sul PC: ./test/esegui_test.sh
@@ -68,7 +73,8 @@ arduino-cli lib install lvgl@8.4.0
 ```bash
 ./compila.sh carica /dev/ttyACM0
 ```
-La porta è quella del connettore USB-C "USB TO UART" (CH343); il nome cambia da sistema a sistema.
+Si può usare una qualsiasi delle due USB-C: "USB TO UART" (CH343) o la USB nativa. Il nome della porta
+cambia da sistema a sistema (su macOS `/dev/cu.usbmodem…`).
 
 ## Compilare con Arduino IDE 2
 1. Gestore schede: **esp32 di Espressif Systems, versione 3.1.1**.
@@ -76,7 +82,7 @@ La porta è quella del connettore USB-C "USB TO UART" (CH343); il nome cambia da
 3. Copiare `lv_conf.h` nella cartella `libraries` dello sketchbook, accanto alla cartella `lvgl`.
 4. Rendere visibile la libreria comune: copiare (o collegare) `firmware/lib/Comune` in `libraries/Comune`.
 5. Scheda **ESP32S3 Dev Module** con: PSRAM **OPI PSRAM**, Flash Size **16MB**, Flash Mode **QIO 80MHz**,
-   Partition Scheme **16M Flash (3MB APP/9.9MB FATFS)**, USB CDC On Boot **Disabled**.
+   Partition Scheme **16M Flash (3MB APP/9.9MB FATFS)**, USB CDC On Boot **Enabled**.
 6. Aprire `pannello.ino` e caricare.
 
 ## Test sul PC
@@ -101,6 +107,11 @@ la password; oppure dalla console (`reti`, `wifi <ssid> <password>`). L'ESP32-S3
 Durante la ricerca la radio cambia canale e il collegamento con l'antenna si interrompe per qualche secondo:
 con l'antenna in movimento la ricerca non parte.
 Con il WiFi collegato il canale ESP-NOW diventa quello del router: **sull'antenna `CANALE_WIFI` deve essere uguale**.
+
+## Memoria
+LVGL alloca i suoi oggetti in **PSRAM** (`lv_conf.h`, `heap_caps_malloc`). Con `malloc` normale le migliaia di
+piccoli oggetti finivano in RAM interna (allocazioni sotto i 4 KB) e la esaurivano: WiFi, DNS e HTTPS fallivano.
+Non tornare a `malloc`. Il comando `mem` mostra la RAM interna libera (circa 137 KB a riposo).
 
 ## Font
 I font in `src/font/` sono Montserrat Medium (SIL Open Font License 1.1) con i simboli di LVGL

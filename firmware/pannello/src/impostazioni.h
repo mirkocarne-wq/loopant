@@ -34,6 +34,14 @@ struct Impostazioni {
   uint8_t rttyOpzioni;  // bit 0 Reverse, bit 1 UOS, bit 2 AFC
 };
 
+// Credenziali QRZ.com (in NVS, in chiaro come la password del WiFi).
+struct ImpostazioniQrz {
+  uint8_t versione;
+  char utente[24];    // ricerca nominativi (XML Data)
+  char password[64];
+  char chiave[40];    // chiave API del logbook (sito QRZ: Logbook → Settings)
+};
+
 namespace impostazioni {
 
 constexpr uint8_t RTTY_REVERSE = 1 << 0;
@@ -43,5 +51,8 @@ constexpr uint8_t RTTY_AFC = 1 << 2;
 void carica();
 void salva();
 Impostazioni& get();
+
+ImpostazioniQrz& qrz();
+void salvaQrz();
 
 }  // namespace impostazioni

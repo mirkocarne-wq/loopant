@@ -4,7 +4,8 @@
 
 namespace icona {
 
-enum class Tipo : uint8_t { SINTONIA, MEMORIE, PROPAGAZIONE, DECODER, DIAGNOSTICA, IMPOSTAZIONI };
+// Nello stesso ordine delle schede (ui::Pag)
+enum class Tipo : uint8_t { SINTONIA, MEMORIE, PROPAGAZIONE, DECODER, QRZ, DIAGNOSTICA, IMPOSTAZIONI };
 
 lv_obj_t* crea(lv_obj_t* parent, Tipo tipo, lv_coord_t lato, lv_color_t colore);
 void colore(lv_obj_t* icona, lv_color_t colore);

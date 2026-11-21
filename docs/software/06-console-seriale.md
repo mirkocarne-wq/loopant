@@ -23,6 +23,9 @@ un numero sopra 100 000 viene letto in Hz.
 I comandi da console non attivano il controllo dell'heartbeat.
 
 ## Pannello in casa (unità di controllo)
+La console risponde su **entrambe le USB-C** del 7B: "USB TO UART" (CH343) e USB nativa (firmware compilato con
+"USB CDC On Boot"). Su macOS aprire la porta CH343 può riavviare la scheda; la USB nativa no.
+
 I comandi `goto`, `stop`, `zero`, `jog`, `cal`, `calcanc` vengono inviati all'antenna via ESP-NOW.
 
 | Comando | Effetto |
@@ -36,4 +39,10 @@ I comandi `goto`, `stop`, `zero`, `jog`, `cal`, `calcanc` vengono inviati all'an
 | `wifi <ssid> <password>` | WiFi di casa per NTP e indici solari |
 | `reti` | Ultime reti trovate e nuova ricerca (ripetere dopo qualche secondo) |
 | `rete` | Stato del WiFi |
+| `qrz <utente> <password>` | Credenziali QRZ (ricerca nominativi) |
+| `qrzkey <chiave>` | Chiave API del logbook QRZ |
+| `qrzcancella` | Cancella le credenziali QRZ |
+| `cerca <nominativo>` | Ricerca su QRZ (il risultato arriva dopo qualche secondo) |
+| `qso [40\|20]` | Ultimi QSO dal logbook QRZ |
+| `mem` | RAM interna libera (minimo, blocco più grande) e PSRAM |
 | `aiuto` | Elenco comandi |

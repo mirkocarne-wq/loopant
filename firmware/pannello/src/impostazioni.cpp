@@ -13,6 +13,10 @@ constexpr uint8_t VERSIONE = 2;
 Impostazioni imp;
 Preferences nvs;
 
+// Credenziali QRZ in un blocco a parte: aggiungerle non azzera le altre impostazioni
+constexpr uint8_t VERSIONE_QRZ = 1;
+ImpostazioniQrz credQrz;
+
 void predefinite() {
   memset(&imp, 0, sizeof(imp));
   imp.versione = VERSIONE;
@@ -47,10 +51,22 @@ void carica() {
   imp.locator[sizeof(imp.locator) - 1] = 0;
   imp.wifiSsid[sizeof(imp.wifiSsid) - 1] = 0;
   imp.wifiPassword[sizeof(imp.wifiPassword) - 1] = 0;
+
+  if (nvs.getBytes("qrz", &credQrz, sizeof(credQrz)) != sizeof(credQrz) || credQrz.versione != VERSIONE_QRZ) {
+    memset(&credQrz, 0, sizeof(credQrz));
+    credQrz.versione = VERSIONE_QRZ;
+  }
+  credQrz.utente[sizeof(credQrz.utente) - 1] = 0;
+  credQrz.password[sizeof(credQrz.password) - 1] = 0;
+  credQrz.chiave[sizeof(credQrz.chiave) - 1] = 0;
 }
 
 void salva() { nvs.putBytes("imp", &imp, sizeof(imp)); }
 
 Impostazioni& get() { return imp; }
+
+ImpostazioniQrz& qrz() { return credQrz; }
+
+void salvaQrz() { nvs.putBytes("qrz", &credQrz, sizeof(credQrz)); }
 
 }  // namespace impostazioni

@@ -12,4 +12,7 @@ lv_obj_t* crea(lv_obj_t* parent, lv_coord_t larghezza, bool citta);
 // stazioneValida = false: nessun segno della stazione.
 void aggiorna(lv_obj_t* m, time_t t, bool stazioneValida, double lat, double lon, const char* etichetta);
 
+// Stazione cercata (QRZ): segno, etichetta e, al prossimo aggiorna(), percorso dalla propria stazione.
+void contatto(lv_obj_t* m, bool valido, double lat, double lon, const char* etichetta);
+
 }  // namespace mappa

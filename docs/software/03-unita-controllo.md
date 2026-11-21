@@ -38,11 +38,11 @@ Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione
 ├───────────────────────────────────────────────────────────────────────┤
 │                         schermata attiva                              │
 ├───────────────────────────────────────────────────────────────────────┤
-│ Sintonia │ Memorie │ Propagazione │ Decoder │ Diagnostica │ Impostaz. │  schede (sempre)
+│ Sintonia │ Memorie │ Propag. │ Decoder │ QRZ │ Diagnostica │ Impostaz. │  schede (sempre)
 └───────────────────────────────────────────────────────────────────────┘
 ```
 - **Barra in alto** (64 px): nominativo e locator, orologio, stato del collegamento, stato dell'antenna, **STOP**.
-- **Schede in basso** (72 px): sei schede con icona e nome.
+- **Schede in basso** (72 px): sette schede con icona e nome (QRZ aggiunta il 21/11/2026).
 - **Calibrazione** non ha una scheda: si apre da Impostazioni → "Calibrazione antenna".
 - **Screensaver** dopo un tempo impostabile; un tocco riporta alla Sintonia.
 
@@ -105,6 +105,16 @@ Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione
 | K1 | Scelta banda 40 / 20 m; posizione del motore su display a 7 segmenti | [D] |
 | K2 | Jog ±10 / ±100 / ±1000 passi; frequenza del dip letta sul NanoVNA; **Salva punto** | [D] |
 | K3 | Grafico posizione ↔ frequenza e tabella dei punti con eliminazione | [D] |
+
+### C7b. QRZ — vedi [10-qrz.md](10-qrz.md)
+| ID | Requisito | |
+|---|---|---|
+| Q1-Q7 | Ricerca nominativi (con o senza abbonamento), distanza/direzione/percorso, i miei QSO con «Accorda», credenziali in Impostazioni | [D] |
+
+### C7c. Pagina web — vedi [11-pagina-web.md](11-pagina-web.md)
+| ID | Requisito | |
+|---|---|---|
+| W1 | Pagina web sulla rete di casa: stato, STOP, TUNE, ZERO, vista e tocco dello schermo | [D] |
 
 ### C8. Screensaver
 | ID | Requisito | |

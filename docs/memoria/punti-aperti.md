@@ -32,6 +32,11 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [x] Pannello: Calibrazione e Diagnostica (protocollo v2: flag, CAL_LEGGI, CAL_ELIMINA), compilano.
 - [x] Pannello: Memorie, Propagazione, Decoder CW/RTTY, screensaver, Impostazioni complete, WiFi/NTP/indici (compilano; algoritmi provati sul PC).
 - [ ] Decoder: prova con segnali veri dalla radio.
+- [x] QRZ.com: ricerca nominativi e logbook scritti; HTTPS e risposta con chiave errata provati sulla scheda.
+- [ ] QRZ.com: prova con l'account dell'utente (ricerca; logbook se abbonato) e verifica del formato ADIF di FETCH.
+- [x] Pagina web del pannello: provata dal Mac (pagina, stato, schermo, tocco, loopant.local).
+- [ ] Pagina web: codice di accesso facoltativo? (oggi nessuna password).
+- [ ] Console sulla USB nativa: da provare collegando il cavo all'altra USB-C.
 - [x] Pannello: font con lettere accentate, "·" e "—" (Montserrat Latin-1 con lv_font_conv).
 - [x] Pannello: icone del mockup, disegnate con linee e archi LVGL.
 - [x] Verso del PWM della retroilluminazione: 100 − luminosità è corretto (verificato sulla scheda).

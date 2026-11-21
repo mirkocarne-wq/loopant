@@ -18,12 +18,19 @@
 #include "src/ora.h"
 #include "src/rete.h"
 #include "src/schermo.h"
+#include "src/server_web.h"
+#include "src/servizio_qrz.h"
+#include "src/tocco_remoto.h"
 #include "src/tema.h"
 #include "src/ui/ui.h"
+#include "src/waveshare/io_extension.h"
 #include "src/waveshare/lvgl_port.h"
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(115200);  // USB nativa (con "USB CDC On Boot") oppure USB TO UART
+#if ARDUINO_USB_CDC_ON_BOOT
+  Serial0.begin(115200);  // USB TO UART (CH343): la console risponde su entrambe le porte
+#endif
   impostazioni::carica();
   motore_antenna::carica();
   ora::applicaFuso();
@@ -31,6 +38,8 @@ void setup() {
 
   // Schermo, touch e LVGL come negli esempi Waveshare
   esp_lcd_touch_handle_t touch = touch_gt911_init();
+  // GPIO19/20 alla USB nativa (EXIO5 basso; alto = CAN, non usato sul pannello)
+  IO_EXTENSION_Output(IO_EXTENSION_IO_5, 0);
   esp_lcd_panel_handle_t schermo = waveshare_esp32_s3_rgb_lcd_init();
   wavesahre_rgb_lcd_bl_on();
   schermo::luminosita(impostazioni::get().luminosita);
@@ -38,10 +47,13 @@ void setup() {
 
   link_antenna::inizia(impostazioni::get().peer);
   rete::inizia();
+  servizio_qrz::inizia();
+  server_web::inizia();
   decodifica::inizia();
 
   if (lvgl_port_lock(-1)) {
     ui::inizia();
+    tocco_remoto::inizia();
     lvgl_port_unlock();
   }
   console::inizia();

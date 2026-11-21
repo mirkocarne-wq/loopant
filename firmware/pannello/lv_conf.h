@@ -1,6 +1,6 @@
 /*
  * lv_conf.h per il pannello loopant (Waveshare ESP32-S3-Touch-LCD-7B, LVGL 8.4).
- * Base: lv_conf.h degli esempi Waveshare; modifiche: memoria da heap (PSRAM), memcpy standard,
+ * Base: lv_conf.h degli esempi Waveshare; modifiche: memoria LVGL in PSRAM (heap_caps), memcpy standard,
  * LV_ATTRIBUTE_FAST_MEM in IRAM, demo disattivate, font integrati disattivati:
  * il pannello usa i propri (src/font, con lettere accentate), font_16 è quello di default.
  * Arduino IDE: copiare questo file nella cartella libraries, accanto a lvgl/.
@@ -67,10 +67,12 @@
     #endif
 
 #else       /*LV_MEM_CUSTOM*/
-    #define LV_MEM_CUSTOM_INCLUDE <stdlib.h>   /*Header for the dynamic memory function*/
-    #define LV_MEM_CUSTOM_ALLOC   malloc
-    #define LV_MEM_CUSTOM_FREE    free
-    #define LV_MEM_CUSTOM_REALLOC realloc
+    /* Oggetti LVGL in PSRAM: con malloc() le allocazioni piccole (< 4 KB) finiscono in RAM interna
+     * e le migliaia di oggetti delle schermate la esaurivano (WiFi, TLS e DNS poi fallivano). */
+    #define LV_MEM_CUSTOM_INCLUDE <esp_heap_caps.h>
+    #define LV_MEM_CUSTOM_ALLOC(dim)        heap_caps_malloc((dim), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT)
+    #define LV_MEM_CUSTOM_FREE(p)           heap_caps_free(p)
+    #define LV_MEM_CUSTOM_REALLOC(p, dim)   heap_caps_realloc((p), (dim), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT)
 #endif     /*LV_MEM_CUSTOM*/
 
 /*Number of the intermediate memory buffer used during rendering and other internal processing mechanisms.
