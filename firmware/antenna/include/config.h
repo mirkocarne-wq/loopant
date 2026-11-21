@@ -20,6 +20,11 @@ constexpr int PIN_FC_MIN = 27;  // finecorsa lato zero
 constexpr int PIN_FC_MAX = 14;  // finecorsa lato opposto
 constexpr bool FC_ATTIVO_BASSO = true;  // microswitch verso massa, pull-up + RC 100 nF
 
+// CAN verso il SERVO42D (versione RX, alternativa a STEP/DIR): transceiver Waveshare SN65HVD230.
+// Non ancora usato dal firmware.
+constexpr int PIN_CAN_TX = 22;  // -> CTX del transceiver
+constexpr int PIN_CAN_RX = 23;  // -> CRX del transceiver
+
 // --- Collegamento ---
 constexpr uint8_t CANALE_WIFI = 1;
 constexpr uint32_t TIMEOUT_HEARTBEAT_MS = 3000;  // 3 heartbeat persi

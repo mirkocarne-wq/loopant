@@ -3,6 +3,7 @@
 ## Già acquistato / in possesso
 - [x] Variabile a lamelle 1000 pF
 - [x] NEMA17 + MKS SERVO42D CAN
+- [x] Transceiver CAN Waveshare SN65HVD230 (3,3 V)
 - [x] Riduttore planetario 20:1 (STEPPERONLINE)
 - [x] Barra ABS 8 mm
 - [x] NanoVNA

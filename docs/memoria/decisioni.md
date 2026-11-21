@@ -18,6 +18,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Controllo casa | Waveshare ESP32-S3-Touch-LCD-7B (7", 1024×600) con LVGL | Schermo grande, touch capacitivo; sostituisce il 5" |
 | Collegamento | ESP-NOW cifrato (PMK/LMK), MAC fissi in NVS, canale fisso (quello del router di casa se il pannello usa il WiFi) | Semplice; il WiFi serve solo per indici solari e ora |
 | Alimentazione | 24 V 2,5 A in casa, convertitore 24→5 V all'antenna | Corrente sufficiente; alimentatore lontano dalla radio |
+| Transceiver CAN | Waveshare SN65HVD230 (3,3 V) su GPIO 22 (TX) / 23 (RX), già in possesso | Stessa tensione dell'ESP32, nessun convertitore di livello |
 | Isolamento albero RX | Barra ABS 8 mm tra due giunti metallici | Albero e telaio del variabile portano RF |
 | Schermate del pannello | Sintonia, Memorie, Propagazione, Decoder, Diagnostica, Impostazioni (+ Calibrazione da Impostazioni, screensaver) | Mockup approvato il 20/11/2026 |
 | Temi del pannello | Notte, Giorno, Fosfori verdi, Fosfori ambra; STOP rosso in tutti | Leggibilità e gusto; lo STOP deve riconoscersi sempre |

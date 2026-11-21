@@ -22,7 +22,7 @@ Il software è descritto in [`../software/`](../software/README.md).
 | UART TMC2209 | 25 / 26 | Nel firmware: TX 25, RX 26 |
 | Finecorsa | 27 / 14 | Nel firmware: MIN 27, MAX 14 |
 | Ingressi analogici | solo ADC1 (32–39) | L'ADC2 non funziona con WiFi/ESP-NOW |
-| CAN (solo SERVO42D via CAN) | es. 22 / 23 | Con transceiver a 3,3 V (es. SN65HVD230) |
+| CAN (solo SERVO42D via CAN) | TX 22 / RX 23 | Transceiver Waveshare SN65HVD230 (3,3 V) |
 | Da evitare | 0, 2, 12, 15 | Pin di strapping |
 
 I valori sono in `firmware/antenna/include/config.h`.
@@ -47,9 +47,23 @@ I valori sono in `firmware/antenna/include/config.h`.
 - Alternativa: modulo ADC I2S. Dettagli: [../software/08-decoder.md](../software/08-decoder.md).
 
 ## CAN (solo se il SERVO42D si usa via CAN)
+- Transceiver: **Waveshare SN65HVD230 CAN Board** (già in possesso), alimentato a 3,3 V come l'ESP32:
+  nessun convertitore di livello.
+
+  | SN65HVD230 | Collegamento |
+  |---|---|
+  | 3V3 | 3,3 V dell'ESP32 |
+  | GND | GND comune (ESP32, SERVO42D, alimentazione) |
+  | CTX | GPIO 22 (TX del controller CAN dell'ESP32, non incrociato) |
+  | CRX | GPIO 23 (RX) |
+  | CANH / CANL | CANH / CANL del SERVO42D, doppino intrecciato corto |
+
+- La scheda Waveshare ha a bordo una resistenza da 120 Ω (da verificare sulla scheda). Con un solo slave e
+  cavo corto basta quella: non aggiungere altri terminatori.
+- Velocità del bus: deve essere uguale a quella impostata nel menu del SERVO42D (500 kbit/s di solito; da verificare).
+- Il firmware per ora pilota il SERVO42D in STEP/DIR/EN; il controllo via CAN è da scrivere e provare.
 - Il manuale non indica isolamento dell'interfaccia: considerarla **non isolata**.
   Con l'ESP32 nella scatola il cavo CAN è corto e non serve isolatore.
-- Per un solo slave, secondo il manuale, **non servono i terminatori da 120 Ω**.
 - Con un cavo lungo in futuro: transceiver isolato (ISO1050 con DC-DC, 3,3 V).
 
 ## Wattmetro / ROS (futuro, TX)
