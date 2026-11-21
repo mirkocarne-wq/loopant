@@ -25,6 +25,7 @@ lv_obj_t* btn40;
 lv_obj_t* btn20;
 lv_obj_t* displayPos;
 lv_obj_t* testoMm;
+lv_obj_t* btnZero;
 lv_obj_t* campoFreq;
 lv_obj_t* tastiera = nullptr;
 lv_obj_t* grafico;
@@ -74,6 +75,8 @@ void scegliBanda(lv_event_t* e) {
   evidenziaBanda();
   link_antenna::richiediTabella(banda);
 }
+
+void premiZero(lv_event_t*) { link_antenna::invia(proto::Tipo::ZERO); }
 
 void premiJog(lv_event_t* e) {
   link_antenna::invia(proto::Tipo::JOG, 0, (int32_t)(intptr_t)lv_event_get_user_data(e));
@@ -229,6 +232,11 @@ void crea(lv_obj_t* c) {
   displayPos = display7::crea(pos, 48, t.accent, t.segOffAccent);
   display7::testo(displayPos, "___ ___");
   testoMm = ui::etichetta(pos, "Arrivo sempre dal verso crescente", &font_14, t.text2);
+  btnZero = ui::pulsante(pos, "ZERO", &font_18, ui::Stile::NORMALE);
+  lv_obj_add_flag(btnZero, LV_OBJ_FLAG_FLOATING);  // in alto a destra, fuori dalla colonna
+  lv_obj_set_size(btnZero, 100, 44);
+  lv_obj_align(btnZero, LV_ALIGN_TOP_RIGHT, 0, 0);
+  lv_obj_add_event_cb(btnZero, premiZero, LV_EVENT_CLICKED, nullptr);
 
   lv_obj_t* jog = ui::contenitore(sx, LV_FLEX_FLOW_ROW_WRAP, 8);
   lv_obj_set_width(jog, LV_PCT(100));
@@ -306,6 +314,8 @@ void mostrata() { link_antenna::richiediTabella(banda); }
 
 void aggiorna(const link_antenna::Stato& s) {
   char buf[16];
+  if (s.collegato) lv_obj_clear_state(btnZero, LV_STATE_DISABLED);
+  else lv_obj_add_state(btnZero, LV_STATE_DISABLED);
   if (s.ricevuta) {
     long p = (long)s.r.posizione;
     if (p < 0) p = 0;

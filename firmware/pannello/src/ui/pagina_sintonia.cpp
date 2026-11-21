@@ -27,6 +27,7 @@ lv_obj_t* testoPosizione;
 lv_obj_t* btn40;
 lv_obj_t* btn20;
 lv_obj_t* btnTune;
+lv_obj_t* btnZero;
 
 const char* TASTI[] = {"7", "8", "9", "\n", "4", "5", "6", "\n", "1", "2", "3", "\n",
                        ",", "0", LV_SYMBOL_BACKSPACE, ""};
@@ -89,6 +90,9 @@ void aggiornaIngresso() {
   }
   ui::stilePulsante(btn40, b == bande::Banda::B40M ? ui::Stile::ATTIVO : ui::Stile::NORMALE);
   ui::stilePulsante(btn20, b == bande::Banda::B20M ? ui::Stile::ATTIVO : ui::Stile::NORMALE);
+
+  if (collegato) lv_obj_clear_state(btnZero, LV_STATE_DISABLED);
+  else lv_obj_add_state(btnZero, LV_STATE_DISABLED);
 
   lv_obj_t* l = lv_obj_get_child(btnTune, 0);
   if (valida && collegato) {
@@ -161,6 +165,9 @@ void premiTune(lv_event_t*) {
   fresco = true;
 }
 
+// Azzeramento sul finecorsa (anche il primo TUNE di ogni banda lo fa da solo)
+void premiZero(lv_event_t*) { link_antenna::invia(proto::Tipo::ZERO); }
+
 }  // namespace
 
 void crea(lv_obj_t* c) {
@@ -207,12 +214,19 @@ void crea(lv_obj_t* c) {
     lv_obj_add_event_cb(b, premiPasso, LV_EVENT_CLICKED, (void*)(intptr_t)passi[i]);
   }
 
-  btnTune = ui::pulsante(sx, "TUNE", &font_30, ui::Stile::PRIMARIO);
-  lv_obj_set_width(btnTune, LV_PCT(100));
+  lv_obj_t* filaTune = ui::contenitore(sx, LV_FLEX_FLOW_ROW, 10);
+  lv_obj_set_width(filaTune, LV_PCT(100));
+  lv_obj_set_flex_grow(filaTune, 1);
+  btnTune = ui::pulsante(filaTune, "TUNE", &font_30, ui::Stile::PRIMARIO);
+  lv_obj_set_height(btnTune, LV_PCT(100));
   lv_obj_set_flex_grow(btnTune, 1);
   lv_obj_set_style_radius(btnTune, 12, 0);
   lv_obj_set_style_text_letter_space(lv_obj_get_child(btnTune, 0), 4, 0);
   lv_obj_add_event_cb(btnTune, premiTune, LV_EVENT_CLICKED, nullptr);
+  btnZero = ui::pulsante(filaTune, "ZERO", &font_22, ui::Stile::NORMALE);
+  lv_obj_set_size(btnZero, 130, LV_PCT(100));
+  lv_obj_set_style_radius(btnZero, 12, 0);
+  lv_obj_add_event_cb(btnZero, premiZero, LV_EVENT_CLICKED, nullptr);
 
   // --- tastierino ---
   lv_obj_t* bm = lv_btnmatrix_create(c);

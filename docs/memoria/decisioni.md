@@ -23,6 +23,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Display all'antenna | OLED 0,96" SSD1306 (ELEGOO) su I2C SDA 21 / SCL 22, facoltativo, spento dopo 2 minuti a riposo | Stato e MAC visibili sul banco e all'installazione; già cablato sui pin I2C standard |
 | EN del motore | GPIO 23 (prima 21) | Il 21 va al display; il 23 è libero all'accensione, il 4 ha una pull-down |
 | Toolchain dell'antenna | arduino-cli con il core esp32 3.1.1, come il pannello (`compila.sh tx\|rx`) | Un solo core sul Mac; evita PlatformIO dopo l'avviso malware; compila senza modifiche |
+| Pulsante ZERO sul pannello | In Sintonia accanto a TUNE e in Calibrazione nel riquadro della posizione | Mancava: c'era solo nella pagina web e in console |
 | Associazione | Pulsante BOOT (GPIO 0) dell'antenna premuto 3 s, ricerca su tutti i canali, conferma con la finestra «Antenna trovata» sul pannello; l'antenna già associata si conferma da sola; protocollo v4 | Richiesta dell'utente; niente MAC da copiare e il canale del router si trova da solo |
 | Canale ESP-NOW dell'antenna | Ricerca automatica quando il pannello tace (messaggio di stato su ogni canale, vince quello con l'ACK del pannello), salvato in NVS; anche `canale` da console | Il router cambia spesso canale; meno di un secondo, senza password del WiFi |
 | Isolamento albero RX | Barra ABS 8 mm tra due giunti metallici | Albero e telaio del variabile portano RF |

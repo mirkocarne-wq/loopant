@@ -57,6 +57,7 @@ Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione
 | S4 | Pulsanti **40 m** / **20 m** (propongono l'ultima frequenza usata nella banda) | [D] |
 | S5 | Tasti di passo **±1** e **±5 kHz** | [D] |
 | S6 | **TUNE** invia la frequenza; disattivato se fuori banda (7 000–7 200, 14 000–14 350 kHz), con avviso | [D] |
+| S7 | **ZERO** accanto a TUNE: azzeramento sul finecorsa a richiesta (il primo TUNE di ogni banda lo fa da solo); disattivato senza antenna | [D] |
 
 ### C2. Memorie
 | ID | Requisito | |
@@ -103,7 +104,7 @@ Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione
 ### C7. Calibrazione (da Impostazioni)
 | ID | Requisito | |
 |---|---|---|
-| K1 | Scelta banda 40 / 20 m; posizione del motore su display a 7 segmenti | [D] |
+| K1 | Scelta banda 40 / 20 m; posizione del motore su display a 7 segmenti, con pulsante **ZERO** (serve prima del jog) | [D] |
 | K2 | Jog ±10 / ±100 / ±1000 passi; frequenza del dip letta sul NanoVNA; **Salva punto** | [D] |
 | K3 | Grafico posizione ↔ frequenza e tabella dei punti con eliminazione | [D] |
 
