@@ -16,8 +16,9 @@ Preferences nvs;
 
 bool can() { return !tipo_antenna::tx(); }  // TX: STEP/DIR (TMC2209); RX: CAN (SERVO42D)
 
-// I driver contano dal finecorsa; fuori da qui lo 0 è il parcheggio dopo l'azzeramento (posMin dal finecorsa).
-int32_t origine() { return tipo_antenna::meccanica().posMin(); }
+// I driver contano dal finecorsa; fuori da qui lo 0 è dove finisce l'azzeramento: sul finecorsa con il SERVO42D
+// via CAN (azzeramento fatto dal servo), allo stacco con STEP/DIR. Lì l'antenna resta fino al primo TUNE.
+int32_t origine() { return can() ? 0 : tipo_antenna::meccanica().staccoPassi; }
 
 bool kbitValido(uint16_t k) { return k == 125 || k == 250 || k == 500 || k == 1000; }
 

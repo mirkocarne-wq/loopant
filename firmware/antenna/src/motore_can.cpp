@@ -140,15 +140,10 @@ void ricevi(const twai_message_t& m) {
     case 0x91:  // 0 errore, 1 partito, 2 riuscito
       if (fase != Fase::AZZERAMENTO) break;
       if (stato == 0) errore(proto::Errore::AZZERAMENTO_FALLITO);
-      else if (stato == 2) {
-        // zero sul finecorsa del SERVO42D; poi si sale alla posizione minima ammessa (stacco + recupero del
-        // gioco), da cui jog e ritocco partono senza salti
+      else if (stato == 2) {  // zero dove il SERVO42D ha finito l'azzeramento: si resta lì fino al primo TUNE
         pos_ = 0;
         azzerato_ = true;
-        target = cfg::RX.posMin();
-        fase = Fase::VERSO_TARGET;
-        inizioFase = millis();
-        muoviA(target);
+        termina();
       }
       break;
     case 0x31:  // encoder cumulativo a 48 bit, 0x4000 per giro del motore
@@ -222,7 +217,8 @@ void fine() {
 
 bool vaiA(int32_t pos, bool recupero) {
   if (!installato || !azzerato_ || fase == Fase::AZZERAMENTO) return false;
-  target = constrain(pos, cfg::RX.posMin(), cfg::RX.posMax());
+  // con il recupero del gioco serve spazio sotto il target (posMin); il jog libero può scendere fino allo zero
+  target = constrain(pos, recupero ? cfg::RX.posMin() : 0, cfg::RX.posMax());
   abilita(true);
   inizioFase = millis();
   if (target > pos_ || !recupero) {

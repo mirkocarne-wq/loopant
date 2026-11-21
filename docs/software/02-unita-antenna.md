@@ -70,9 +70,11 @@ Segue il tipo di antenna (decisione del 21/11/2026): non c'è una scelta separat
    Se il target è sotto la posizione attuale, il motore scende di `RECUPERO_GIOCO_PASSI`
    sotto il target e poi risale. Così il gioco è sempre preso dalla stessa parte.
 2. **Azzeramento sul finecorsa MIN a ogni cambio banda**, e all'accensione al primo comando. Dopo lo zero l'antenna
-   sale alla posizione minima ammessa (`posMin` = stacco + recupero del gioco: 532 passi sull'RX), arrivando dal
-   basso, e ci resta fino al primo TUNE. **Quella posizione vale 0**: fuori dai driver (risposte al pannello,
-   calibrazione, display) le posizioni contano dal parcheggio; i driver contano dal finecorsa (`movimento.cpp`).
+   resta dove finisce l'azzeramento (sul finecorsa con il SERVO42D via CAN, allo stacco con STEP/DIR) fino al primo
+   TUNE. **Quella posizione vale 0**: fuori dai driver (risposte al pannello, calibrazione, display) le posizioni
+   contano da lì; i driver contano dal finecorsa (`movimento.cpp`). GOTO e jog normale stanno sopra `posMin`
+   (stacco + recupero del gioco: spazio per scendere sotto il target e risalire); il jog libero della manopola
+   scende fino a 0, così il primo scatto dopo lo zero non salta.
    Sequenza: ricerca veloce → stacco → riavvicinamento lento → zero → stacco finale.
 3. **Driver disabilitato dopo ogni movimento** (motore libero, nessun rumore HF).
 4. **Limiti software**: il target viene limitato tra `POS_MIN` e `POS_MAX`.

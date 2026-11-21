@@ -25,7 +25,7 @@ enum class Fase : uint8_t {
   AZ_STACCA,
   AZ_LENTO,        // riavvicinamento lento
   AZ_ATTESA_2,
-  AZ_FINE,         // stacco finale fino alla posizione minima ammessa
+  AZ_FINE,         // stacco finale
 };
 
 FastAccelStepperEngine motore;
@@ -110,7 +110,8 @@ void inizia() {
 
 bool vaiA(int32_t pos, bool recupero) {
   if (!stepper || !azzerato_ || azzeramento(fase)) return false;
-  target = constrain(pos, M().posMin(), M().posMax());
+  // con il recupero del gioco serve spazio sotto il target (posMin); il jog libero può scendere fino allo stacco
+  target = constrain(pos, recupero ? M().posMin() : M().staccoPassi, M().posMax());
   stepper->enableOutputs();
   if (target > stepper->getCurrentPosition() || !recupero) {
     avvia(target, M().velocitaHz);
@@ -220,9 +221,7 @@ void aggiorna() {
     case Fase::AZ_ATTESA_2:
       if (fermo()) {
         stepper->setCurrentPosition(0);  // zero dove il motore si è fermato davvero
-        // si sale fino alla posizione minima ammessa (stacco + recupero del gioco): parcheggio dopo lo zero,
-        // da cui jog e ritocco partono senza salti
-        avvia(M().posMin(), M().velocitaAzzeramentoHz);
+        avvia(M().staccoPassi, M().velocitaAzzeramentoHz);  // stacco finale: qui si resta fino al primo TUNE
         fase = Fase::AZ_FINE;
       }
       break;
