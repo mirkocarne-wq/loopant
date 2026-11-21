@@ -24,7 +24,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | EN del motore | GPIO 23 (prima 21) | Il 21 va al display; il 23 è libero all'accensione, il 4 ha una pull-down |
 | Toolchain dell'antenna | arduino-cli con il core esp32 3.1.1, come il pannello (`compila.sh tx\|rx`) | Un solo core sul Mac; evita PlatformIO dopo l'avviso malware; compila senza modifiche |
 | Associazione | Pulsante BOOT (GPIO 0) dell'antenna premuto 3 s, ricerca su tutti i canali, conferma con la finestra «Antenna trovata» sul pannello; l'antenna già associata si conferma da sola; protocollo v4 | Richiesta dell'utente; niente MAC da copiare e il canale del router si trova da solo |
-| Canale ESP-NOW dell'antenna | Predefinito in `config.h`, modificabile dalla console (`canale`) e salvato in NVS | Deve seguire il canale del router senza ricompilare |
+| Canale ESP-NOW dell'antenna | Ricerca automatica quando il pannello tace (messaggio di stato su ogni canale, vince quello con l'ACK del pannello), salvato in NVS; anche `canale` da console | Il router cambia spesso canale; meno di un secondo, senza password del WiFi |
 | Isolamento albero RX | Barra ABS 8 mm tra due giunti metallici | Albero e telaio del variabile portano RF |
 | Schermate del pannello | Sintonia, Memorie, Propagazione, Decoder, Diagnostica, Impostazioni (+ Calibrazione da Impostazioni, screensaver) | Mockup approvato il 20/11/2026 |
 | Temi del pannello | Notte, Giorno, Fosfori verdi, Fosfori ambra; STOP rosso in tutti | Leggibilità e gusto; lo STOP deve riconoscersi sempre |
@@ -61,6 +61,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Bounce buffer da 20 righe | Schermo fermo, ma 20 KB di RAM interna in più rispetto a 15 righe, che bastano |
 | PlatformIO per l'antenna (core 2.0.17) | Avviso malware di macOS al primo download, causa non trovata; sostituito da arduino-cli |
 | Display sui pin 16/17 con EN e CAN fermi | Scelta dell'utente: il display resta sui pin I2C standard |
+| Password del WiFi all'antenna con l'associazione | Non serve: la ricerca con ACK trova il canale; l'antenna non entra nella rete e la password non resta nella scatola sul balcone |
 | Calibrazione come scheda del pannello | Si usa di rado: spostata dentro Impostazioni |
 | D1 mini ESP8266 all'antenna | Non è un ESP32: un solo ADC, pochi GPIO, niente CAN; FastAccelStepper non lo supporta |
 | ESP32-S3-Zero all'antenna | Chip non schermato e antenna ceramica: troppo esposto all'RF del TX |

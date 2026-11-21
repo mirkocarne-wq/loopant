@@ -27,7 +27,7 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [x] Collegamento ESP-NOW cifrato con heartbeat tra pannello e antenna, provato sulle schede il 21/11/2026 (canale 3 del router, chiavi di esempio).
 - [ ] Chiavi ESP-NOW vere (`segreti.h`) su pannello e antenna: oggi entrambi usano quelle di esempio.
 - [x] Associazione con il pulsante BOOT dell'antenna e conferma sul pannello: provata sulle schede il 21/11/2026.
-- [ ] Antenna: ricerca automatica del canale se il router lo cambia senza premere BOOT (oggi BOOT o `canale`).
+- [x] Antenna: ricerca automatica del canale quando il pannello tace (ACK), provata il 21/11/2026.
 - [ ] Display OLED dell'antenna: disturbo sui 40 e 20 m acceso e spento (con la radio).
 - [x] Requisiti e mockup del pannello 7B approvati (docs/software/03-unita-controllo.md).
 - [x] Firmware del pannello 7B, prima versione: driver, collegamento, barra, schede, Sintonia, temi, Impostazioni di base (compila).

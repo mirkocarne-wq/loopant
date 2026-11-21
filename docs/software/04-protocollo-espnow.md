@@ -6,8 +6,8 @@ Definizione: `firmware/lib/Comune/src/protocollo.h`.
 - Un solo peer per unità, con **MAC fisso salvato in NVS**: si imposta con l'associazione (pulsante BOOT
   dell'antenna, sotto) oppure dalla console con `mac AA:BB:CC:DD:EE:FF`. All'accensione ogni unità stampa il proprio MAC.
 - **Stesso canale WiFi** su entrambe (`CANALE_WIFI`). Se il pannello si collega al WiFi di casa
-  (indici solari, ora), il canale è quello del router: l'antenna lo trova da sola con l'associazione
-  oppure si imposta con `canale <n>` dalla console dell'antenna (salvato in NVS).
+  (indici solari, ora), il canale è quello del router: se il router lo cambia, l'antenna lo ritrova da sola
+  (ricerca con ACK, [02-unita-antenna.md](02-unita-antenna.md)); si può anche impostare con `canale <n>`.
 - **Cifratura** con chiavi PMK/LMK in `segreti.h` (non versionato; copiare `segreti.esempio.h` e cambiare le chiavi).
 - Sono accettati solo pacchetti dal peer configurato, più i pacchetti di associazione in broadcast.
 
@@ -102,4 +102,4 @@ Il pannello tiene un solo comando in attesa di risposta; i comandi inviati nel f
 - Controllo: collegamento segnalato come perso se non arrivano risposte per 3 s.
 
 ## Da fare
-- Ricerca automatica del canale senza premere BOOT, se il router lo cambia.
+- Niente in sospeso sul collegamento; restano le chiavi vere in `segreti.h`.

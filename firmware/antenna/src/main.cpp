@@ -2,6 +2,7 @@
 // gestisce calibrazione, azzeramento a ogni cambio banda e sicurezza dell'heartbeat.
 #include <Arduino.h>
 #include <Preferences.h>
+#include <esp_wifi.h>
 
 #include "associazione.h"
 #include "bande.h"
@@ -48,7 +49,7 @@ proto::Stato statoAttuale() {
   return proto::Stato::FERMO;
 }
 
-void inviaRisposta(uint16_t seqComando) {
+proto::Risposta preparaRisposta(uint16_t seqComando) {
   proto::Risposta r = {};
   r.versione = proto::VERSIONE;
   r.tipo = proto::Tipo::RISPOSTA;
@@ -65,6 +66,11 @@ void inviaRisposta(uint16_t seqComando) {
            (movimento::modo() == movimento::Modo::CAN ? proto::FLAG_CAN : 0) |
            (VERSIONE_TX ? proto::FLAG_VERSIONE_TX : 0) |
            (movimento::azzerato() ? proto::FLAG_AZZERATA : 0);
+  return r;
+}
+
+void inviaRisposta(uint16_t seqComando) {
+  proto::Risposta r = preparaRisposta(seqComando);
   radio.invia(&r, sizeof(r));
   statoUltimoInvio = r.stato;
 }
@@ -224,6 +230,41 @@ void controllaHeartbeat() {
   }
 }
 
+// --- Ricerca del canale -------------------------------------------------------------------------
+// Il pannello segue il canale del router; se il router lo cambia l'antenna non sente più niente. Allora prova
+// tutti i canali, partendo da quello salvato, con un messaggio di stato: la radio del pannello lo conferma (ACK)
+// solo sul canale giusto. Con il pannello acceso dura meno di un secondo; il motore è fermo, quindi il loop
+// può aspettare.
+
+uint32_t ultimaRicerca = 0;
+
+void cercaCanale() {
+  if (!radio.peerValido() || associazione::fase() != associazione::Fase::INATTIVA) return;
+  if (movimento::inMovimento() || targetInSospeso) return;
+  uint32_t ora = millis();
+  if (ora - ultimoMessaggioRadio < cfg::RICERCA_CANALE_SILENZIO_MS) return;  // 0 = dall'accensione
+  if (ultimaRicerca && ora - ultimaRicerca < cfg::RICERCA_CANALE_INTERVALLO_MS) return;
+  ultimaRicerca = ora;
+
+  proto::Risposta r = preparaRisposta(0);
+  for (uint8_t i = 0; i < 13; i++) {
+    uint8_t ch = (canale - 1 + i) % 13 + 1;
+    esp_wifi_set_channel(ch, WIFI_SECOND_CHAN_NONE);
+    for (int tentativo = 0; tentativo < 2; tentativo++) {
+      r.seq = ++seqRisposta;
+      if (!radio.inviaConConferma(&r, sizeof(r), cfg::RICERCA_CANALE_ACK_MS)) continue;
+      statoUltimoInvio = r.stato;
+      if (ch != canale) {
+        Serial.printf("Pannello trovato sul canale %u (prima %u): salvato\n", ch, canale);
+        canale = ch;
+        nvs.putUChar("canale", ch);
+      }
+      return;
+    }
+  }
+  esp_wifi_set_channel(canale, WIFI_SECOND_CHAN_NONE);  // pannello spento: si resta sul canale salvato
+}
+
 // --- Associazione con il pulsante BOOT ---------------------------------------------------------
 
 void aggiornaAssociazione() {
@@ -236,7 +277,7 @@ void aggiornaAssociazione() {
     memcpy(macPannello, mac, 6);
     canale = ch;
     radio.cambiaPeer(mac, segreti::LMK);
-    ultimoMessaggioRadio = 0;
+    ultimoMessaggioRadio = millis();  // il pannello è appena stato sentito: niente ricerca del canale
     char t[18];
     Collegamento::scriviMac(mac, t);
     Serial.printf("Associata al pannello %s sul canale %u (salvato)\n", t, ch);
@@ -428,6 +469,7 @@ void loop() {
   }
 
   controllaHeartbeat();
+  cercaCanale();
   leggiConsole();
   aggiornaAssociazione();
   aggiornaOled();

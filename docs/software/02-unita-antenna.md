@@ -34,6 +34,12 @@ non aspetta l'I2C.
 ## Canale ESP-NOW
 Predefinito `CANALE_WIFI` (1) in `config.h`. L'associazione salva quello del pannello; dalla console
 `canale <1-13>` lo imposta a mano (salvato in NVS, riavviare).
+
+**Ricerca automatica**: il pannello segue il canale del router, che può cambiarlo spesso. Se il pannello tace da 5 s
+e il motore è fermo, l'antenna prova i canali da quello salvato in poi con un messaggio di stato: la radio del
+pannello lo conferma (ACK di ESP-NOW) solo sul canale giusto, che viene salvato in NVS. Con il pannello acceso
+dura meno di un secondo; se non risponde (pannello spento) si riprova ogni 10 s. Provata il 21/11/2026: partita
+dal canale 6, l'antenna ha ritrovato il pannello sul 3. Costanti `RICERCA_CANALE_*` in `config.h`.
 Se il pannello è collegato al WiFi di casa deve essere il canale del router (oggi il 3).
 
 ## Driver del motore (antenna RX)

@@ -47,6 +47,12 @@ constexpr uint16_t OLED_SPEGNI_S = 120;
 // --- Collegamento ---
 constexpr uint8_t CANALE_WIFI = 1;  // predefinito; si cambia dalla console con "canale <n>" (NVS)
 constexpr uint32_t TIMEOUT_HEARTBEAT_MS = 3000;  // 3 heartbeat persi
+// Ricerca del canale (il router lo cambia e il pannello lo segue): se il pannello tace da SILENZIO, a motore fermo,
+// l'antenna prova i canali 1-13 con un messaggio di stato che la radio del pannello conferma (ACK).
+// Se non lo trova (pannello spento) riprova ogni INTERVALLO.
+constexpr uint32_t RICERCA_CANALE_SILENZIO_MS = 5000;
+constexpr uint32_t RICERCA_CANALE_INTERVALLO_MS = 10000;
+constexpr uint32_t RICERCA_CANALE_ACK_MS = 40;  // attesa della conferma su ogni canale (2 tentativi)
 
 #if VERSIONE_TX
 // --- TX: NEMA11 + vite T6x1 (1 mm/giro), corsa 150 mm ---

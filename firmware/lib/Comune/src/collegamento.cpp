@@ -12,6 +12,9 @@ uint8_t macPeer[6] = {0};
 bool peerOk = false;
 bool broadcastOk = false;
 const uint8_t TUTTI[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+volatile int8_t esitoInvio = -1;  // ultimo invio: -1 in corso, 0 senza ACK, 1 ricevuto
+
+void suInvio(const uint8_t*, esp_now_send_status_t stato) { esitoInvio = stato == ESP_NOW_SEND_SUCCESS ? 1 : 0; }
 
 void annuncio(const uint8_t* mac, const uint8_t* dati, int len, int8_t rssi) {
   if (!codaAnnunci || len <= 0 || len > (int)sizeof(Annuncio::dati)) return;
@@ -65,6 +68,7 @@ bool Collegamento::inizia(const uint8_t peer[6], const uint8_t pmk[16], const ui
   if (esp_now_init() != ESP_OK) return false;
   esp_now_set_pmk(pmk);
   esp_now_register_recv_cb(suRicezione);
+  esp_now_register_send_cb(suInvio);
 
   memcpy(macPeer, peer, 6);
   peerOk = false;
@@ -83,6 +87,15 @@ bool Collegamento::inizia(const uint8_t peer[6], const uint8_t pmk[16], const ui
 bool Collegamento::invia(const void* dati, size_t len) {
   if (!peerOk) return false;
   return esp_now_send(macPeer, (const uint8_t*)dati, len) == ESP_OK;
+}
+
+bool Collegamento::inviaConConferma(const void* dati, size_t len, uint32_t attesaMs) {
+  if (!peerOk) return false;
+  esitoInvio = -1;
+  if (esp_now_send(macPeer, (const uint8_t*)dati, len) != ESP_OK) return false;
+  uint32_t inizio = millis();
+  while (esitoInvio < 0 && millis() - inizio < attesaMs) delay(1);
+  return esitoInvio == 1;
 }
 
 bool Collegamento::ricevi(Pacchetto& p) { return coda && xQueueReceive(coda, &p, 0) == pdTRUE; }

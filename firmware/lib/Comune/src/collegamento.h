@@ -22,6 +22,9 @@ class Collegamento {
   // peer: MAC dell'altra unità; pmk/lmk: chiavi da 16 byte; canale: canale WiFi comune.
   bool inizia(const uint8_t peer[6], const uint8_t pmk[16], const uint8_t lmk[16], uint8_t canale);
   bool invia(const void* dati, size_t len);
+  // Invio al peer con attesa della conferma di ricezione della sua radio (ACK): true se il peer l'ha ricevuto.
+  // Serve all'antenna per trovare il canale del pannello. Blocca al massimo attesaMs.
+  bool inviaConConferma(const void* dati, size_t len, uint32_t attesaMs);
   bool ricevi(Pacchetto& p);
   bool peerValido() const;
 
