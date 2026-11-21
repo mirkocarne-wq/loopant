@@ -244,7 +244,7 @@ void aggiorna(const link_antenna::Stato& s) {
       if (v && staz) {
         sole::AlbaTramonto at = sole::albaTramonto(adesso, lat, lon);
         int a = (int)(at.alba * 60 + 0.5), tr = (int)(at.tramonto * 60 + 0.5);
-        snprintf(buf, sizeof(buf), "Grey line · alba %02d:%02d · tramonto %02d:%02d UTC", a / 60 % 24, a % 60,
+        snprintf(buf, sizeof(buf), "Alba %02d:%02d · tramonto %02d:%02d UTC", a / 60 % 24, a % 60,
                  tr / 60 % 24, tr % 60);
         lv_label_set_text(riga2, buf);
       } else {

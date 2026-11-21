@@ -55,17 +55,15 @@ lv_obj_t* casella(lv_obj_t* parent, const char* nome) {
   lv_obj_set_style_radius(c, 8, 0);
   lv_obj_set_style_pad_hor(c, 12, 0);
   lv_obj_set_style_pad_ver(c, 8, 0);
-  lv_obj_set_width(c, LV_PCT(47));
-  lv_obj_set_flex_grow(c, 1);
-  lv_obj_t* v = ui::etichetta(c, "--", &font_26, t.text);
-  ui::etichetta(c, nome, &font_14, t.text2);
+  lv_obj_set_size(c, 133, 64);
+  lv_obj_t* v = ui::etichetta(c, "--", &font_24, t.text);
+  ui::etichetta(c, nome, &font_12, t.text2);
   return v;
 }
 
 lv_obj_t* colonna(lv_obj_t* parent, const char* titolo) {
   lv_obj_t* s = ui::scheda(parent);
-  lv_obj_set_height(s, LV_PCT(100));
-  lv_obj_set_flex_grow(s, 1);
+  lv_obj_set_size(s, 318, LV_PCT(100));
   ui::titoletto(s, titolo);
   return s;
 }
@@ -120,12 +118,11 @@ void crea(lv_obj_t* c) {
   // Contatori
   lv_obj_t* con = colonna(sopra, "CONTATORI");
   lv_obj_t* griglia = ui::contenitore(con, LV_FLEX_FLOW_ROW_WRAP, 10);
-  lv_obj_set_width(griglia, LV_PCT(100));
-  lv_obj_set_flex_grow(griglia, 1);
+  lv_obj_set_width(griglia, 276);
   valMovimenti = casella(griglia, "movimenti");
   valAzzeramenti = casella(griglia, "azzeramenti");
-  valAcceso = casella(griglia, "pannello acceso da");
-  valVersione = casella(griglia, "versione antenna");
+  valAcceso = casella(griglia, "pannello acceso");
+  valVersione = casella(griglia, "antenna");
 
   // Ultimi eventi
   lv_obj_t* ev = ui::scheda(sotto);

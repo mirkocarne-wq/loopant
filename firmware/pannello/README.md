@@ -42,6 +42,7 @@ src/audio.*             ingresso audio (ADC continuo a 8 kHz)
 src/decoder/            algoritmi CW e RTTY (C++ puro, provati sul PC)
 src/decodifica.*        decoder sul pannello: impostazioni, testo ricevuto
 test/                   test sul PC: ./test/esegui_test.sh
+simulatore/             interfaccia sul PC con LVGL, schermate in PNG
 src/font/               font Montserrat 12-34 con lettere accentate (generati, non modificare a mano)
 strumenti/genera_font.sh  rigenera i font con lv_font_conv 1.5.3
 src/ui/                 barra, schede e schermate
@@ -81,6 +82,10 @@ test/esegui_test.sh
 ```
 Prova i calcoli del sole e del locator, l'analisi del feed degli indici e i decoder CW e RTTY
 con segnali sintetici e rumore (velocità automatica, filtri, Reverse, 50 baud/850 Hz, AFC con 25 Hz di errore).
+
+## Simulatore e schermate
+Il simulatore ([simulatore/README.md](simulatore/README.md)) disegna le schermate vere sul PC.
+Le ultime sono in [docs/software/schermate/](../../docs/software/schermate/).
 
 ## Ingresso audio
 Il decoder legge l'audio della radio da `cfg::PIN_AUDIO` (predefinito **GPIO6**, l'unico ADC1 che sembra libero

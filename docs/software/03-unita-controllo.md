@@ -12,6 +12,8 @@ I valori mostrati nel mockup (posizioni, eventi, indici solari) sono **di esempi
 
 Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione](09-propagazione.md).
 
+**Schermate del firmware** (generate dal simulatore sul PC, dati di esempio): [schermate/](schermate/).
+
 ## A. Dati della scheda (da documentazione Waveshare)
 | Voce | Valore |
 |---|---|

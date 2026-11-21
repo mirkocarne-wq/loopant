@@ -36,6 +36,7 @@ cd firmware/antenna && pio run -e tx   # versione TX (NEMA11 + TMC2209)
 cd firmware/antenna && pio run -e rx   # versione RX (SERVO42D in STEP/DIR)
 firmware/pannello/compila.sh           # pannello, con arduino-cli (core esp32 3.1.1, lvgl 8.4.0)
 firmware/pannello/test/esegui_test.sh  # test sul PC: sole, locator, indici, decoder CW/RTTY
+firmware/pannello/simulatore/compila.sh <lvgl>  # interfaccia sul PC, schermate PNG (controllare dopo ogni modifica)
 ```
 Le chiavi ESP-NOW reali vanno in `firmware/lib/Comune/src/segreti.h` (non versionato);
 senza, si compila con le chiavi di esempio e un avviso.

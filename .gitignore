@@ -2,5 +2,8 @@
 .pio/
 .vscode/
 
+# Schermate generate dal simulatore
+firmware/pannello/simulatore/schermate/
+
 # Chiavi ESP-NOW reali
 firmware/lib/Comune/src/segreti.h
