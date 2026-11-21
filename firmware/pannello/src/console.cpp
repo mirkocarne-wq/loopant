@@ -10,6 +10,7 @@
 #include "link_antenna.h"
 #include "ora.h"
 #include "rete.h"
+#include "schermo.h"
 #include "servizio_qrz.h"
 #include "tema.h"
 #include "ui/ui.h"
@@ -52,7 +53,7 @@ void aiuto() {
       "         mac <AA:BB:CC:DD:EE:FF> | call <nominativo> | loc <locator> | tema <0-3> |\n"
       "         ora <AAAA-MM-GG HH:MM> (UTC) | wifi <ssid> <password> | reti | rete |\n"
       "         qrz <utente> <password> | qrzkey <chiave> | qrzcancella | cerca <nominativo> | qso [40|20] |\n"
-      "         mem | aiuto");
+      "         mem | lcd [MHz | sync 0|1] | aiuto");
 }
 
 void stato() {
@@ -156,6 +157,24 @@ void esegui(char* riga) {
                   (unsigned)heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT),
                   (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT),
                   (unsigned)heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+  } else if (!strcmp(cmd, "lcd")) {
+    if (a1 && !strcmp(a1, "sync") && a2) {
+      schermo::risincronizza(atoi(a2) != 0);
+    } else if (a1) {
+      double mhz = atof(a1);
+      if (mhz < 10 || mhz > 40) {
+        uscita.println("Clock dei pixel fuori campo (10-40 MHz)");
+        return;
+      }
+      schermo::frequenzaPixel((uint32_t)(mhz * 1e6 + 0.5));
+    }
+    // quadri al secondo misurati su 400 ms (attesa breve: l'heartbeat non ne risente)
+    delay(100);
+    uint32_t q0 = schermo::quadri();
+    delay(400);
+    uint32_t q = schermo::quadri() - q0;
+    uscita.printf("Schermo: clock dei pixel %.1f MHz, %.1f quadri/s, riallineamento a ogni quadro %s\n",
+                  schermo::frequenzaPixel() / 1e6, q * 2.5, schermo::risincronizza() ? "sì" : "no");
   } else if (!strcmp(cmd, "qrzcancella")) {
     ImpostazioniQrz& q = impostazioni::qrz();
     q.utente[0] = q.password[0] = q.chiave[0] = 0;

@@ -19,9 +19,18 @@ const char *TAG = "example";
 // Handle for the RGB LCD panel
 static esp_lcd_panel_handle_t panel_handle = NULL; // Declare a handle for the LCD panel
 
+// loopant: stato per la correzione del tremolio
+static volatile uint32_t frame_count = 0;
+static volatile bool resync = true;
+static uint32_t pclk_hz = EXAMPLE_LCD_PIXEL_CLOCK_HZ;
+
 // VSYNC event callback function
 IRAM_ATTR static bool rgb_lcd_on_vsync_event(esp_lcd_panel_handle_t panel, const esp_lcd_rgb_panel_event_data_t *edata, void *user_ctx)
 {
+    frame_count = frame_count + 1;
+    // Il core Arduino non abilita CONFIG_LCD_RGB_RESTART_IN_VSYNC: se il DMA perde il passo con la PSRAM
+    // l'immagine resta spostata. Chiedendo il riavvio a ogni quadro il driver si riallinea al prossimo VSYNC.
+    if (resync) esp_lcd_rgb_panel_restart(panel);
     return lvgl_port_notify_rgb_vsync();
 }
 
@@ -187,6 +196,19 @@ void waveshare_get_frame_buffer(void **buf1, void **buf2)
 {
     ESP_ERROR_CHECK(esp_lcd_rgb_panel_get_frame_buffer(panel_handle, 2, buf1, buf2));
 }
+
+void waveshare_rgb_lcd_set_pclk(uint32_t hz)
+{
+    if (panel_handle && esp_lcd_rgb_panel_set_pclk(panel_handle, hz) == ESP_OK) pclk_hz = hz;
+}
+
+uint32_t waveshare_rgb_lcd_get_pclk(void) { return pclk_hz; }
+
+void waveshare_rgb_lcd_set_resync(bool on) { resync = on; }
+
+bool waveshare_rgb_lcd_get_resync(void) { return resync; }
+
+uint32_t waveshare_rgb_lcd_frames(void) { return frame_count; }
 /**
  * @brief Turn on the RGB LCD screen backlight.
  *

@@ -15,4 +15,14 @@ void luminosita(uint8_t p) {
   IO_EXTENSION_Pwm_Output((uint8_t)(100 - p));
 }
 
+void frequenzaPixel(uint32_t hz) { waveshare_rgb_lcd_set_pclk(hz); }
+
+uint32_t frequenzaPixel() { return waveshare_rgb_lcd_get_pclk(); }
+
+void risincronizza(bool attiva) { waveshare_rgb_lcd_set_resync(attiva); }
+
+bool risincronizza() { return waveshare_rgb_lcd_get_resync(); }
+
+uint32_t quadri() { return waveshare_rgb_lcd_frames(); }
+
 }  // namespace schermo

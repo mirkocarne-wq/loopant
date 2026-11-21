@@ -45,4 +45,5 @@ I comandi `goto`, `stop`, `zero`, `jog`, `cal`, `calcanc` vengono inviati all'an
 | `cerca <nominativo>` | Ricerca su QRZ (il risultato arriva dopo qualche secondo) |
 | `qso [40\|20]` | Ultimi QSO dal logbook QRZ |
 | `mem` | RAM interna libera (minimo, blocco più grande) e PSRAM |
+| `lcd [MHz \| sync 0\|1]` | Schermo: clock dei pixel e quadri al secondo; cambia il clock (non salvato) o il riallineamento del DMA |
 | `aiuto` | Elenco comandi |

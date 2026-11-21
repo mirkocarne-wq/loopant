@@ -1,6 +1,6 @@
 # Decisioni di progetto
 
-Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiornato al 20/11/2026.
+Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiornato al 21/11/2026.
 
 ## Prese
 | Ambito | Decisione | Motivo |
@@ -41,6 +41,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Memoria di LVGL | In PSRAM con heap_caps_malloc | Con malloc la RAM interna si esauriva (820 byte liberi) |
 | Pagina web | Server sulla porta 80 + mDNS loopant.local; stato, comandi, schermo in BMP, tocco remoto; senza password | Richiesta dell'utente; rete di casa fidata |
 | Console | Su entrambe le USB-C (USB CDC On Boot + Serial0) | L'utente ha due porte; la USB nativa non riavvia la scheda |
+| Schermo del pannello | Clock dei pixel 21 MHz, bounce buffer 15 righe, riallineamento del DMA a ogni quadro | A 30 MHz l'immagine tremava (PSRAM a 80 MHz nel core standard); provato sulla scheda il 21/11/2026 |
 | WiFi del pannello | Facoltativo: NTP e indici solari (hamqsl.com); il peer ESP-NOW segue il canale corrente | L'antenna deve stare sul canale del router |
 
 ## Scartate
@@ -51,6 +52,8 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Variabile a lamelle 1000 pF in TX | Spaziatura circa 1 mm: inadatto a circa 3,3–4,7 kV di picco |
 | Tubo prolunga doccia Leroy Merlin (ottone, circa 24 mm) | Scartato per il condensatore TX |
 | diymore ESP32-S3 3,5" come unità antenna | Pochi GPIO, schermo inutile all'antenna |
+| Core Arduino "esp32-XIP-3.1.1" di Waveshare (PSRAM a 120 MHz) | Pacchetto non ufficiale da Google Drive; a 21 MHz lo schermo è già fermo |
+| Bounce buffer da 20 righe | Schermo fermo, ma 20 KB di RAM interna in più rispetto a 15 righe, che bastano |
 | Calibrazione come scheda del pannello | Si usa di rado: spostata dentro Impostazioni |
 | D1 mini ESP8266 all'antenna | Non è un ESP32: un solo ADC, pochi GPIO, niente CAN; FastAccelStepper non lo supporta |
 | ESP32-S3-Zero all'antenna | Chip non schermato e antenna ceramica: troppo esposto all'RF del TX |

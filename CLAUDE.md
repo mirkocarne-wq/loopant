@@ -44,6 +44,7 @@ Il pannello 7B usa il core Arduino ESP32 **3.1.1** (gli esempi Waveshare usano `
 l'antenna resta su PlatformIO `espressif32@6.9.0` (core 2.0.17). Non usare `Wire` sul pannello: l'I2C è del driver Waveshare.
 Sul pannello LVGL alloca in **PSRAM** (`lv_conf.h`): non tornare a `malloc`, la RAM interna si esaurisce
 (controllare con il comando `mem`). Nel task di LVGL (stack 6 KB) le strutture grandi vanno dichiarate `static`.
+Schermo del pannello: clock dei pixel 21 MHz e bounce buffer da 15 righe; a 30 MHz l'immagine trema (PSRAM a 80 MHz).
 
 ## Regole che il firmware deve rispettare
 - **Avvicinarsi alla posizione target sempre dallo stesso verso**: il gioco del riduttore

@@ -3,8 +3,8 @@
 Firmware Arduino (core ESP32 **3.x**) + LVGL 8.4. Requisiti: [docs/software/03-unita-controllo.md](../../docs/software/03-unita-controllo.md).
 
 ## Stato
-Tutte le schermate del mockup sono scritte. **Provato sulla scheda il 21/11/2026**: schermo, touch, colori,
-luminosità e ricerca delle reti WiFi funzionano. Da provare: collegamento con l'antenna, decoder con segnali veri.
+Tutte le schermate del mockup sono scritte. **Provato sulla scheda il 21/11/2026**: schermo (fermo con il clock
+dei pixel a 21 MHz, vedi sotto), touch, colori, luminosità e ricerca delle reti WiFi funzionano. Da provare: collegamento con l'antenna, decoder con segnali veri.
 
 | Parte | Stato |
 |---|---|
@@ -111,7 +111,22 @@ Con il WiFi collegato il canale ESP-NOW diventa quello del router: **sull'antenn
 ## Memoria
 LVGL alloca i suoi oggetti in **PSRAM** (`lv_conf.h`, `heap_caps_malloc`). Con `malloc` normale le migliaia di
 piccoli oggetti finivano in RAM interna (allocazioni sotto i 4 KB) e la esaurivano: WiFi, DNS e HTTPS fallivano.
-Non tornare a `malloc`. Il comando `mem` mostra la RAM interna libera (circa 137 KB a riposo).
+Non tornare a `malloc`. Il comando `mem` mostra la RAM interna libera (circa 88 KB a riposo con il WiFi collegato,
+il server web e i buffer dello schermo da 15 righe).
+
+## Schermo che trema
+Con il core Arduino standard la PSRAM ottale va a 80 MHz e il codice gira dalla flash, che condivide lo stesso bus.
+Con il clock dei pixel a 30 MHz degli esempi Waveshare il DMA dello schermo non riceveva i dati in tempo: l'immagine
+tremava in orizzontale e i quadri trasmessi variavano da 2 a 32 al secondo (misura del 21/11/2026). Correzioni in
+`src/waveshare/rgb_lcd_port.*`:
+- clock dei pixel **21 MHz** (circa 23 quadri al secondo, nessuno sfarfallio visibile);
+- buffer intermedi (bounce buffer) da **15 righe** invece di 10: con 10 tremava ancora un po' cambiando scheda;
+- riallineamento del DMA a ogni quadro (`esp_lcd_rgb_panel_restart`), come `CONFIG_LCD_RGB_RESTART_IN_VSYNC`,
+  che il core Arduino non abilita.
+
+Il comando `lcd` della console mostra clock e quadri al secondo misurati; `lcd <MHz>` cambia il clock al volo
+(non salvato), `lcd sync 0|1` spegne o accende il riallineamento. Per tornare a 30 MHz servirebbe il core
+"esp32-XIP-3.1.1" di Waveshare (PSRAM a 120 MHz e codice eseguito dalla PSRAM), non adottato.
 
 ## Font
 I font in `src/font/` sono Montserrat Medium (SIL Open Font License 1.1) con i simboli di LVGL

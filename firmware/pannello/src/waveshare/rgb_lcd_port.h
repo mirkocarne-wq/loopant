@@ -34,7 +34,10 @@
  */
 #define EXAMPLE_LCD_H_RES               (1024)  ///< Horizontal resolution in pixels
 #define EXAMPLE_LCD_V_RES               (600)  ///< Vertical resolution in pixels
-#define EXAMPLE_LCD_PIXEL_CLOCK_HZ      (30 * 1000 * 1000) ///< Pixel clock frequency in Hz
+// loopant: 21 MHz invece dei 30 degli esempi Waveshare (circa 23 quadri/s). Con il core Arduino standard la PSRAM
+// va a 80 MHz e a 30 MHz il DMA perdeva quadri (misurati da 2 a 32 al secondo): immagine che tremava in orizzontale.
+// A 21 MHz l'immagine è ferma (prova sulla scheda del 21/11/2026). Si cambia dalla console con "lcd <MHz>".
+#define EXAMPLE_LCD_PIXEL_CLOCK_HZ      (21 * 1000 * 1000) ///< Pixel clock frequency in Hz
 
 /**
  * @brief Color and Pixel Configuration
@@ -43,7 +46,9 @@
 #define EXAMPLE_RGB_BIT_PER_PIXEL       (16)   ///< RGB interface color depth
 #define EXAMPLE_RGB_DATA_WIDTH          (16)   ///< Data width for RGB interface
 #define EXAMPLE_LCD_RGB_BUFFER_NUMS     (2)    ///< Number of frame buffers for double buffering
-#define EXAMPLE_RGB_BOUNCE_BUFFER_SIZE  (EXAMPLE_LCD_H_RES * 10) ///< Size of bounce buffer for RGB data
+// loopant: 15 righe invece di 10 (60 KB di RAM interna per i due buffer, 20 KB più dell'esempio): con 10 righe
+// l'immagine tremava ancora un po' cambiando scheda, con 15 è ferma. 20 righe toglierebbero troppa RAM all'HTTPS.
+#define EXAMPLE_RGB_BOUNCE_BUFFER_SIZE  (EXAMPLE_LCD_H_RES * 15) ///< Size of bounce buffer for RGB data
 
 /**
  * @brief GPIO Pins for RGB LCD Signals
@@ -125,5 +130,12 @@ void wavesahre_rgb_lcd_display(uint8_t *Image);
  * @param buf2 Pointer to hold the address of the second frame buffer.
  */
 void waveshare_get_frame_buffer(void **buf1, void **buf2);
+
+// loopant: diagnostica e correzione del tremolio (DMA RGB che perde il passo con la PSRAM)
+void waveshare_rgb_lcd_set_pclk(uint32_t hz);   // applicato al prossimo VSYNC
+uint32_t waveshare_rgb_lcd_get_pclk(void);
+void waveshare_rgb_lcd_set_resync(bool on);     // riallinea il DMA a ogni quadro (come CONFIG_LCD_RGB_RESTART_IN_VSYNC)
+bool waveshare_rgb_lcd_get_resync(void);
+uint32_t waveshare_rgb_lcd_frames(void);        // quadri trasmessi dall'accensione
 
 #endif // _RGB_LCD_H_
