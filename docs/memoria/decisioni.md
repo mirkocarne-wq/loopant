@@ -19,6 +19,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Collegamento | ESP-NOW cifrato (PMK/LMK), MAC fissi in NVS, canale fisso (quello del router di casa se il pannello usa il WiFi) | Semplice; il WiFi serve solo per indici solari e ora |
 | Alimentazione | 24 V 2,5 A in casa, convertitore 24→5 V all'antenna | Corrente sufficiente; alimentatore lontano dalla radio |
 | Firmware dell'antenna | Unico per TX e RX: tipo scelto dal pannello (o `tipo tx\|rx`), salvato in NVS, riavvio al cambio; calibrazione separata per tipo; al primo avvio RX | Richiesta dell'utente; niente versioni da scegliere quando si carica |
+| Finecorsa | Antenna RX: sugli ingressi del SERVO42D, che fa lo zero; antenna TX: sull'ESP32 (GPIO 27/14), zero fatto dal firmware | Decisione dell'utente; il TMC2209 non ha ingressi per i finecorsa |
 | Driver del motore RX | Doppio: STEP/DIR o CAN (SERVO42D), scelto dal pannello e salvato in NVS sull'antenna | Il SERVO42D ha già gli ingressi dei finecorsa; in CAN si legge lo stato del driver |
 | Transceiver CAN | Waveshare SN65HVD230 (3,3 V) su GPIO 17 (TX2) / 16 (RX2), già in possesso | Stessa tensione dell'ESP32, nessun convertitore di livello; 22/23 lasciati al display |
 | Display all'antenna | OLED 0,96" SSD1306 (ELEGOO) su I2C SDA 21 / SCL 22, facoltativo, spento dopo 2 minuti a riposo | Stato e MAC visibili sul banco e all'installazione; già cablato sui pin I2C standard |

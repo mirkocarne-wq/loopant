@@ -53,9 +53,10 @@ Se il pannello è collegato al WiFi di casa deve essere il canale del router (og
 Si sceglie dal pannello (Impostazioni → Antenna) o dalla console (`motore stepdir|can`); la scelta resta in NVS.
 | Driver | Comandi | Finecorsa e azzeramento | Codice |
 |---|---|---|---|
-| STEP/DIR | impulsi con FastAccelStepper | microswitch sui GPIO 27/14, azzeramento fatto dal firmware | `motore_stepdir.cpp` |
-| CAN | SERVO42D via SN65HVD230 (GPIO 22/23) | finecorsa collegati al SERVO42D, azzeramento con il suo comando 0x91 (parametri dal menu del driver) | `motore_can.cpp` |
+| STEP/DIR | impulsi con FastAccelStepper | finecorsa sul SERVO42D: azzeramento **da adattare** (oggi il firmware li cerca sui GPIO 27/14, che valgono solo per il TX) | `motore_stepdir.cpp` |
+| CAN | SERVO42D via SN65HVD230 (GPIO 17/16) | finecorsa collegati al SERVO42D, azzeramento con il suo comando 0x91 (parametri dal menu del driver) | `motore_can.cpp` |
 
+- Finecorsa: sull'antenna RX sono collegati al SERVO42D, sull'antenna TX all'ESP32 (GPIO 27/14).
 - Le posizioni sono in impulsi con gli stessi micropassi in entrambi i modi: la tabella di calibrazione resta valida.
 - Dopo un cambio di driver la posizione non è più nota: serve un nuovo azzeramento.
 - Nel cambio il firmware mette il SERVO42D nel modo giusto via CAN (SR_vFOC per il CAN, CR_vFOC per STEP/DIR).

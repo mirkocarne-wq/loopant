@@ -12,7 +12,8 @@ Il software è descritto in [`../software/`](../software/README.md).
   Tutti i pin usati dal firmware ci sono sia sulla versione a 30 sia su quella a 38 pin.
 - Driver **TMC2209** (STEP/DIR/EN), in **stealthChop**; driver disabilitato dopo ogni movimento.
 - Corrente del NEMA11: da regolare sul valore nominale (0,5–1 A, controllare la scheda tecnica).
-- Finecorsa: 2, con pull-up e filtro RC/100 nF.
+- Finecorsa: **antenna TX** sull'ESP32 (GPIO 27 MIN, 14 MAX, pull-up e filtro RC/100 nF), lo zero lo fa il firmware;
+  **antenna RX** sugli ingressi del SERVO42D, che fa lo zero da solo (decisione del 21/11/2026).
 - Versione RX: SERVO42D pilotato dallo stesso ESP32 con **STEP/DIR/EN** (modo a impulsi) oppure via CAN.
 
 ### Pinout suggerito (da confermare in fase di cablaggio)
@@ -20,7 +21,7 @@ Il software è descritto in [`../software/`](../software/README.md).
 |---|---|---|
 | STEP / DIR / EN | nell'intervallo 16–23 | Nel firmware: STEP 18, DIR 19, EN 23 (libero all'accensione) |
 | UART TMC2209 | 25 / 26 | Nel firmware: TX 25, RX 26 |
-| Finecorsa | 27 / 14 | Nel firmware: MIN 27, MAX 14 |
+| Finecorsa (solo antenna TX) | 27 / 14 | Nel firmware: MIN 27, MAX 14; sull'antenna RX sono sul SERVO42D |
 | Ingressi analogici | solo ADC1 (32–39) | L'ADC2 non funziona con WiFi/ESP-NOW |
 | CAN (solo SERVO42D via CAN) | TX 17 (TX2) / RX 16 (RX2) | Transceiver Waveshare SN65HVD230 (3,3 V) |
 | Display OLED 0,96" (I2C) | SDA 21 / SCL 22 | SSD1306 128×64 a 0x3C, pin I2C standard; bus libero per altri moduli I2C (es. ADS1115) |
@@ -70,8 +71,8 @@ pull-down interna e il driver (EN attivo basso) resterebbe abilitato durante l'a
 - La scheda Waveshare ha a bordo una resistenza da 120 Ω (da verificare sulla scheda). Con un solo slave e
   cavo corto basta quella: non aggiungere altri terminatori.
 - Velocità del bus: deve essere uguale a quella impostata nel menu del SERVO42D (500 kbit/s di solito; da verificare).
-- Il firmware supporta entrambi i modi (STEP/DIR o CAN), scelti dal pannello. In CAN i finecorsa vanno collegati al
-  SERVO42D e l'azzeramento lo fa il driver con i parametri impostati nel suo menu (livello, verso, velocità): da provare.
+- Il firmware supporta entrambi i modi (STEP/DIR o CAN), scelti dal pannello. Sull'antenna RX i finecorsa sono sempre
+  sul SERVO42D e l'azzeramento lo fa il driver con i parametri impostati nel suo menu (livello, verso, velocità): da provare.
 - Il manuale non indica isolamento dell'interfaccia: considerarla **non isolata**.
   Con l'ESP32 nella scatola il cavo CAN è corto e non serve isolatore.
 - Con un cavo lungo in futuro: transceiver isolato (ISO1050 con DC-DC, 3,3 V).
