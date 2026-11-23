@@ -25,11 +25,15 @@
 
 ## Contenitore stampato del motore e dell'elettronica (proposta da confermare)
 - Modello parametrico in [`hardware/contenitore-rx/`](../../hardware/contenitore-rx/README.md) (CadQuery, STL e STEP).
-- Dentro: SERVO42D e riduttore fissati con la **squadra a 90°** a una piastra interna (asole per viti M4);
-  millefori 90×70 con ESP32 DevKit, SN65HVD230 e convertitore 24→5 V; OLED 0,96" sotto il coperchio, dietro un
-  vetrino.
-- Ingombro di circa 176 × 141 × 83 mm più il coperchio; guarnizione piatta in TPU, 8 viti M3 con inserti a caldo,
-  2 PG7 (24 V e finecorsa), valvola di sfiato M12, paraolio 8×16×5 sull'asta ABS che esce dalla parete frontale.
+- Dentro: SERVO42D e riduttore fissati con la **squadra a 90°** a una piastra interna (asole per viti M4),
+  **sull'asse centrale** della scatola; due strisce di millefori 35×90 ai lati del motore (ESP32 DevKit da una
+  parte, SN65HVD230 e convertitore 24→5 V dall'altra); OLED 0,96" sotto il coperchio, dietro un vetrino.
+- L'albero esce al centro della parete frontale: foro per il **tubo isolante da 8 mm**, con paraolio 8×16×5.
+- **Fissaggio al palo:** staffa stampata con due blocchi a V (pali da circa 20 a 50 mm) e due fascette stringitubo
+  inox, avvitata al fondo con 4 inserti M4 ciechi. Palo verticale, parete frontale in alto verso il variabile,
+  24 V e sfiato in basso.
+- Ingombro di circa 176 × 141 × 83 mm più il coperchio e la staffa (32 mm); guarnizione piatta in TPU, 8 viti M3
+  con inserti a caldo, 2 PG7 (24 V e finecorsa), valvola di sfiato M12.
 - **Proposta:** il variabile va in una scatola separata, lontano dall'elettronica, invece di stare nella scatola
   unica descritta sotto. Da confermare.
 - Tutte le misure dei componenti sono **stime da verificare** con il calibro (tabella nel README).

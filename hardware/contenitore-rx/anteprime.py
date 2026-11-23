@@ -8,7 +8,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-COLORI = {"scatola": "#dfe3e8", "piastra": "#f6ae2d", "coperchio": "#86b6f6", "guarnizione": "#d93025"}
+COLORI = {"scatola": "#dfe3e8", "piastra": "#f6ae2d", "coperchio": "#86b6f6", "guarnizione": "#d93025",
+          "staffa": "#7cb342", "palo": "#8d8d8d"}
 
 
 def triangoli(oggetto, spost=(0, 0, 0), tol=0.2):
@@ -87,26 +88,36 @@ def figura(gruppi, file, elev, azim, titolo):
     print("anteprima:", os.path.basename(file))
 
 
-def disegna(qui, parti, pezzi, z_coperchio, spessore_coperchio):
+def installato(tri):
+    """Dalla posizione di stampa a quella sul palo verticale: parete frontale (X = 0) in alto."""
+    return np.stack([tri[..., 2], tri[..., 1], -tri[..., 0]], axis=-1)
+
+
+def disegna(qui, parti, pezzi):
     cart = os.path.join(qui, "anteprime")
     os.makedirs(cart, exist_ok=True)
-    finti = [(triangoli(o), c) for o, c in pezzi.values()]
     finti_senza_oled = [(triangoli(o), c) for n, (o, c) in pezzi.items() if n != "OLED"]
-    sc = triangoli(parti["scatola"])
-    pi = triangoli(parti["piastra"])
-    co = triangoli(parti["coperchio"])
-    gu = triangoli(parti["guarnizione"])
+    oled = (triangoli(pezzi["OLED"][0]), pezzi["OLED"][1])
+    t = {n: triangoli(o) for n, o in parti.items()}
+    c = COLORI
 
-    interno = [(sc, COLORI["scatola"]), (pi, COLORI["piastra"])] + finti_senza_oled
+    interno = [(t["scatola"], c["scatola"]), (t["piastra"], c["piastra"]), (t["staffa"], c["staffa"])] + finti_senza_oled
     figura(interno, os.path.join(cart, "montaggio.png"), 42, -135,
-           "Interno: SERVO42D con riduttore sulla squadra, millefori, piastra")
+           "Interno: SERVO42D al centro, sulla squadra; strisce di millefori ai lati")
     figura(interno, os.path.join(cart, "montaggio-retro.png"), 40, 45,
-           "Interno dal retro: PG7 per i 24 V e valvola di sfiato")
-    figura(interno + [(triangoli(parti["guarnizione"], (0, 0, 40)), COLORI["guarnizione"]),
-                      (triangoli(parti["coperchio"], (0, 0, 80)), COLORI["coperchio"]),
+           "Interno dal retro: PG7 dei 24 V e valvola di sfiato")
+    figura(interno + [(triangoli(parti["guarnizione"], (0, 0, 40)), c["guarnizione"]),
+                      (triangoli(parti["coperchio"], (0, 0, 80)), c["coperchio"]),
                       (triangoli(pezzi["OLED"][0], (0, 0, 80)), pezzi["OLED"][1])],
-           os.path.join(cart, "esploso.png"), 24, -135, "Esploso: scatola, guarnizione, coperchio con l'OLED")
-    figura([(sc, COLORI["scatola"]), (gu, COLORI["guarnizione"]), (co, COLORI["coperchio"])] + finti,
-           os.path.join(cart, "chiuso.png"), 30, -140, "Chiuso: finestra dell'OLED, passaggio dell'albero, PG7")
-    figura([(co, COLORI["coperchio"]), (triangoli(pezzi["OLED"][0]), pezzi["OLED"][1])],
+           os.path.join(cart, "esploso.png"), 24, -135, "Esploso: staffa, scatola, guarnizione, coperchio con l'OLED")
+    chiuso = [(t["scatola"], c["scatola"]), (t["guarnizione"], c["guarnizione"]), (t["coperchio"], c["coperchio"]),
+              (t["staffa"], c["staffa"]), oled] + finti_senza_oled
+    figura([(installato(a), b) for a, b in chiuso + [(t["palo"], c["palo"])]],
+           os.path.join(cart, "sul-palo.png"), 12, -35,
+           "Sul palo: albero in alto verso il variabile, 24 V e sfiato in basso")
+    figura([(installato(a), b) for a, b in chiuso + [(t["palo"], c["palo"])]],
+           os.path.join(cart, "sul-palo-retro.png"), 20, 150, "Staffa a V con le fascette stringitubo")
+    figura([(t["staffa"], c["staffa"])], os.path.join(cart, "staffa-palo.png"), -40, -60,
+           "Staffa: due blocchi a V, passaggi per le fascette, 4 viti M4 nel fondo")
+    figura([(t["coperchio"], c["coperchio"]), oled],
            os.path.join(cart, "coperchio-interno.png"), -55, -100, "Coperchio da dentro: OLED sulle colonnine")
