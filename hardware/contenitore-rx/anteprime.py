@@ -111,7 +111,7 @@ def disegna(qui, parti, pezzi):
 
     interno = [(t["scatola"], c["scatola"]), (t["piastra"], c["piastra"]), (t["staffa"], c["staffa"])] + finti_senza_oled
     figura(interno, os.path.join(cart, "montaggio.png"), 42, -135,
-           "Interno: SERVO42D al centro, sulla squadra; strisce di millefori ai lati")
+           "Interno: riduttore, squadra e SERVO42D al centro; strisce di millefori ai lati")
     figura(interno, os.path.join(cart, "montaggio-retro.png"), 40, 45,
            "Interno dal retro: PG7 dei 24 V e valvola di sfiato")
     figura(interno + [(triangoli(parti["guarnizione"], (0, 0, 40)), c["guarnizione"]),
@@ -130,7 +130,7 @@ def disegna(qui, parti, pezzi):
                                                                   "guarnizione")]
     sezione += [(triangoli(taglia(o, ya)), col) for n, (o, col) in pezzi.items()]
     figura(sezione, os.path.join(cart, "sezione.png"), 8, 90,
-           "Sezione sull'asse: rialzo di 20 mm sotto la squadra, appoggio del motore, albero nel paraolio")
+           "Sezione sull'asse: riduttore, squadra e motore sul rialzo di 20 mm; giunto e tubo nel paraolio")
     figura([(t["staffa"], c["staffa"])], os.path.join(cart, "staffa-palo.png"), -40, -60,
            "Staffa: due blocchi a V, passaggi per le fascette, 4 viti M4 nel fondo")
     figura([(t["coperchio"], c["coperchio"]), oled],

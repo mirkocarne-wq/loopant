@@ -25,7 +25,8 @@
 
 ## Contenitore stampato del motore e dell'elettronica (proposta da confermare)
 - Modello parametrico in [`hardware/contenitore-rx/`](../../hardware/contenitore-rx/README.md) (CadQuery, STL e STEP).
-- Dentro: SERVO42D e riduttore fissati con la **squadra a 90°** a una piastra interna (asole per viti M4),
+- Dentro: SERVO42D e riduttore fissati con la **squadra a 90°**, che sta tra i due (riduttore davanti, motore
+  dietro sulla base), a una piastra interna (asole per viti M4),
   **sull'asse centrale** della scatola e su un rialzo di 20 mm (il variabile ha l'asse 20 mm più alto del motore:
   così i due alberi restano concentrici); due strisce di millefori 35×90 ai lati del motore (ESP32 DevKit da una
   parte, SN65HVD230 e convertitore 24→5 V dall'altra); OLED 0,96" sotto il coperchio, dietro un vetrino.

@@ -2,7 +2,8 @@
 
 Scatola stagna da stampare in 3D, da fissare al palo. Contiene:
 - il **SERVO42D** (NEMA17 con il driver sul retro) con il **riduttore planetario 20:1**, fissati con la loro
-  **squadra a 90°** alla piastra interna, **sull'asse centrale** della scatola e su un **rialzo di 20 mm**: il
+  **squadra a 90°** alla piastra interna. La squadra sta **tra riduttore e motore**: riduttore davanti, verso la
+  parete frontale, e motore dietro, sulla base della squadra. Il gruppo è **sull'asse centrale** della scatola e su un **rialzo di 20 mm**: il
   variabile ha l'asse 20 mm più alto del motore, e così i due alberi restano concentrici;
 - l'**elettronica** su due strisce di millefori 35×90, ai lati del motore: ESP32 DevKit 30 pin da una parte,
   SN65HVD230 e convertitore 24→5 V dall'altra;
@@ -62,13 +63,14 @@ Le misure dei componenti sono **stime da verificare con il calibro** prima di st
 
 | Variabile | Valore | Cosa misurare |
 |---|---|---|
-| `H_ASSE` | 30 | Altezza dell'asse del riduttore sopra la base della squadra |
+| `H_ASSE` | 30 | Altezza dell'asse sopra la base della squadra (il motore ci sta sopra se è almeno 24 mm) |
+| `SQUADRA_VERSO` | 1 | Da che parte va la base della squadra: 1 sotto il motore, -1 sotto il riduttore (allora la piastra aggiunge un appoggio sotto il motore) |
 | `DISLIVELLO` | 20 | Di quanto l'asse del variabile è più alto di quello del motore, appoggiati sullo stesso piano |
 | `SQUADRA_BASE`, `ASOLE_SQUADRA` | 35; due asole a ±13 mm dall'asse | Fori della base della squadra (le asole lunghe 20 mm danno margine lungo l'asse) |
 | `RIDUTTORE_L`, `RIDUTTORE_D` | 40, 36 | Corpo del riduttore |
 | `MOTORE_L`, `DRIVER_L` | 40, 22 | NEMA17 e guscio del SERVO42D; dietro restano 27 mm per i connettori |
 | `ALBERO_L`, `GIUNTO_L`, `GIUNTO_D` | 20, 25, 20 | Albero d'uscita (8 mm) e giunto verso il tubo isolante |
-| `X_SQUADRA` | 38 | Distanza tra la squadra e la parete frontale: deve starci il giunto |
+| `X_RIDUTTORE` | 38 | Distanza tra la faccia d'uscita del riduttore e la parete frontale: deve starci il giunto |
 | `TUBO_ISOLANTE`, `GIOCO_FORO` | 8; 0,4 | Il foro si stampa da 8,4 mm perché i fori stampati vengono più stretti; il paraolio fa la tenuta |
 | `MILLEFORI`, `MILLEFORI_FORI` | 35×90; fori a 2,5 mm dal bordo | Strisce di millefori e fori di fissaggio (viti M2 autofilettanti) |
 | `OLED_FORI`, `OLED_DY_PCB`, `OLED_VETRO` | 23×23,5; 1,5; 1,8 | Interassi dei fori dell'OLED; spostamento della zona attiva; spessore del vetro |
@@ -83,7 +85,7 @@ previsto, si allarga `LY`.
 |---|---|---|---|
 | `scatola.stl` | **ASA** (o PETG) | Fondo sul piatto | Bordo interno smussato a 45° e borchia con mento a 45°: nessun supporto. 4 perimetri, 25–30 % di riempimento |
 | `coperchio.stl` | ASA o PETG | Faccia esterna sul piatto (la scritta è incisa sotto) | Nessun supporto |
-| `piastra.stl` | PETG | Piatta, rialzo verso l'alto | 3 perimetri, 30 % di riempimento (rialzo e appoggio sono pieni) |
+| `piastra.stl` | PETG | Piatta, rialzo verso l'alto | 3 perimetri, 30 % di riempimento (il rialzo è pieno) |
 | `staffa-palo.stl` | **ASA** o PETG | Faccia verso la scatola sul piatto | Le V sono aperte verso l'alto e i passaggi delle fascette sono ponti da 14 mm: nessun supporto. 5 perimetri, 40 % di riempimento |
 | `guarnizione.stl` | **TPU 85A–95A** | Piatta | In alternativa: foglio di silicone o EPDM da 1,5 mm, ritagliato usando lo STL come dima |
 
@@ -97,7 +99,6 @@ mano di vernice.
 - 2 **fascette stringitubo inox** (banda da 9–12 mm) adatte al diametro del palo.
 - Viti M4×35 con dadi e rondelle per la squadra: attraversano squadra, rialzo e piastra; i dadi stanno sotto la
   piastra, che è rialzata di 6 mm.
-- Una fascetta di plastica per tenere il motore sul suo appoggio (fessure nella piastra ai lati).
 - 8 viti M2×6 autofilettanti per le due strisce di millefori e 4 per l'OLED.
 - 2 pressacavi **PG7**: 24 V in basso e cavo dei finecorsa in alto, verso la scatola del variabile. Quello in alto
   va stretto bene: è rivolto verso la pioggia.
@@ -109,8 +110,8 @@ mano di vernice.
 ## Montaggio
 1. Inserti a caldo nel bordo (8), nelle colonnine del fondo (4) e, da fuori, nei rinforzi del fondo per la
    staffa (4).
-2. Squadra con il SERVO42D e il riduttore sul rialzo della piastra, nelle asole; fascetta attorno al motore e al
-   suo appoggio; strisce di millefori sui distanziali.
+2. Riduttore avvitato davanti alla squadra e motore dietro, con l'albero nel foro della squadra. Squadra sul rialzo
+   della piastra, nelle asole; strisce di millefori sui distanziali.
 3. Piastra nella scatola. L'apertura del bordo è 160×125 mm e la piastra 158×123 mm.
 4. Giunto sull'albero del riduttore. Tubo isolante infilato dall'esterno attraverso il paraolio, fino al giunto.
 5. Cavi nei PG7 e fascette nelle fessure della piastra. OLED sulle colonnine del coperchio, vetrino incollato.
