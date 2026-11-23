@@ -14,6 +14,8 @@ COLORI = {"scatola": "#dfe3e8", "piastra": "#f6ae2d", "coperchio": "#86b6f6", "g
 
 def triangoli(oggetto, spost=(0, 0, 0), tol=0.2):
     v, t = oggetto.val().tessellate(tol, 0.3)
+    if not t:  # pezzo vuoto (per esempio tutto dall'altra parte della sezione)
+        return np.zeros((0, 3, 3))
     v = np.array([(p.x, p.y, p.z) for p in v]) + np.array(spost)
     return v[np.array(t)]
 
@@ -88,6 +90,12 @@ def figura(gruppi, file, elev, azim, titolo):
     print("anteprima:", os.path.basename(file))
 
 
+def taglia(oggetto, y):
+    """Tiene la metà con Y < y (sezione sull'asse del motore)."""
+    import cadquery as cq
+    return oggetto.intersect(cq.Workplane("XY").box(2000, 1000, 2000).translate((0, y - 500, 0)))
+
+
 def installato(tri):
     """Dalla posizione di stampa a quella sul palo verticale: parete frontale (X = 0) in alto."""
     return np.stack([tri[..., 2], tri[..., 1], -tri[..., 0]], axis=-1)
@@ -117,6 +125,12 @@ def disegna(qui, parti, pezzi):
            "Sul palo: albero in alto verso il variabile, 24 V e sfiato in basso")
     figura([(installato(a), b) for a, b in chiuso + [(t["palo"], c["palo"])]],
            os.path.join(cart, "sul-palo-retro.png"), 20, 150, "Staffa a V con le fascette stringitubo")
+    ya = pezzi["albero"][0].val().BoundingBox().center.y
+    sezione = [(triangoli(taglia(parti[n], ya)), c[n]) for n in ("scatola", "piastra", "staffa", "coperchio",
+                                                                  "guarnizione")]
+    sezione += [(triangoli(taglia(o, ya)), col) for n, (o, col) in pezzi.items()]
+    figura(sezione, os.path.join(cart, "sezione.png"), 8, 90,
+           "Sezione sull'asse: rialzo di 20 mm sotto la squadra, appoggio del motore, albero nel paraolio")
     figura([(t["staffa"], c["staffa"])], os.path.join(cart, "staffa-palo.png"), -40, -60,
            "Staffa: due blocchi a V, passaggi per le fascette, 4 viti M4 nel fondo")
     figura([(t["coperchio"], c["coperchio"]), oled],

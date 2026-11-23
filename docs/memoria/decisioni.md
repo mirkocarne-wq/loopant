@@ -30,6 +30,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Associazione | Pulsante BOOT (GPIO 0) dell'antenna premuto 3 s, ricerca su tutti i canali, conferma con la finestra «Antenna trovata» sul pannello; l'antenna già associata si conferma da sola; protocollo v4 | Richiesta dell'utente; niente MAC da copiare e il canale del router si trova da solo |
 | Canale ESP-NOW dell'antenna | Ricerca automatica quando il pannello tace (messaggio di stato su ogni canale, vince quello con l'ACK del pannello), salvato in NVS; anche `canale` da console | Il router cambia spesso canale; meno di un secondo, senza password del WiFi |
 | Fissaggio del gruppo motore RX | SERVO42D e riduttore su una squadra a 90° avvitata alla base, sull'asse centrale della scatola | Indicazione dell'utente |
+| Concentricità motore–variabile RX | Rialzo di 20 mm sotto la squadra (`DISLIVELLO` in `contenitore.py`), appoggio sotto il motore | Misura dell'utente: l'asse del variabile è 20 mm più alto di quello del motore |
 | Uscita dell'albero RX | Foro da 8 mm al centro della parete frontale per il tubo isolante | Indicazione dell'utente |
 | Contenitore RX sul palo | Staffa a V stampata con fascette stringitubo, fondo contro il palo, albero in alto | Richiesta dell'utente; la V va bene per pali di diametri diversi |
 | Isolamento albero RX | Barra ABS 8 mm tra due giunti metallici | Albero e telaio del variabile portano RF |

@@ -27,7 +27,7 @@ QUI = os.path.dirname(os.path.abspath(__file__))
 # ============================================================================================================
 
 # --- Scatola ---
-LX, LY, HZ = 170.0, 135.0, 80.0  # misure interne (lunghezza, larghezza, altezza fino al bordo)
+LX, LY = 170.0, 135.0            # misure interne (lunghezza, larghezza); l'altezza HZ si calcola dal motore
 PARETE = 3.0                     # spessore delle pareti
 FONDO = 3.0                      # spessore del fondo
 R_ESTERNO = 6.0                  # raggio degli spigoli verticali
@@ -48,13 +48,22 @@ COLONNINE = [(22, 22), (LX - 22, 22), (22, LY - 22), (LX - 22, LY - 22)]
 
 # --- Gruppo motore (da misurare) ---
 Y_ASSE = LY / 2                  # motore sull'asse centrale della scatola
-H_ASSE = 30.0                    # altezza dell'asse sopra la piastra (dipende dalla squadra)
+H_ASSE = 30.0                    # altezza dell'asse sopra la base della squadra (dipende dalla squadra)
+# Dislivello tra variabile e motore appoggiati sullo stesso piano: l'asse del variabile è 20 mm più alto.
+# Il motore sale dello stesso tanto su un rialzo della piastra, così l'albero e il variabile restano concentrici
+# (con la scatola del variabile fatta allo stesso modo: stessa staffa, stesso fondo, stessa piastra).
+# Con un valore negativo il rialzo va sotto il variabile e qui resta 0.
+DISLIVELLO = 20.0
+RIALZO_MOTORE = max(DISLIVELLO, 0.0)
+SUPPORTO_MOTORE = True           # appoggio sotto il corpo del NEMA17, con fessure per una fascetta
 X_SQUADRA = 38.0                 # faccia della squadra (lato albero) dalla parete frontale
 SQUADRA_S = 3.0                  # spessore della squadra
 SQUADRA_BASE = 35.0              # profondità della base della squadra (verso il motore)
 RIDUTTORE_L, RIDUTTORE_D = 40.0, 36.0
 MOTORE_L, NEMA = 40.0, 42.3
 DRIVER_L = 22.0                  # SERVO42D con il suo guscio sul retro del motore
+Z_ASSE = COLONNINA_H + PIASTRA + RIALZO_MOTORE + H_ASSE   # asse del motore sopra il fondo interno
+HZ = float(math.ceil(Z_ASSE + NEMA / 2 + BORDO_H + BORDO + 2))  # altezza interna: il motore passa sotto il bordo
 ALBERO_D, ALBERO_L = 8.0, 20.0   # albero di uscita del riduttore
 GIUNTO_D, GIUNTO_L = 20.0, 25.0
 ASOLE_SQUADRA = [(X_SQUADRA + 17, Y_ASSE - 13), (X_SQUADRA + 17, Y_ASSE + 13)]  # centri delle asole
@@ -156,7 +165,7 @@ def scatola():
         s = s.cut(cilindro_z(x, y, COLONNINA_H - 5.5, 6, INSERTO_D))
 
     # Passaggio dell'albero: borchia esterna a "D" con mento a 45°, foro e sede del paraolio
-    z_asse = COLONNINA_H + PIASTRA + H_ASSE
+    z_asse = Z_ASSE
     xb = -PARETE - BOSS_SPORGENZA
     borchia = cilindro_x(xb, Y_ASSE, z_asse, BOSS_SPORGENZA + 0.1, 2 * BOSS_R)
     borchia = borchia.union(cq.Workplane("XY").box(BOSS_SPORGENZA + 0.1, 2 * BOSS_R, BOSS_R, centered=False)
@@ -217,9 +226,22 @@ def piastra():
     for x, y in COLONNINE:
         p = p.cut(cilindro_z(x, y, z0 - 1, PIASTRA + 2, 3.4))
         p = p.cut(cilindro_z(x, y, z0 + PIASTRA - 3.2, 4, 6.2))  # testa della vite incassata
+    # Rialzo sotto la squadra (dislivello con il variabile); le asole lo attraversano: viti M4 lunghe con i dadi
+    # sotto la piastra
+    if RIALZO_MOTORE > 0:
+        p = p.union(scatola_arrotondata(X_SQUADRA - 3, Y_ASSE - 24, z0 + PIASTRA - 0.1,
+                                        X_SQUADRA + SQUADRA_BASE + 3, Y_ASSE + 24, z0 + PIASTRA + RIALZO_MOTORE, 3.0))
     for x, y in ASOLE_SQUADRA:
         p = p.cut(cq.Workplane("XY").workplane(offset=z0 - 1).center(x, y).slot2D(ASOLA_L + ASOLA_W, ASOLA_W)
-                  .extrude(PIASTRA + 2))
+                  .extrude(PIASTRA + RIALZO_MOTORE + 2))
+    # Appoggio sotto il corpo del motore (0,5 mm di gioco) e fessure per la fascetta che lo tiene
+    if SUPPORTO_MOTORE:
+        xm = X_SQUADRA + SQUADRA_S + RIDUTTORE_L + MOTORE_L / 2
+        cima = Z_ASSE - NEMA / 2 - 0.5
+        p = p.union(scatola_arrotondata(xm - 9, Y_ASSE - 18, z0 + PIASTRA - 0.1, xm + 9, Y_ASSE + 18, cima, 2.0))
+        for lato in (-1, 1):
+            p = p.cut(cq.Workplane("XY").workplane(offset=z0 - 1).center(xm, Y_ASSE + lato * 23.3).rect(5, 2.2)
+                      .extrude(PIASTRA + 2))
     # Distanziali delle due strisce di millefori
     w, h, _ = MILLEFORI
     f = MILLEFORI_FORI
@@ -232,9 +254,6 @@ def piastra():
     for x, y in [(LX - 16, 30), (LX - 16, LY - 30), (MILLEFORI_X0 - 12, 30), (MILLEFORI_X0 - 12, LY - 30)]:
         for dx in (-4, 4):
             p = p.cut(cq.Workplane("XY").workplane(offset=z0 - 1).center(x + dx, y).rect(2, 4.5).extrude(PIASTRA + 2))
-    # Alleggerimento sotto il motore (lontano dalle asole)
-    p = p.cut(cq.Workplane("XY").workplane(offset=z0 - 1).center(X_SQUADRA + SQUADRA_BASE + 40, Y_ASSE)
-              .slot2D(60, 22).extrude(PIASTRA + 2))
     return p
 
 
@@ -285,11 +304,12 @@ def guarnizione(z_basso):
 def ingombri():
     """Componenti finti, solo per le anteprime e per controllare gli spazi."""
     zp = COLONNINA_H + PIASTRA
-    za = zp + H_ASSE
+    za = Z_ASSE
+    zs = zp + RIALZO_MOTORE           # base della squadra
     xs = X_SQUADRA
     pezzi = {}
-    sq = (cq.Workplane("XY").box(SQUADRA_S, 44, H_ASSE + 22, centered=False).translate((xs, Y_ASSE - 22, zp))
-          .union(cq.Workplane("XY").box(SQUADRA_BASE, 44, SQUADRA_S, centered=False).translate((xs, Y_ASSE - 22, zp))))
+    sq = (cq.Workplane("XY").box(SQUADRA_S, 44, H_ASSE + 22, centered=False).translate((xs, Y_ASSE - 22, zs))
+          .union(cq.Workplane("XY").box(SQUADRA_BASE, 44, SQUADRA_S, centered=False).translate((xs, Y_ASSE - 22, zs))))
     pezzi["squadra"] = (sq, "#9aa0a6")
     x = xs + SQUADRA_S
     pezzi["riduttore"] = (cilindro_x(x, Y_ASSE, za, RIDUTTORE_L, RIDUTTORE_D), "#3c4043")
@@ -356,6 +376,8 @@ def controlla(sc, pi, pezzi):
     if tra < 4:
         errori.append(f"tra motore e millefori solo {tra:.1f} mm")
     print(f"Spazio dietro il SERVO42D: {retro:.0f} mm; tra motore e millefori: {tra:.1f} mm")
+    print(f"Asse del motore: {Z_ASSE:.1f} mm sopra il fondo interno, {Z_ASSE + FONDO:.1f} mm sopra il fondo esterno "
+          f"(rialzo {RIALZO_MOTORE:.0f} mm); altezza interna {HZ:.0f} mm")
     if FORO_ALBERO < TUBO_ISOLANTE:
         errori.append("foro dell'albero più stretto del tubo isolante")
     return errori
