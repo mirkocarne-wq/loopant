@@ -6,7 +6,7 @@ namespace condiviso {
 namespace {
 portMUX_TYPE blocco = portMUX_INITIALIZER_UNLOCKED;
 Pannello pannello_ = {};
-Comandi comandi_ = {false, 0, 7100000, 0, 0, 0};
+Comandi comandi_ = {false, 0, 7100000, 0, 0, 0, 0, 1, 0, 0};
 }  // namespace
 
 Pannello pannello() {

@@ -11,6 +11,10 @@ Legenda: **[D]** = deciso; **[N]** = proposta tecnica, da confermare.
 - ADC a 32 kHz, FIR passa-basso e riduzione a 8 kHz, 16 bit (toni fino a circa 3 kHz). [D]
 - Evoluzione possibile: secondo ESP32-S3 con ADC I2S (PCM1808) che decodifica e manda il testo al pannello. [N]
 
+## Acceso/spento [D]
+Il decoder si spegne dal pulsante **Spegni** della pagina Decoder o dal menu della manopola: stato unico per pannello e
+manopola, salvato nel pannello. Da spento non si elabora l'audio. Dettagli in [12-manopola.md](12-manopola.md).
+
 ## CW
 | Funzione | Specifica | |
 |---|---|---|

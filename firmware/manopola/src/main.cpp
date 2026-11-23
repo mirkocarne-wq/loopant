@@ -14,6 +14,7 @@
 #include "decodifica.h"
 #include "encoder.h"
 #include "interfaccia.h"
+#include "menu.h"
 #include "waveshare/cst816.h"
 #include "waveshare/lcd_bl_pwm_bsp.h"
 #include "waveshare/schermo_lcd.h"
@@ -33,6 +34,8 @@ uint32_t ultimoPannello = 0, ultimoStato = 0, ultimaRicerca = 0, ultimaAssociazi
 int8_t rssi = 0;
 proto::ManopolaImposta imp = {};
 bool impValida = false;
+bool cercaAuto = true;  // non associata: cerca il pannello da sola (falso dopo "Dimentica il pannello")
+uint16_t nAssociaVisto = 0, nDimenticaVisto = 0;
 
 void riceviPannello() {
   Pacchetto p;
@@ -59,6 +62,8 @@ proto::ManopolaStato preparaStato() {
   s.nTune = c.nTune;
   s.freqTune = c.freqTune;
   s.nZero = c.nZero;
+  s.nDecoder = c.nDecoder;
+  s.decoderVoluto = c.decoderVoluto;
   return s;
 }
 
@@ -92,15 +97,41 @@ void aggiornaAssociazione() {
     canale = ch;
     radio.cambiaPeer(mac, segreti::LMK);
     ultimoPannello = millis();
+    impValida = false;  // impostazioni del nuovo pannello in arrivo
+    cercaAuto = true;
+    nvs.putBool("cercaAuto", true);
     char t[18];
     Collegamento::scriviMac(mac, t);
     Serial.printf("Associata al pannello %s sul canale %u (salvato)\n", t, ch);
   }
   // non associata: cerca il pannello da sola, ogni tanto (niente pulsante: la conferma è sul pannello)
-  if (!radio.peerValido() && associazione::fase() == associazione::Fase::INATTIVA &&
+  if (cercaAuto && !radio.peerValido() && associazione::fase() == associazione::Fase::INATTIVA &&
       (!ultimaAssociazione || millis() - ultimaAssociazione > ASSOCIA_INTERVALLO_MS)) {
     ultimaAssociazione = millis();
     associazione::avvia();
+  }
+}
+
+void dimentica() {
+  uint8_t zero[6] = {0};
+  nvs.putBytes("peer", zero, 6);
+  radio.cambiaPeer(zero, segreti::LMK);
+  impValida = false;
+  cercaAuto = false;  // non si riassocia da sola: si sceglie "Associa a un pannello"
+  nvs.putBool("cercaAuto", false);
+  Serial.println("Pannello dimenticato");
+}
+
+// Richieste dal menu (task di LVGL) eseguite qui, dove stanno radio e NVS
+void comandiMenu() {
+  condiviso::Comandi c = condiviso::comandi();
+  if (c.nAssocia != nAssociaVisto) {
+    nAssociaVisto = c.nAssocia;
+    associazione::avvia();
+  }
+  if (c.nDimentica != nDimenticaVisto) {
+    nDimenticaVisto = c.nDimentica;
+    dimentica();
   }
 }
 
@@ -113,6 +144,8 @@ void pubblica() {
   p.canale = associazione::fase() == associazione::Fase::INATTIVA ? canale : associazione::canale();
   p.valida = impValida && p.collegato;
   p.imp = imp;
+  if (radio.peerValido()) Collegamento::scriviMac(radio.macPeer(), p.macPannello);
+  else p.macPannello[0] = 0;
   condiviso::pannello(p);
 }
 
@@ -134,10 +167,7 @@ void console() {
     if (!strcmp(cmd, "associa")) {
       associazione::avvia();
     } else if (!strcmp(cmd, "dimentica")) {
-      uint8_t zero[6] = {0};
-      nvs.putBytes("peer", zero, 6);
-      radio.cambiaPeer(zero, segreti::LMK);
-      Serial.println("Pannello dimenticato");
+      dimentica();
     } else if (!strcmp(cmd, "canale") && arg) {
       int ch = atoi(arg);
       if (ch >= 1 && ch <= 13) {
@@ -171,11 +201,13 @@ void setup() {
   uint8_t peer[6] = {0};
   nvs.getBytes("peer", peer, 6);
   canale = nvs.getUChar("canale", cfg::CANALE_WIFI);
+  cercaAuto = nvs.getBool("cercaAuto", true);
   if (canale < 1 || canale > 13) canale = cfg::CANALE_WIFI;
   radio.inizia(peer, segreti::PMK, segreti::LMK, canale);
   associazione::inizia(-1, proto::FLAG_MANOPOLA);  // niente pulsante
 
   if (example_lvgl_lock(-1)) {
+    menu::applicaSalvate();  // luminosità e rotazione scelte dal menu
     interfaccia::crea();
     example_lvgl_unlock();
   }
@@ -189,6 +221,7 @@ void setup() {
 
 void loop() {
   riceviPannello();
+  comandiMenu();
   aggiornaAssociazione();
   cercaCanale();
   inviaStato();

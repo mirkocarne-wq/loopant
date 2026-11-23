@@ -19,6 +19,7 @@ bool modoRtty = false;
 proto::SorgenteAudio sorgente_ = proto::SorgenteAudio::MICROFONO;
 proto::ManopolaImposta attuale = {};
 bool configurata = false;
+volatile bool attivo_ = true;  // decoder acceso: lo decide il pannello (ManopolaImposta::decoderAttivo)
 volatile float livelloProva = 0;
 
 constexpr size_t MAX_TESTO = 256;
@@ -35,6 +36,7 @@ void aggiungi(char c, void*) {  // con il mutex preso
 }
 
 void elabora(const int16_t* x, size_t n) {
+  if (!attivo_) return;  // decoder spento: niente elaborazione
   if (xSemaphoreTake(mutex, pdMS_TO_TICKS(50)) != pdTRUE) return;
   if (modoRtty) rtty_.campioni(x, n);
   else cw.campioni(x, n);
@@ -114,6 +116,7 @@ void inizia() {
 }
 
 void configura(const proto::ManopolaImposta& imp) {
+  attivo_ = imp.decoderAttivo != 0;
   if (configurata && uguali(imp, attuale)) return;
   xSemaphoreTake(mutex, portMAX_DELAY);
   applica(imp);
@@ -163,6 +166,8 @@ uint32_t testo(char* out, size_t n) {
 float livello() { return sorgente_ == proto::SorgenteAudio::PROVA ? livelloProva : microfono::livello(); }
 
 bool rtty() { return modoRtty; }
+
+bool attivo() { return attivo_; }
 
 float wpm() { return cw.wpm(); }
 

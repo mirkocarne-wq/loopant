@@ -35,7 +35,8 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [x] Firmware del pannello 7B, prima versione: driver, collegamento, barra, schede, Sintonia, temi, Impostazioni di base (compila).
 - [x] Pannello sulla scheda vera (21/11/2026): schermo, touch, colori, luminosità, ricerca reti WiFi funzionano.
 - [x] Pannello da 5" (ESP32-S3-Touch-LCD-5B): schermo, tocco e retroilluminazione provati (23/11/2026).
-- [ ] Pannello 5B: associazione con antenna e manopola (associate al 7B) e prova completa.
+- [x] Manopola associata al pannello 5B dal suo menu; menu e decoder acceso/spento provati (23/11/2026).
+- [ ] Pannello 5B: associazione con l'antenna (oggi associata al 7B) e prova completa.
 - [x] Pannello: collegamento ESP-NOW con l'antenna sulla scheda vera (21/11/2026).
 - [x] Pannello: Calibrazione e Diagnostica (protocollo v2: flag, CAL_LEGGI, CAL_ELIMINA), compilano.
 - [x] Pannello: Memorie, Propagazione, Decoder CW/RTTY, screensaver, Impostazioni complete, WiFi/NTP/indici (compilano; algoritmi provati sul PC).

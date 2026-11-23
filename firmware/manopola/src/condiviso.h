@@ -14,6 +14,7 @@ struct Pannello {         // scritto dal collegamento
   uint8_t canale;
   bool valida;            // almeno un ManopolaImposta ricevuto
   proto::ManopolaImposta imp;
+  char macPannello[18];   // pannello associato ("" se nessuno)
 };
 
 struct Comandi {          // scritto dall'interfaccia, mandato al pannello
@@ -23,6 +24,10 @@ struct Comandi {          // scritto dall'interfaccia, mandato al pannello
   uint16_t nTune;
   uint32_t freqTune;
   uint16_t nZero;
+  uint16_t nDecoder;      // richiesta di accendere/spegnere il decoder (dal menu)
+  uint8_t decoderVoluto;
+  uint16_t nAssocia;      // richiesta di associazione a un pannello (dal menu)
+  uint16_t nDimentica;    // richiesta di dimenticare il pannello (dal menu)
 };
 
 Pannello pannello();

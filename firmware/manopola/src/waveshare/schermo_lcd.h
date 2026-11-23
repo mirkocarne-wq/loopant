@@ -22,6 +22,7 @@ extern "C" {
 void lcd_lvgl_Init(void);                // display, touch e LVGL (chiamare dopo Touch_Init)
 bool example_lvgl_lock(int timeout_ms);  // -1 = attesa infinita
 void example_lvgl_unlock(void);
+void schermo_ruota_180(bool si);         // loopant: rotazione al volo (dal task di LVGL), touch compreso
 
 #ifdef __cplusplus
 }

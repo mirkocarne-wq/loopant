@@ -10,6 +10,7 @@
 #include "condiviso.h"
 #include "decodifica.h"
 #include "encoder.h"
+#include "menu.h"
 
 namespace interfaccia {
 namespace {
@@ -98,6 +99,9 @@ void tocco(lv_event_t* e) {
       if (bande::di(f) == bande::Banda::NESSUNA) f = 7100000;
       c.freqModifica = f;
     }
+  } else if (lv_event_get_code(e) == LV_EVENT_LONG_PRESSED && !c.modoFrequenza) {
+    menu::apri();  // tocco lungo nel ritocco fine: menu
+    return;
   } else if (lv_event_get_code(e) == LV_EVENT_LONG_PRESSED && c.modoFrequenza) {
     c.nTune++;
     c.freqTune = c.freqModifica;
@@ -118,7 +122,9 @@ void aggiorna(lv_timer_t*) {
   int32_t e = encoder::scatti();
   int32_t d = e - ultimoEncoder;
   ultimoEncoder = e;
-  if (d) {
+  if (d && menu::aperto()) {
+    menu::scatti(d);  // con il menu aperto la manopola scorre le voci
+  } else if (d) {
     if (c.modoFrequenza) c.freqModifica = passa(c.freqModifica, d, abs(d) >= 3 ? 10000 : 1000);
     else c.scatti += d;
     condiviso::comandi(c);
@@ -176,13 +182,19 @@ void aggiorna(lv_timer_t*) {
 
   // decoder
   static char buf[64];
-  decodifica::testo(buf, 21);
-  lv_label_set_text(testo, buf);
-  if (decodifica::rtty()) lv_label_set_text(decoder, decodifica::agganciato() ? "RTTY · agganciato" : "RTTY · in ascolto");
-  else {
-    snprintf(t, sizeof(t), "CW · %d WPM", (int)(decodifica::wpm() + 0.5f));
-    lv_label_set_text(decoder, t);
+  if (!decodifica::attivo()) {
+    lv_label_set_text(testo, "decoder spento");
+    lv_label_set_text(decoder, "");
+  } else {
+    decodifica::testo(buf, 21);
+    lv_label_set_text(testo, buf);
+    if (decodifica::rtty()) lv_label_set_text(decoder, decodifica::agganciato() ? "RTTY · agganciato" : "RTTY · in ascolto");
+    else {
+      snprintf(t, sizeof(t), "CW · %d WPM", (int)(decodifica::wpm() + 0.5f));
+      lv_label_set_text(decoder, t);
+    }
   }
+  menu::aggiorna();
 
   // avvisi: associazione e TUNE
   using associazione::Fase;
@@ -241,6 +253,7 @@ void crea() {
 
   lv_obj_add_event_cb(scr, tocco, LV_EVENT_SHORT_CLICKED, nullptr);
   lv_obj_add_event_cb(scr, tocco, LV_EVENT_LONG_PRESSED, nullptr);
+  menu::crea(scr);  // sopra a tutto
   lv_timer_create(aggiorna, 50, nullptr);
   ultimoEncoder = encoder::scatti();
 }

@@ -22,6 +22,7 @@ static SemaphoreHandle_t lvgl_mux = NULL; //mutex semaphores
 
 
 static esp_lcd_panel_io_handle_t amoled_panel_io_handle = NULL; 
+static volatile bool ruota180 = LOOPANT_RUOTA_180;  // loopant: rotazione scelta dal menu della manopola
 
 static const sh8601_lcd_init_cmd_t lcd_init_cmds[] = 
 {
@@ -376,12 +377,14 @@ static void example_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
     #ifdef EXAMPLE_Rotate_90
       data->point.x = tp_y;
       data->point.y = (EXAMPLE_LCD_V_RES - tp_x);
-    #elif LOOPANT_RUOTA_180
-      data->point.x = (EXAMPLE_LCD_H_RES - 1) - tp_x;
-      data->point.y = (EXAMPLE_LCD_V_RES - 1) - tp_y;
     #else
-      data->point.x = tp_x;
-      data->point.y = tp_y;
+      if (ruota180) {
+        data->point.x = (EXAMPLE_LCD_H_RES - 1) - tp_x;
+        data->point.y = (EXAMPLE_LCD_V_RES - 1) - tp_y;
+      } else {
+        data->point.x = tp_x;
+        data->point.y = tp_y;
+      }
     #endif
     if(data->point.x > EXAMPLE_LCD_H_RES)
     data->point.x = EXAMPLE_LCD_H_RES;
@@ -394,4 +397,15 @@ static void example_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
   {
     data->state = LV_INDEV_STATE_RELEASED;
   }
+}
+
+/* loopant: rotazione di 180 gradi al volo (MADCTL 0xC0, altrimenti 0x00) e coordinate del touch corrispondenti.
+ * Da chiamare dal task di LVGL (o con il suo lock); poi va ridisegnato tutto lo schermo. */
+void schermo_ruota_180(bool si)
+{
+  ruota180 = si;
+  if (!amoled_panel_io_handle) return;
+  uint8_t madctl = si ? 0xC0 : 0x00;
+  int cmd = (0x02 << 24) | (0x36 << 8);  // scrittura di un comando sul bus QSPI dello SH8601
+  esp_lcd_panel_io_tx_param(amoled_panel_io_handle, cmd, &madctl, 1);
 }

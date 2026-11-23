@@ -15,6 +15,7 @@ namespace {
 
 lv_obj_t* btnModo[2];
 lv_obj_t* chipStato;
+lv_obj_t* btnAttivo;
 lv_obj_t* testoAudio;
 lv_obj_t* areaTesto;
 lv_obj_t* testo;
@@ -125,6 +126,8 @@ void premiModo(lv_event_t* e) {
 
 void premiPulisci(lv_event_t*) { decodifica::pulisci(); }
 
+void premiAttivo(lv_event_t*) { decodifica::attiva(!decodifica::attivo()); }
+
 void premiTono(lv_event_t* e) {
   Impostazioni& imp = impostazioni::get();
   int v = imp.cwTono + (int)(intptr_t)lv_event_get_user_data(e);
@@ -213,6 +216,9 @@ void crea(lv_obj_t* c) {
   chipStato = ui::chip(su, &font_14);
   testoAudio = ui::etichetta(su, "", &font_14, t.text2);
   lv_obj_set_flex_grow(testoAudio, 1);
+  btnAttivo = ui::pulsante(su, "Spegni", &font_16, ui::Stile::NORMALE);
+  lv_obj_set_size(btnAttivo, 110, 44);
+  lv_obj_add_event_cb(btnAttivo, premiAttivo, LV_EVENT_CLICKED, nullptr);
   lv_obj_t* pul = ui::pulsante(su, "Pulisci", &font_16, ui::Stile::NORMALE);
   lv_obj_set_size(pul, 110, 44);
   lv_obj_add_event_cb(pul, premiPulisci, LV_EVENT_CLICKED, nullptr);
@@ -331,9 +337,15 @@ void aggiorna(const link_antenna::Stato&) {
   const Impostazioni& imp = impostazioni::get();
   decodifica::Stato s = decodifica::stato();
 
+  lv_label_set_text(lv_obj_get_child(btnAttivo, 0), s.attivo ? "Spegni" : "Accendi");
+  ui::stilePulsante(btnAttivo, s.attivo ? ui::Stile::NORMALE : ui::Stile::PRIMARIO);
   static const char* const SORGENTE[] = {"segnale di prova", "microfono", "linea"};
   const char* sorgente = SORGENTE[s.sorgente <= 2 ? s.sorgente : 1];
-  if (s.remoto && !s.remotoCollegato) {
+  if (!s.attivo) {
+    lv_label_set_text(chipStato, "Decoder spento");
+    ui::coloriChip(chipStato, t.surface2, t.text2);
+    lv_label_set_text(testoAudio, s.remoto ? "Spento anche sulla manopola" : "Nessuna elaborazione dell'audio");
+  } else if (s.remoto && !s.remotoCollegato) {
     lv_label_set_text(chipStato, "Manopola non collegata");
     ui::coloriChip(chipStato, t.dangerBg, t.dangerText);
     lv_label_set_text(testoAudio, "Il decoder è sulla manopola remota");

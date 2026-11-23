@@ -1,6 +1,7 @@
 #include "decodifica.h"
 
 #include <Arduino.h>
+#include <Preferences.h>
 #include <Decoder.h>
 #include <string.h>
 
@@ -16,6 +17,7 @@ SemaphoreHandle_t mutex = nullptr;
 decoder::DecoderCw cw;
 decoder::DecoderRtty rtty;
 bool modoRtty = false;
+volatile bool attivo_ = true;
 
 constexpr size_t MAX_TESTO = 1200;
 char testo_[MAX_TESTO + 1] = "";
@@ -34,6 +36,7 @@ void aggiungi(char c, void*) {  // chiamata con il mutex preso
 }
 
 void elabora(const int16_t* x, size_t n) {
+  if (!attivo_) return;                           // decoder spento
   if (link_manopola::stato().associata) return;  // decodifica la manopola
   if (xSemaphoreTake(mutex, pdMS_TO_TICKS(50)) != pdTRUE) return;
   if (modoRtty) rtty.campioni(x, n);
@@ -48,6 +51,10 @@ const float STOP[] = {1.0f, 1.5f, 2.0f};
 
 void inizia() {
   if (!mutex) mutex = xSemaphoreCreateMutex();
+  Preferences p;
+  p.begin("decoder", true);
+  attivo_ = p.getBool("attivo", true);
+  p.end();
   configura();
   audio::inizia(cfg::PIN_AUDIO, cfg::FREQ_AUDIO_HZ, elabora);
 }
@@ -72,6 +79,7 @@ void configura() {
 
 Stato stato() {
   Stato s = {};
+  s.attivo = attivo_;
   link_manopola::Stato m = link_manopola::stato();
   if (m.associata) {  // stato del decoder della manopola (valori 0-255 -> 0-1)
     const proto::ManopolaStato& r = m.s;
@@ -117,6 +125,18 @@ uint32_t testo(char* out, size_t n) {
   uint32_t v = versione;
   xSemaphoreGive(mutex);
   return v;
+}
+
+bool attivo() { return attivo_; }
+
+void attiva(bool si) {
+  if (si == attivo_) return;
+  attivo_ = si;
+  Preferences p;
+  p.begin("decoder", false);
+  p.putBool("attivo", si);
+  p.end();
+  link_manopola::impostazioniCambiate();  // la manopola lo sa subito
 }
 
 void aggiungiRemoto(const char* t, size_t n) {

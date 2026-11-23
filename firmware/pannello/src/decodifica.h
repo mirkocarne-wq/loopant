@@ -7,6 +7,7 @@
 namespace decodifica {
 
 struct Stato {
+  bool attivo;          // decoder acceso (spento: niente elaborazione, né qui né sulla manopola)
   bool remoto;          // decoder della manopola remota
   bool remotoCollegato; // manopola collegata
   uint8_t sorgente;     // proto::SorgenteAudio della manopola
@@ -27,6 +28,10 @@ void configura();   // rilegge le impostazioni (modo e parametri)
 Stato stato();
 uint32_t testo(char* out, size_t n);  // copia il testo ricevuto; restituisce un contatore che cambia a ogni carattere
 void pulisci();
+// Decoder acceso o spento: stato unico per pannello e manopola, salvato in NVS ("decoder"). Si cambia dalla
+// pagina Decoder o dal menu della manopola (attraverso link_manopola).
+bool attivo();
+void attiva(bool si);
 void aggiungiRemoto(const char* testo, size_t n);  // caratteri decodificati dalla manopola (da link_manopola)
 
 }  // namespace decodifica

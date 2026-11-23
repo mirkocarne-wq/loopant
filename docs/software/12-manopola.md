@@ -30,7 +30,8 @@ La manopola **passa sempre dal pannello**: è il pannello a comandare l'antenna 
   azzerata: va diretto anche all'indietro, senza scendere sotto e risalire. Il recupero del gioco lo rifà il GOTO
   successivo (TUNE). Il jog della pagina Calibrazione resta con il recupero. TUNE → `GOTO`.
 - Associazione come l'antenna (finestra «Manopola trovata» sul pannello), ma **senza pulsante**: finché non è
-  associata la manopola cerca il pannello da sola ogni 15 s. Poi ritrova il canale da sola se il router lo cambia.
+  associata la manopola cerca il pannello da sola ogni 15 s (tranne dopo «Dimentica il pannello»); per cambiare
+  pannello c'è la voce «Associa a un pannello» del menu. Poi ritrova il canale da sola se il router lo cambia.
 - Provato il 21/11/2026: associazione e testo del segnale di prova sul pannello e sulla manopola.
 
 ## Uso [D]
@@ -40,6 +41,21 @@ La manopola **passa sempre dal pannello**: è il pannello a comandare l'antenna 
 | Tocco breve sul display | passa tra RITOCCO FINE e FREQUENZA |
 | Girare la manopola (FREQUENZA) | 1 kHz per scatto, 10 kHz girando in fretta; oltre il bordo della banda si passa all'altra |
 | Tocco lungo (FREQUENZA) | TUNE sulla frequenza mostrata, poi si torna al ritocco fine |
+| Tocco lungo (RITOCCO FINE) | apre il menu |
+
+### Menu
+Si scorre girando la manopola, tocco breve = scegli, tocco lungo = chiudi; si chiude da solo dopo 10 s.
+| Voce | Effetto |
+|---|---|
+| Decoder: acceso/spento | Accende o spegne il decoder CW/RTTY: stato unico tenuto dal pannello, vale per pannello e manopola (serve il pannello collegato) |
+| Luminosità | 25 / 50 / 75 / 100 %, salvata (NVS «schermo») |
+| Rotazione | 180° (predefinita) o 0°, salvata; il touch segue |
+| Associa a un pannello | Cerca un pannello su tutti i canali; sul pannello compare «Manopola trovata». Serve a passare dal 7″ al 5″ e viceversa |
+| Informazioni | MAC della manopola e del pannello, canale, segnale, data del firmware; «Dimentica il pannello» (con conferma): dopo non si riassocia da sola finché non si sceglie «Associa» |
+| Esci | Chiude il menu |
+
+Provato il 23/11/2026 con il pannello da 5″: associazione dal menu, decoder acceso/spento allineato tra manopola e
+pannello, luminosità e rotazione (anche dopo il riavvio).
 
 Nel ritocco fine il numero al centro è **relativo**: i passi dall'ultimo GOTO o ZERO (da qualsiasi parte: Sintonia,
 memorie, TUNE della manopola, pagina web, console), che riparte da 0. Il riferimento lo tiene il pannello: quando
@@ -60,6 +76,12 @@ generati sulla manopola (`generatore.*`), per provare senza la radio.
 - Impostazioni → **Manopola remota**: stato del collegamento, sorgente (Microfono, Segnale di prova), passi per scatto
   (1-500, predefinito 5).
 - Codice: `link_manopola.*`, `decodifica.*`, `ui/finestra_associazione.cpp`, `ui/pagina_impostazioni.cpp`.
+
+## Decoder acceso/spento
+Stato unico salvato nel pannello (NVS «decoder»): si cambia dal pulsante **Spegni/Accendi** della pagina Decoder o dal
+menu della manopola (`MANOPOLA_STATO.nDecoder`); il pannello lo rimanda alla manopola (`MANOPOLA_IMPOSTA.decoderAttivo`).
+Da spento nessuna elaborazione dell'audio, né sul pannello né sulla manopola; la manopola scrive «decoder spento»
+e continua a servire per ritocco fine e TUNE.
 
 ## Console della manopola (USB, 115200)
 `stato` · `associa` · `dimentica` (dimentica il pannello) · `canale <1-13>`

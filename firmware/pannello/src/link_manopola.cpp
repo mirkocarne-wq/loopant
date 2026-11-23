@@ -30,7 +30,7 @@ int8_t rssi = 0;
 proto::ManopolaStato ultimo = {};
 bool primo = true;  // primo stato dopo l'avvio o l'associazione: allinea i contatori senza agire
 int32_t scattiFatti = 0;
-uint16_t nTuneVisto = 0, nZeroVisto = 0;
+uint16_t nTuneVisto = 0, nZeroVisto = 0, nDecoderVisto = 0;
 uint32_t testoVisto = 0;
 
 // Riferimento del ritocco fine: posizione dell'antenna alla fine dell'ultimo GOTO o ZERO
@@ -97,6 +97,7 @@ void inviaImpostazioni() {
   m.antFreqHz = a.r.freq_hz;
   m.freqProposta = imp.ultima40_hz;
   m.passiScatto = scelte_.passiScatto;
+  m.decoderAttivo = decodifica::attivo();
   m.fineValido = riferimentoValido && faseRiferimento == 0;
   m.finePassi = m.fineValido ? a.r.posizione - riferimento : 0;
   radio.invia(&m, sizeof(m));
@@ -165,7 +166,12 @@ void aggiorna() {
       scattiFatti = s.scatti;
       nTuneVisto = s.nTune;
       nZeroVisto = s.nZero;
+      nDecoderVisto = s.nDecoder;
       testoVisto = s.nTesto;
+    }
+    if (s.nDecoder != nDecoderVisto) {  // dal menu della manopola
+      nDecoderVisto = s.nDecoder;
+      decodifica::attiva(s.decoderVoluto != 0);
     }
     prendiTesto(s);
     eseguiComandi(s);

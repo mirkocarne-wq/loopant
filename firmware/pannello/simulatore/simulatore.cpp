@@ -196,8 +196,11 @@ void luminosita(uint8_t) {}
 namespace decodifica {
 void inizia() {}
 void configura() {}
+bool attivo() { return true; }
+void attiva(bool) {}
 Stato stato() {
   Stato s = {};
+  s.attivo = true;
   s.ingresso = true;
   s.audio = 0.32f;
   s.rtty = impostazioni::get().decModo == 1;

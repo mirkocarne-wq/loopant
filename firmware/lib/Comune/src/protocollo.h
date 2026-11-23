@@ -141,6 +141,7 @@ struct __attribute__((packed)) ManopolaImposta {  // pannello -> manopola
   uint16_t passiScatto;  // passi per scatto nel ritocco fine
   int32_t finePassi;     // ritocco fine: posizione meno quella dopo l'ultimo GOTO o ZERO (riparte da 0)
   uint8_t fineValido;    // 0 finché non c'è un riferimento
+  uint8_t decoderAttivo; // decoder CW/RTTY acceso: stato unico, tenuto dal pannello (vale per pannello e manopola)
 };
 
 constexpr uint8_t AUDIO_INGRESSO = 1 << 0;  // sorgente attiva (microfono trovato o segnale di prova)
@@ -171,6 +172,8 @@ struct __attribute__((packed)) ManopolaStato {  // manopola -> pannello
   uint16_t nTune;      // cambia a ogni richiesta di TUNE
   uint32_t freqTune;   // frequenza della richiesta di TUNE
   uint16_t nZero;      // cambia a ogni richiesta di ZERO
+  uint16_t nDecoder;   // cambia a ogni richiesta di accendere o spegnere il decoder (dal menu della manopola)
+  uint8_t decoderVoluto;  // 1 acceso, 0 spento
 };
 
 // Risposta a CAL_LEGGI. totale = 0: banda senza punti (indice e valori non significativi).

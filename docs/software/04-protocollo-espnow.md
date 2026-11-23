@@ -97,7 +97,8 @@ Provata sulle schede il 21/11/2026: conferma automatica dalla console e associaz
 della manopola). Con `freq_hz = 0` il jog normale arriva sempre dal verso crescente.
 
 ### Manopola remota
-`MANOPOLA_IMPOSTA` (0x20, pannello → manopola, ogni secondo, con `finePassi`: passi dall'ultimo GOTO o ZERO) e `MANOPOLA_STATO` (0xA0, manopola → pannello,
+`MANOPOLA_IMPOSTA` (0x20, pannello → manopola, ogni secondo, con `finePassi`: passi dall'ultimo GOTO o ZERO, e
+`decoderAttivo`; la manopola chiede di cambiarlo con `nDecoder`/`decoderVoluto` in `MANOPOLA_STATO`) e `MANOPOLA_STATO` (0xA0, manopola → pannello,
 10 volte al secondo); strutture in `protocollo.h`, uso in [12-manopola.md](12-manopola.md). L'associazione usa gli
 stessi messaggi `ASSOCIA_*` con `FLAG_MANOPOLA` nel campo `flag`. Aggiunti senza cambiare la versione 4: i messaggi
 esistenti sono invariati.
