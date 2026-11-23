@@ -20,6 +20,7 @@ docs/tecnico/      progetto tecnico: anello, condensatori, meccanica, elettronic
 docs/software/     software: architettura, unità antenna, pannello (requisiti), protocollo, tuning, console
 docs/memoria/      decisioni prese/scartate e punti aperti
 docs/archivio/     documento originale del 20/11/2026 (non aggiornato)
+hardware/contenitore-rx/  contenitore stampabile in 3D (motore RX, elettronica, OLED): CadQuery, STL e STEP
 firmware/lib/Comune/   codice condiviso: protocollo ESP-NOW, bande, collegamento, chiavi
 firmware/antenna/      firmware unità antenna (ESP32 DevKit 30 pin, WROOM-32), arduino-cli, unico per TX e RX
 firmware/pannello/     firmware pannello in casa (Waveshare 7B), Arduino core 3.1.1 + LVGL 8.4

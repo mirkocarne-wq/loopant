@@ -23,6 +23,17 @@
 - Verificare con il tester che non ci sia continuità tra riduttore/motore e telaio/albero del variabile.
 - L'ABS soffre i raggi UV: vernice o protezione.
 
+## Contenitore stampato del motore e dell'elettronica (proposta da confermare)
+- Modello parametrico in [`hardware/contenitore-rx/`](../../hardware/contenitore-rx/README.md) (CadQuery, STL e STEP).
+- Dentro: SERVO42D e riduttore fissati con la **squadra a 90°** a una piastra interna (asole per viti M4);
+  millefori 90×70 con ESP32 DevKit, SN65HVD230 e convertitore 24→5 V; OLED 0,96" sotto il coperchio, dietro un
+  vetrino.
+- Ingombro di circa 176 × 141 × 83 mm più il coperchio; guarnizione piatta in TPU, 8 viti M3 con inserti a caldo,
+  2 PG7 (24 V e finecorsa), valvola di sfiato M12, paraolio 8×16×5 sull'asta ABS che esce dalla parete frontale.
+- **Proposta:** il variabile va in una scatola separata, lontano dall'elettronica, invece di stare nella scatola
+  unica descritta sotto. Da confermare.
+- Tutte le misure dei componenti sono **stime da verificare** con il calibro (tabella nel README).
+
 ## Scatola stagna in plastica
 - IP65 o superiore, circa 25×15×10 cm (variabile, riduttore, motore, SERVO42D).
 - Variabile su distanziali in nylon, lontano da pareti e motore. Piattine di rame corte e larghe verso gli statori.
