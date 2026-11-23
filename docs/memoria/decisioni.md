@@ -1,6 +1,6 @@
 # Decisioni di progetto
 
-Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiornato al 21/11/2026.
+Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiornato al 23/11/2026.
 
 ## Prese
 | Ambito | Decisione | Motivo |
@@ -15,6 +15,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Motore TX | Attuatore lineare a guida, NEMA11, vite T6×1, corsa 150 mm | Già allineato, compatto |
 | Driver TX | TMC2209 in stealthChop, STEP/DIR/EN + UART | StallGuard per rilevare blocchi, silenzioso |
 | MCU antenna | ESP32 DevKit 30 pin (WROOM-32), già in possesso, nella scatola all'antenna | GPIO sufficienti, CAN, ADC1, modulo schermato contro l'RF del loop |
+| Pannello da 5" | Waveshare ESP32-S3-Touch-LCD-5B, stesso firmware con `compila.sh 5b` (CH422G, porch del 5B, luminosità non regolabile) | Richiesta dell'utente; stessa risoluzione, nessuna schermata da rifare |
 | Controllo casa | Waveshare ESP32-S3-Touch-LCD-7B (7", 1024×600) con LVGL | Schermo grande, touch capacitivo; sostituisce il 5" |
 | Collegamento | ESP-NOW cifrato (PMK/LMK), MAC fissi in NVS, canale fisso (quello del router di casa se il pannello usa il WiFi) | Semplice; il WiFi serve solo per indici solari e ora |
 | Alimentazione | 24 V 2,5 A in casa, convertitore 24→5 V all'antenna | Corrente sufficiente; alimentatore lontano dalla radio |

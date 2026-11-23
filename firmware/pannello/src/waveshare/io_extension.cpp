@@ -12,7 +12,48 @@
  *
  ******************************************************************************/
 #include "io_extension.h"  // Include IO_EXTENSION driver header for GPIO functions
- 
+#include "../scheda.h"
+
+#if PANNELLO_5B
+/* loopant: ESP32-S3-Touch-LCD-5B, IO expander CH422G. Ogni "registro" del CH422G è un indirizzo I2C a cui si
+ * scrive un byte: 0x24 configurazione (bit 0 = IO0-7 in uscita), 0x38 uscite IO0-7, 0x26 lettura IO0-7.
+ * EXIO1 reset del touch, EXIO2 retroilluminazione, EXIO3 reset dello schermo, EXIO4 CS della SD;
+ * EXIO0 ed EXIO5 sono ingressi isolati (restano alti). Niente PWM né ADC. */
+io_extension_obj_t IO_EXTENSION;
+static i2c_master_dev_handle_t ch422g_set = NULL, ch422g_io = NULL, ch422g_in = NULL;
+
+void IO_EXTENSION_IO_Mode(uint8_t pin) { (void)pin; }
+
+void IO_EXTENSION_Init()
+{
+    DEV_I2C_Set_Slave_Addr(&ch422g_set, 0x24);
+    DEV_I2C_Set_Slave_Addr(&ch422g_io, 0x38);
+    DEV_I2C_Set_Slave_Addr(&ch422g_in, 0x26);
+    uint8_t modo = 0x01;  // IO0-7 in uscita
+    DEV_I2C_Write_Nbyte(ch422g_set, &modo, 1);
+    IO_EXTENSION.Last_io_value = 0xFF;
+    DEV_I2C_Write_Nbyte(ch422g_io, &IO_EXTENSION.Last_io_value, 1);
+}
+
+void IO_EXTENSION_Output(uint8_t pin, uint8_t value)
+{
+    if (pin == 0 || pin == 5) return;  // ingressi isolati DI0/DI1
+    if (value) IO_EXTENSION.Last_io_value |= (1 << pin);
+    else IO_EXTENSION.Last_io_value &= ~(1 << pin);
+    DEV_I2C_Write_Nbyte(ch422g_io, &IO_EXTENSION.Last_io_value, 1);
+}
+
+uint8_t IO_EXTENSION_Input(uint8_t pin)
+{
+    uint8_t v = DEV_I2C_Read_Byte(ch422g_in);
+    return (v >> pin) & 1;
+}
+
+void IO_EXTENSION_Pwm_Output(uint8_t Value) { (void)Value; }  // il CH422G non ha PWM
+
+uint16_t IO_EXTENSION_Adc_Input() { return 0; }
+
+#else  // ESP32-S3-Touch-LCD-7B: IO expander Waveshare
 io_extension_obj_t IO_EXTENSION;  // Define the global IO_EXTENSION object
 
 /**
@@ -123,3 +164,5 @@ uint16_t IO_EXTENSION_Adc_Input()
     // Read the ADC input value from the IO_EXTENSION device
     return DEV_I2C_Read_Word(IO_EXTENSION.addr, IO_EXTENSION_ADC_ADDR);
 }
+
+#endif  // PANNELLO_5B

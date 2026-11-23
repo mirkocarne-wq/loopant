@@ -14,6 +14,7 @@
 #include "src/eventi.h"
 #include "src/impostazioni.h"
 #include "src/link_antenna.h"
+#include "src/scheda.h"
 #include "src/link_manopola.h"
 #include "src/motore_antenna.h"
 #include "src/ora.h"
@@ -40,7 +41,9 @@ void setup() {
   // Schermo, touch e LVGL come negli esempi Waveshare
   esp_lcd_touch_handle_t touch = touch_gt911_init();
   // GPIO19/20 alla USB nativa (EXIO5 basso; alto = CAN, non usato sul pannello)
-  IO_EXTENSION_Output(IO_EXTENSION_IO_5, 0);
+#if !PANNELLO_5B
+  IO_EXTENSION_Output(IO_EXTENSION_IO_5, 0);  // 7B: USB su GPIO 19/20 (non CAN); il 5B ha il CAN su 15/16
+#endif
   esp_lcd_panel_handle_t schermo = waveshare_esp32_s3_rgb_lcd_init();
   wavesahre_rgb_lcd_bl_on();
   schermo::luminosita(impostazioni::get().luminosita);

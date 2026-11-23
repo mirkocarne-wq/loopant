@@ -57,6 +57,16 @@ src/ui/                 barra, schede e schermate
 src/waveshare/          driver degli esempi Waveshare (Apache 2.0, vedi NOTICE.md)
 ```
 
+## Schede: 7" (7B) e 5" (5B)
+Lo stesso firmware gira su due schede Waveshare con la stessa risoluzione 1024×600 e gli stessi pin RGB:
+| Scheda | Compilazione | Differenze |
+|---|---|---|
+| ESP32-S3-Touch-LCD-7B (7") | `./compila.sh` | IO expander Waveshare a 0x24 (PWM della luminosità); porch 162/152/48, 45/13/3 |
+| ESP32-S3-Touch-LCD-5B (5") | `./compila.sh 5b` (definisce `PANNELLO_5B`) | IO expander **CH422G** (EXIO1 reset touch, EXIO2 retroilluminazione, EXIO3 reset schermo, EXIO4 CS SD; EXIO0/EXIO5 ingressi isolati); porch 30/145/170, 2/23/12; **luminosità non regolabile** (solo accesa/spenta); CAN su GPIO 15/16 (niente commutatore USB/CAN), RS485 su 43/44 |
+
+Clock dei pixel 21 MHz su tutte e due. Il 5B è stato provato il 23/11/2026: schermo, tocco, retroilluminazione.
+Il codice specifico è in `src/scheda.h`, `src/waveshare/io_extension.cpp`, `src/waveshare/rgb_lcd_port.cpp`.
+
 ## Compilare con arduino-cli
 Funziona su Linux e macOS (provato con arduino-cli 1.6.0 da Homebrew).
 ```bash

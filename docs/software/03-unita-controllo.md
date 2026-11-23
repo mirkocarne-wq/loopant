@@ -31,6 +31,11 @@ Sezioni collegate: [08 — Decoder CW/RTTY](08-decoder.md), [09 — Propagazione
 | RTC / ingresso audio | **Non indicati** nella documentazione |
 | Software Waveshare | Arduino core ESP32 **3.x** (3.0.7 / 3.1.1), LVGL 8.4 (anche 9.x), driver `esp_lcd` RGB con doppio framebuffer in PSRAM |
 
+### Versione da 5" [D]
+**Waveshare ESP32-S3-Touch-LCD-5B** (5", 1024×600, stessa interfaccia del 7B): si compila con
+`firmware/pannello/compila.sh 5b`. IO expander CH422G, niente regolazione della luminosità (in Impostazioni la
+voce dice «non regolabile sul 5″»). Dettagli in `firmware/pannello/README.md`. Provato il 23/11/2026.
+
 ## B. Struttura delle schermate [D]
 ```
 ┌───────────────────────────────────────────────────────────────────────┐

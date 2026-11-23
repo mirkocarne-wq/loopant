@@ -8,6 +8,7 @@
 
 #include "../impostazioni.h"
 #include "../link_manopola.h"
+#include "../scheda.h"
 #include "../motore_antenna.h"
 #include "../ora.h"
 #include "../rete.h"
@@ -668,6 +669,9 @@ void crea(lv_obj_t* c) {
   lv_obj_set_flex_align(lr, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
   ui::etichetta(lr, "Luminosità", &font_14, t.text2);
   testoLuce = ui::etichetta(lr, "", &font_16, t.text);
+#if PANNELLO_5B
+  lv_label_set_text(testoLuce, "non regolabile sul 5\"");  // CH422G: retroilluminazione solo accesa/spenta
+#else
   lv_label_set_text_fmt(testoLuce, "%u %%", imp.luminosita);
   lv_obj_t* sl = lv_slider_create(so);
   lv_slider_set_range(sl, 10, 100);
@@ -678,6 +682,7 @@ void crea(lv_obj_t* c) {
   lv_obj_set_style_bg_color(sl, t.accent, LV_PART_KNOB);
   lv_obj_add_event_cb(sl, luce, LV_EVENT_VALUE_CHANGED, nullptr);
   lv_obj_add_event_cb(sl, luce, LV_EVENT_RELEASED, nullptr);
+#endif
   ui::etichetta(so, "Ora nella barra", &font_14, t.text2);
   gruppo(so, MODI, V_MODI, 3, &imp.modoOra);
   ui::etichetta(so, "Fuso orario dell'ora locale", &font_14, t.text2);

@@ -13,6 +13,7 @@
 
 #include "rgb_lcd_port.h"
 #include "lvgl_port.h"
+#include "../scheda.h"
 
 const char *TAG = "example";
 
@@ -49,6 +50,12 @@ esp_lcd_panel_handle_t waveshare_esp32_s3_rgb_lcd_init()
 {
     // Log the start of the RGB LCD panel driver installation
     ESP_LOGI(TAG, "Install RGB LCD panel driver");
+#if PANNELLO_5B  // loopant: reset dello schermo con EXIO3 del CH422G (come l'esempio Waveshare)
+    IO_EXTENSION_Output(IO_EXTENSION_IO_3, 0);
+    vTaskDelay(pdMS_TO_TICKS(10));
+    IO_EXTENSION_Output(IO_EXTENSION_IO_3, 1);
+    vTaskDelay(pdMS_TO_TICKS(100));
+#endif
 
     // Configuration structure for the RGB LCD panel
     esp_lcd_rgb_panel_config_t panel_config = {
@@ -57,12 +64,21 @@ esp_lcd_panel_handle_t waveshare_esp32_s3_rgb_lcd_init()
             .pclk_hz = EXAMPLE_LCD_PIXEL_CLOCK_HZ, // Pixel clock frequency in Hz
             .h_res = EXAMPLE_LCD_H_RES,            // Horizontal resolution (number of pixels per row)
             .v_res = EXAMPLE_LCD_V_RES,            // Vertical resolution (number of rows)
+#if PANNELLO_5B  // loopant: 5" 1024x600, valori dell'esempio LVGL Waveshare del 5B
+            .hsync_pulse_width = 30,
+            .hsync_back_porch = 145,
+            .hsync_front_porch = 170,
+            .vsync_pulse_width = 2,
+            .vsync_back_porch = 23,
+            .vsync_front_porch = 12,
+#else
             .hsync_pulse_width = 162,                // Horizontal sync pulse width
             .hsync_back_porch = 152,                 // Horizontal back porch
             .hsync_front_porch = 48,                // Horizontal front porch
             .vsync_pulse_width = 45,                // Vertical sync pulse width
             .vsync_back_porch = 13,                 // Vertical back porch
             .vsync_front_porch = 3,                // Vertical front porch
+#endif
             .flags = {
                 .pclk_active_neg = 1, // Set pixel clock polarity to active low
             },
