@@ -99,8 +99,10 @@ mano di vernice.
 
 ## Materiale
 - 8 inserti a caldo M3 (Ø 4,0 mm, lunghi 5–6 mm) per il coperchio e 4 per la piastra; 8 viti M3×12 e 4 viti M3×8.
-- 4 inserti a caldo **M4** nel fondo per la staffa. I fori sono ciechi e il fondo resta chiuso. 4 viti M4×8 a
-  testa cilindrica.
+- 4 inserti a caldo **M4** (Ø 5,6 mm, lunghi circa 6–8 mm) nel fondo per la staffa, messi da fuori. I fori sono
+  ciechi: dentro la scatola ci sono 4 rinforzi alti 5 mm e il fondo resta chiuso. 4 viti **M4×8 a testa bombata**
+  (ISO 7380, testa alta 2,2 mm): la testa sta nell'incasso della staffa dal lato del palo, non quella cilindrica
+  normale, che sporgerebbe di 1 mm.
 - 2 **fascette stringitubo inox** (banda da 9–12 mm) adatte al diametro del palo.
 - 2 viti M4×20 con rondelle e dadi per la squadra (asole a 30 mm di interasse): la vite entra dal basso, con testa
   e rondella nell'asola larga sotto la piastra (sotto la squadra restano 8 mm di materiale), e il dado si stringe
@@ -124,7 +126,9 @@ mano di vernice.
 4. Giunto sull'albero del riduttore. Tubo isolante infilato dall'esterno attraverso il paraolio, fino al giunto.
 5. Cavi nei PG7 e fascette nelle fessure della piastra. OLED sulle colonnine del coperchio, vetrino incollato.
 6. Coperchio con la guarnizione; viti strette in modo uniforme, a croce.
-7. Staffa avvitata al fondo. Fascette infilate nei passaggi dei blocchi a V e strette attorno al palo.
+7. Staffa appoggiata al fondo e fissata con le 4 viti M4×8 negli inserti, dal lato del palo: le viti stanno fuori
+   dai blocchi a V e si raggiungono anche con la scatola montata. Poi le fascette nei passaggi dei blocchi,
+   strette attorno al palo ([immagine](anteprime/staffa-montaggio.png)).
 
 ## Da verificare
 - Il dislivello di 20 mm misurato con variabile e motore appoggiati sullo stesso piano; poi, con tutto montato,

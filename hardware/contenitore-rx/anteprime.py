@@ -131,6 +131,12 @@ def disegna(qui, parti, pezzi):
     sezione += [(triangoli(taglia(o, ya)), col) for n, (o, col) in pezzi.items()]
     figura(sezione, os.path.join(cart, "sezione.png"), 8, 90,
            "Sezione sull'asse: base della squadra verso il riduttore, sul rialzo di 20 mm; appoggio sotto il motore")
+    if "viti_staffa" in parti:
+        figura([(t["scatola"], c["scatola"]), (t["inserti_staffa"], "#c9a227"),
+                (triangoli(parti["staffa"], (0, 0, -45)), c["staffa"]),
+                (triangoli(parti["viti_staffa"], (0, 0, -80)), "#5f6368")],
+               os.path.join(cart, "staffa-montaggio.png"), -32, -125,
+               "Staffa e scatola: 4 viti M4×8 dal lato del palo negli inserti a caldo M4 del fondo")
     figura([(t["piastra"], c["piastra"])], os.path.join(cart, "piastra-sotto.png"), -50, -60,
            "Piastra da sotto: asole della squadra (interasse 30 mm) con l'asola larga per testa e rondella")
     figura([(t["staffa"], c["staffa"])], os.path.join(cart, "staffa-palo.png"), -40, -60,

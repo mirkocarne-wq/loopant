@@ -455,8 +455,17 @@ def main():
     if "--niente-anteprime" not in sys.argv:
         import anteprime
         palo = cilindro_x(-80, LY / 2, centro_palo(), LX + 160, PALO_D)
+        # Viti della staffa (M4×8 a testa bombata, testa nell'incasso dal lato del palo) e inserti nel fondo
+        zp = -FONDO - STAFFA_SP
+        viti = None
+        inserti = None
+        for x, y in VITI_STAFFA:
+            v = cilindro_z(x, y, zp + 3 - 2.2, 2.2, 7.6).union(cilindro_z(x, y, zp + 3, 8, 4))
+            i = cilindro_z(x, y, -FONDO, INSERTO_M4_P - 0.5, INSERTO_M4_D)
+            viti = v if viti is None else viti.union(v)
+            inserti = i if inserti is None else inserti.union(i)
         anteprime.disegna(QUI, {"scatola": sc, "piastra": pi, "coperchio": co, "guarnizione": gu, "staffa": st,
-                                "palo": palo}, pezzi)
+                                "palo": palo, "viti_staffa": viti, "inserti_staffa": inserti}, pezzi)
     return 1 if errori else 0
 
 
