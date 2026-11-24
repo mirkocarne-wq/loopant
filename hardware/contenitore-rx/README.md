@@ -68,7 +68,7 @@ Le misure dei componenti sono **stime da verificare con il calibro** prima di st
 | `H_ASSE` | 30 | Altezza dell'asse sopra la base della squadra (il motore ci sta sopra se è almeno 24 mm) |
 | `SQUADRA_VERSO` | -1 | Da che parte va la base della squadra: -1 verso il riduttore (con l'appoggio sotto il motore), 1 sotto il motore |
 | `DISLIVELLO` | 20 | Di quanto l'asse del variabile è più alto di quello del motore, appoggiati sullo stesso piano |
-| `SQUADRA_BASE`, `ASOLE_SQUADRA` | 35; due asole a ±13 mm dall'asse | Fori della base della squadra (le asole lunghe 20 mm danno margine lungo l'asse) |
+| `SQUADRA_BASE`, `INTERASSE_ASOLE` | 35; 30 (misura dell'utente) | Fori della base della squadra (le asole lunghe 20 mm danno margine lungo l'asse) |
 | `LUNGHEZZA_GRUPPO` | 150 | Dal davanti del giunto al retro del SERVO42D (giunto, riduttore, squadra, motore): la scatola si allunga con questa misura |
 | `RIDUTTORE_L`, `RIDUTTORE_D` | 52,5 (calcolato), 36 | Il riduttore prende la lunghezza che resta del gruppo; con le misure vere dei pezzi la ripartizione si corregge |
 | `MOTORE_L`, `DRIVER_L` | 40, 22 | NEMA17 e guscio del SERVO42D; dietro restano 27 mm per i connettori |
@@ -102,8 +102,9 @@ mano di vernice.
 - 4 inserti a caldo **M4** nel fondo per la staffa. I fori sono ciechi e il fondo resta chiuso. 4 viti M4×8 a
   testa cilindrica.
 - 2 **fascette stringitubo inox** (banda da 9–12 mm) adatte al diametro del palo.
-- Viti M4×35 con dadi e rondelle per la squadra: attraversano squadra, rialzo e piastra; i dadi stanno sotto la
-  piastra, che è rialzata di 6 mm.
+- 2 viti M4×20 con rondelle e dadi per la squadra (asole a 30 mm di interasse): la vite entra dal basso, con testa
+  e rondella nell'asola larga sotto la piastra (sotto la squadra restano 8 mm di materiale), e il dado si stringe
+  sopra la squadra.
 - Una fascetta di plastica che tiene il motore sul suo appoggio (fessure nella piastra ai lati).
 - 8 viti M2×6 autofilettanti per le due strisce di millefori e 4 per l'OLED.
 - 2 pressacavi **PG7**: 24 V in basso e cavo dei finecorsa in alto, verso la scatola del variabile. Quello in alto

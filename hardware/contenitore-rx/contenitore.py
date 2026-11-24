@@ -82,8 +82,12 @@ SUPPORTO_MOTORE = SQUADRA_VERSO < 0  # appoggio sotto il corpo del NEMA17, con f
 Z_ASSE = COLONNINA_H + PIASTRA + RIALZO_MOTORE + H_ASSE   # asse del motore sopra il fondo interno
 HZ = float(math.ceil(Z_ASSE + NEMA / 2 + BORDO_H + BORDO + 2))  # altezza interna: il motore passa sotto il bordo
 _XA = (BASE_SQUADRA[0] + BASE_SQUADRA[1]) / 2
-ASOLE_SQUADRA = [(_XA, Y_ASSE - 13), (_XA, Y_ASSE + 13)]  # centri delle asole
+INTERASSE_ASOLE = 30.0           # interasse delle asole della squadra (misura dell'utente)
+ASOLE_SQUADRA = [(_XA, Y_ASSE - INTERASSE_ASOLE / 2), (_XA, Y_ASSE + INTERASSE_ASOLE / 2)]  # centri delle asole
 ASOLA_L, ASOLA_W = 20.0, 4.5     # asole lungo X per viti M4 (permettono di spostare la squadra)
+# Sotto: asola più larga per la testa della vite e la rondella (vite dal basso, dado sopra la squadra)
+TESTA_W = 10.0                   # rondella M4 Ø 9 + gioco
+SPESSORE_SOTTO_SQUADRA = 8.0     # materiale che resta tra la testa e la squadra
 
 # --- Passaggio dell'albero (parete frontale) ---
 BOSS_R, BOSS_SPORGENZA = 13.0, 6.0
@@ -247,9 +251,13 @@ def piastra():
     if RIALZO_MOTORE > 0:
         p = p.union(scatola_arrotondata(BASE_SQUADRA[0] - 3, Y_ASSE - 24, z0 + PIASTRA - 0.1,
                                         BASE_SQUADRA[1] + 3, Y_ASSE + 24, z0 + PIASTRA + RIALZO_MOTORE, 3.0))
+    testa_p = PIASTRA + RIALZO_MOTORE - SPESSORE_SOTTO_SQUADRA  # profondità dell'asola per la testa
     for x, y in ASOLE_SQUADRA:
         p = p.cut(cq.Workplane("XY").workplane(offset=z0 - 1).center(x, y).slot2D(ASOLA_L + ASOLA_W, ASOLA_W)
                   .extrude(PIASTRA + RIALZO_MOTORE + 2))
+        if testa_p > 0:
+            p = p.cut(cq.Workplane("XY").workplane(offset=z0 - 1).center(x, y).slot2D(ASOLA_L + TESTA_W, TESTA_W)
+                      .extrude(testa_p + 1))
     # Appoggio sotto il corpo del motore (0,5 mm di gioco) e fessure per la fascetta che lo tiene
     if SUPPORTO_MOTORE:
         xm = X_SQUADRA + SQUADRA_S + MOTORE_L / 2
