@@ -137,6 +137,15 @@ def disegna(qui, parti, pezzi):
                 (triangoli(parti["viti_staffa"], (0, 0, -80)), "#5f6368")],
                os.path.join(cart, "staffa-montaggio.png"), -32, -125,
                "Staffa e scatola: 4 viti M4×8 dal lato del palo negli inserti a caldo M4 del fondo")
+    if "viti_staffa" in parti:
+        # Fondo visto da sotto con la staffa spostata di lato: i 4 fori ciechi degli inserti e i 4 fori della staffa
+        import cadquery as cq
+        bb = parti["scatola"].val().BoundingBox()
+        dy = bb.ylen + 20
+        st_ruotata = parti["staffa"].rotate((0, 0, 0), (1, 0, 0), 180).translate((0, dy + bb.ylen, -2 * (bb.zmin - 8)))
+        figura([(t["scatola"], c["scatola"]), (triangoli(st_ruotata), c["staffa"])],
+               os.path.join(cart, "fondo-e-staffa.png"), -89.9, -90,
+               "Da sotto: 4 fori ciechi per gli inserti M4 nel fondo (sopra) e 4 fori della staffa (sotto), stesse posizioni")
     figura([(t["piastra"], c["piastra"])], os.path.join(cart, "piastra-sotto.png"), -50, -60,
            "Piastra da sotto: asole della squadra (interasse 30 mm) con l'asola larga per testa e rondella")
     figura([(t["staffa"], c["staffa"])], os.path.join(cart, "staffa-palo.png"), -40, -60,
