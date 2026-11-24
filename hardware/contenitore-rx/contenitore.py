@@ -58,7 +58,7 @@ RIALZO_MOTORE = max(DISLIVELLO, 0.0)
 # La squadra sta tra riduttore e motore: il riduttore è avvitato davanti (verso la parete frontale), il motore
 # dietro, e l'albero del motore passa nel foro della squadra.
 X_RIDUTTORE = 38.0               # faccia d'uscita del riduttore dalla parete frontale (davanti c'è il giunto)
-SQUADRA_VERSO = 1                # base della squadra: 1 sotto il motore, -1 sotto il riduttore
+SQUADRA_VERSO = -1               # base della squadra: -1 verso il riduttore (com'è la squadra), 1 sotto il motore
 SQUADRA_S = 3.0                  # spessore della squadra
 SQUADRA_BASE = 35.0              # profondità della base della squadra
 RIDUTTORE_L, RIDUTTORE_D = 40.0, 36.0

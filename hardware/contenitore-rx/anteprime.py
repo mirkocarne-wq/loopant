@@ -130,7 +130,7 @@ def disegna(qui, parti, pezzi):
                                                                   "guarnizione")]
     sezione += [(triangoli(taglia(o, ya)), col) for n, (o, col) in pezzi.items()]
     figura(sezione, os.path.join(cart, "sezione.png"), 8, 90,
-           "Sezione sull'asse: riduttore, squadra e motore sul rialzo di 20 mm; giunto e tubo nel paraolio")
+           "Sezione sull'asse: base della squadra verso il riduttore, sul rialzo di 20 mm; appoggio sotto il motore")
     figura([(t["staffa"], c["staffa"])], os.path.join(cart, "staffa-palo.png"), -40, -60,
            "Staffa: due blocchi a V, passaggi per le fascette, 4 viti M4 nel fondo")
     figura([(t["coperchio"], c["coperchio"]), oled],
