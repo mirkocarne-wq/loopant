@@ -50,8 +50,8 @@ Lo script controlla anche gli ingombri. Avvisa se motore, squadra o elettronica 
 altri componenti, e se la staffa entra nella scatola.
 
 ## Misure (stime da verificare)
-Scatola: circa **176 × 141 × 100 mm** più il coperchio (5,5 mm con la guarnizione); la borchia dell'albero sporge
-6 mm. La staffa aggiunge circa 32 mm verso il palo. Interno: 170 × 135 × 97 mm. L'altezza si calcola dal motore:
+Scatola: circa **195 × 141 × 100 mm** più il coperchio (5,5 mm con la guarnizione); la borchia dell'albero sporge
+6 mm. La staffa aggiunge circa 32 mm verso il palo. Interno: 189 × 135 × 97 mm. La lunghezza si calcola dal gruppo motore (150 mm) e l'altezza dal motore:
 con il rialzo di 20 mm la scatola è più alta di 17 mm rispetto alla prima versione.
 
 **Concentricità con il variabile.** L'asse del motore sta 60 mm sopra il fondo interno (63 mm sopra quello
@@ -69,10 +69,11 @@ Le misure dei componenti sono **stime da verificare con il calibro** prima di st
 | `SQUADRA_VERSO` | -1 | Da che parte va la base della squadra: -1 verso il riduttore (con l'appoggio sotto il motore), 1 sotto il motore |
 | `DISLIVELLO` | 20 | Di quanto l'asse del variabile è più alto di quello del motore, appoggiati sullo stesso piano |
 | `SQUADRA_BASE`, `ASOLE_SQUADRA` | 35; due asole a ±13 mm dall'asse | Fori della base della squadra (le asole lunghe 20 mm danno margine lungo l'asse) |
-| `RIDUTTORE_L`, `RIDUTTORE_D` | 40, 36 | Corpo del riduttore |
+| `LUNGHEZZA_GRUPPO` | 150 | Dal davanti del giunto al retro del SERVO42D (giunto, riduttore, squadra, motore): la scatola si allunga con questa misura |
+| `RIDUTTORE_L`, `RIDUTTORE_D` | 52,5 (calcolato), 36 | Il riduttore prende la lunghezza che resta del gruppo; con le misure vere dei pezzi la ripartizione si corregge |
 | `MOTORE_L`, `DRIVER_L` | 40, 22 | NEMA17 e guscio del SERVO42D; dietro restano 27 mm per i connettori |
 | `ALBERO_L`, `GIUNTO_L`, `GIUNTO_D` | 20, 25, 20 | Albero d'uscita (8 mm) e giunto verso il tubo isolante |
-| `X_RIDUTTORE` | 38 | Distanza tra la faccia d'uscita del riduttore e la parete frontale: deve starci il giunto |
+| `X_GIUNTO` | 12 | Spazio tra la parete frontale interna e il davanti del giunto |
 | `TUBO_ISOLANTE`, `GIOCO_FORO` | 8; 0,4 | Il foro si stampa da 8,4 mm perché i fori stampati vengono più stretti; il paraolio fa la tenuta |
 | `MILLEFORI`, `MILLEFORI_FORI` | 35×90; fori a 2,5 mm dal bordo | Strisce di millefori e fori di fissaggio (viti M2 autofilettanti) |
 | `OLED_FORI`, `OLED_DY_PCB`, `OLED_VETRO` | 23×23,5; 1,5; 1,8 | Interassi dei fori dell'OLED; spostamento della zona attiva; spessore del vetro |
@@ -83,6 +84,8 @@ Tra il motore e le strisce di millefori restano circa 4 mm per lato. Se i compon
 previsto, si allarga `LY`.
 
 ## Pezzi e stampa
+La scatola occupa sul piatto circa 201 × 141 mm (con la borchia dell'albero): serve un piatto da almeno 220 mm.
+
 | Pezzo | Materiale | Orientamento | Note |
 |---|---|---|---|
 | `scatola.stl` | **ASA** (o PETG) | Fondo sul piatto | Bordo interno smussato a 45° e borchia con mento a 45°: nessun supporto. 4 perimetri, 25–30 % di riempimento |
@@ -116,7 +119,7 @@ mano di vernice.
 2. Riduttore avvitato davanti alla squadra e motore dietro, con l'albero nel foro della squadra. Squadra sul rialzo
    della piastra, con la base sotto il riduttore, nelle asole; fascetta attorno al motore e al suo appoggio;
    strisce di millefori sui distanziali.
-3. Piastra nella scatola. L'apertura del bordo è 160×125 mm e la piastra 158×123 mm.
+3. Piastra nella scatola. L'apertura del bordo è 179×125 mm e la piastra 177×123 mm.
 4. Giunto sull'albero del riduttore. Tubo isolante infilato dall'esterno attraverso il paraolio, fino al giunto.
 5. Cavi nei PG7 e fascette nelle fessure della piastra. OLED sulle colonnine del coperchio, vetrino incollato.
 6. Coperchio con la guarnizione; viti strette in modo uniforme, a croce.

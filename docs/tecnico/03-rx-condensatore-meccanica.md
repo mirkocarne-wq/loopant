@@ -34,7 +34,7 @@
 - **Fissaggio al palo:** staffa stampata con due blocchi a V (pali da circa 20 a 50 mm) e due fascette stringitubo
   inox, avvitata al fondo con 4 inserti M4 ciechi. Palo verticale, parete frontale in alto verso il variabile,
   24 V e sfiato in basso.
-- Ingombro di circa 176 × 141 × 100 mm più il coperchio e la staffa (32 mm); guarnizione piatta in TPU, 8 viti M3
+- Gruppo giunto, riduttore, squadra e motore lungo circa 150 mm (misura dell'utente). Ingombro di circa 195 × 141 × 100 mm più il coperchio e la staffa (32 mm); guarnizione piatta in TPU, 8 viti M3
   con inserti a caldo, 2 PG7 (24 V e finecorsa), valvola di sfiato M12.
 - **Proposta:** il variabile va in una scatola separata, lontano dall'elettronica, invece di stare nella scatola
   unica descritta sotto. Da confermare.

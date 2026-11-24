@@ -26,8 +26,14 @@ QUI = os.path.dirname(os.path.abspath(__file__))
 # X lungo l'asse del motore (0 = parete frontale, quella dell'albero), Y in larghezza, Z in altezza.
 # ============================================================================================================
 
+# --- Gruppo motore: lunghezza complessiva (misura dell'utente, circa) ---
+LUNGHEZZA_GRUPPO = 150.0         # dal davanti del giunto al retro del SERVO42D: giunto, riduttore, squadra, motore
+X_GIUNTO = 12.0                  # spazio tra la parete frontale interna e il davanti del giunto
+SPAZIO_CAVI = 27.0               # dietro il SERVO42D, per i connettori
+
 # --- Scatola ---
-LX, LY = 170.0, 135.0            # misure interne (lunghezza, larghezza); l'altezza HZ si calcola dal motore
+LX = float(math.ceil(X_GIUNTO + LUNGHEZZA_GRUPPO + SPAZIO_CAVI))  # lunghezza interna, dal gruppo motore
+LY = 135.0                       # larghezza interna; l'altezza HZ si calcola dal motore
 PARETE = 3.0                     # spessore delle pareti
 FONDO = 3.0                      # spessore del fondo
 R_ESTERNO = 6.0                  # raggio degli spigoli verticali
@@ -57,22 +63,24 @@ DISLIVELLO = 20.0
 RIALZO_MOTORE = max(DISLIVELLO, 0.0)
 # La squadra sta tra riduttore e motore: il riduttore è avvitato davanti (verso la parete frontale), il motore
 # dietro, e l'albero del motore passa nel foro della squadra.
-X_RIDUTTORE = 38.0               # faccia d'uscita del riduttore dalla parete frontale (davanti c'è il giunto)
 SQUADRA_VERSO = -1               # base della squadra: -1 verso il riduttore (com'è la squadra), 1 sotto il motore
 SQUADRA_S = 3.0                  # spessore della squadra
 SQUADRA_BASE = 35.0              # profondità della base della squadra
-RIDUTTORE_L, RIDUTTORE_D = 40.0, 36.0
+MOTORE_L, NEMA = 40.0, 42.3
+DRIVER_L = 22.0                  # SERVO42D con il suo guscio sul retro del motore
+ALBERO_D, ALBERO_L = 8.0, 20.0   # albero di uscita del riduttore
+GIUNTO_D, GIUNTO_L = 20.0, 25.0  # giunto: metà sull'albero, metà sul tubo isolante
+RIDUTTORE_D = 36.0
+# Il riduttore prende la lunghezza che resta del gruppo (ripartizione da verificare)
+RIDUTTORE_L = LUNGHEZZA_GRUPPO - (GIUNTO_L / 2 + ALBERO_L + SQUADRA_S + MOTORE_L + DRIVER_L)
+X_RIDUTTORE = X_GIUNTO + GIUNTO_L / 2 + ALBERO_L  # faccia d'uscita del riduttore
 X_SQUADRA = X_RIDUTTORE + RIDUTTORE_L  # faccia della squadra verso il riduttore
 # Base della squadra lungo X; con la base sotto il riduttore il motore sbalza e serve l'appoggio
 BASE_SQUADRA = ((X_SQUADRA, X_SQUADRA + SQUADRA_BASE) if SQUADRA_VERSO > 0
                 else (X_SQUADRA + SQUADRA_S - SQUADRA_BASE, X_SQUADRA + SQUADRA_S))
 SUPPORTO_MOTORE = SQUADRA_VERSO < 0  # appoggio sotto il corpo del NEMA17, con fessure per una fascetta
-MOTORE_L, NEMA = 40.0, 42.3
-DRIVER_L = 22.0                  # SERVO42D con il suo guscio sul retro del motore
 Z_ASSE = COLONNINA_H + PIASTRA + RIALZO_MOTORE + H_ASSE   # asse del motore sopra il fondo interno
 HZ = float(math.ceil(Z_ASSE + NEMA / 2 + BORDO_H + BORDO + 2))  # altezza interna: il motore passa sotto il bordo
-ALBERO_D, ALBERO_L = 8.0, 20.0   # albero di uscita del riduttore
-GIUNTO_D, GIUNTO_L = 20.0, 25.0
 _XA = (BASE_SQUADRA[0] + BASE_SQUADRA[1]) / 2
 ASOLE_SQUADRA = [(_XA, Y_ASSE - 13), (_XA, Y_ASSE + 13)]  # centri delle asole
 ASOLA_L, ASOLA_W = 20.0, 4.5     # asole lungo X per viti M4 (permettono di spostare la squadra)
@@ -328,7 +336,7 @@ def ingombri():
     pezzi["servo42d"] = (cq.Workplane("XY").box(DRIVER_L, NEMA, NEMA, centered=False)
                          .translate((x, Y_ASSE - NEMA / 2, za - NEMA / 2)).edges("|X").chamfer(3), "#1a73e8")
     pezzi["albero"] = (cilindro_x(X_RIDUTTORE - ALBERO_L, Y_ASSE, za, ALBERO_L, ALBERO_D), "#bdc1c6")
-    pezzi["giunto"] = (cilindro_x(X_RIDUTTORE - ALBERO_L - 3, Y_ASSE, za, GIUNTO_L, GIUNTO_D), "#c5a572")
+    pezzi["giunto"] = (cilindro_x(X_GIUNTO, Y_ASSE, za, GIUNTO_L, GIUNTO_D), "#c5a572")
     pezzi["tubo isolante"] = (cilindro_x(-PARETE - BOSS_SPORGENZA - 30, Y_ASSE, za,
                                          30 + PARETE + BOSS_SPORGENZA + 10, TUBO_ISOLANTE), "#f1f3f4")
     w, h, t = MILLEFORI
@@ -384,6 +392,7 @@ def controlla(sc, pi, pezzi):
     if tra < 4:
         errori.append(f"tra motore e millefori solo {tra:.1f} mm")
     print(f"Spazio dietro il SERVO42D: {retro:.0f} mm; tra motore e millefori: {tra:.1f} mm")
+    print(f"Gruppo {LUNGHEZZA_GRUPPO:.0f} mm: riduttore stimato {RIDUTTORE_L:.1f} mm; scatola lunga {LX:.0f} mm interni")
     print(f"Asse del motore: {Z_ASSE:.1f} mm sopra il fondo interno, {Z_ASSE + FONDO:.1f} mm sopra il fondo esterno "
           f"(rialzo {RIALZO_MOTORE:.0f} mm); altezza interna {HZ:.0f} mm")
     if SQUADRA_VERSO > 0 and H_ASSE - NEMA / 2 < SQUADRA_S:
