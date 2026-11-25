@@ -135,6 +135,7 @@ VETRINO = (31.0, 17.0, 1.6)      # lastrina in plexiglass (lato lungo × corto �
 COLONNINA_OLED_R = 2.0
 
 SCRITTA = "loopant RX"
+CON_OLED = True                  # finestra e colonnine dell'OLED nel coperchio (la scatola del variabile non le ha)
 
 # --- Finecorsa ottici (forcella, tipo Lerdge) e ruota con le bandierine sull'albero d'uscita del riduttore ---
 # Il variabile lavora su circa 180°. Due sensori sotto l'albero, a SENSORE_A e SENSORE_B gradi (angoli nel piano YZ
@@ -324,17 +325,18 @@ def coperchio(z_basso):
     for x, y in viti_coperchio():
         c = c.cut(cilindro_z(x, y, z_basso - 1, COPERCHIO + 2, VITE_PASSANTE))
 
-    # Finestra dell'OLED con smusso esterno, sede del vetrino da dentro, colonnine del circuito.
-    # Display ruotato: lato lungo lungo Y, alto del display (pin) verso X = 0 (in alto con il palo verticale).
-    lv, cv = OLED_VISIBILE
-    finestra = (cq.Workplane("XY").workplane(offset=z_basso - 0.1).center(OLED_X, OLED_Y).rect(cv, lv)
-                .workplane(offset=COPERCHIO + 0.2).rect(cv + 2 * COPERCHIO, lv + 2 * COPERCHIO).loft())
-    c = c.cut(finestra)
-    c = c.cut(scatola_arrotondata(OLED_X - VETRINO[1] / 2, OLED_Y - VETRINO[0] / 2, z_basso - 0.1,
-                                  OLED_X + VETRINO[1] / 2, OLED_Y + VETRINO[0] / 2, z_basso + VETRINO[2], 1.0))
-    for x, y in fori_oled():
-        c = c.union(cilindro_z(x, y, z_basso - OLED_VETRO, OLED_VETRO + 0.1, 2 * COLONNINA_OLED_R))
-        c = c.cut(cilindro_z(x, y, z_basso - OLED_VETRO - 1, OLED_VETRO + 1 + 2.5, 1.7))
+    if CON_OLED:
+        # Finestra dell'OLED con smusso esterno, sede del vetrino da dentro, colonnine del circuito.
+        # Display ruotato: lato lungo lungo Y, alto del display (pin) verso X = 0 (in alto con il palo verticale).
+        lv, cv = OLED_VISIBILE
+        finestra = (cq.Workplane("XY").workplane(offset=z_basso - 0.1).center(OLED_X, OLED_Y).rect(cv, lv)
+                    .workplane(offset=COPERCHIO + 0.2).rect(cv + 2 * COPERCHIO, lv + 2 * COPERCHIO).loft())
+        c = c.cut(finestra)
+        c = c.cut(scatola_arrotondata(OLED_X - VETRINO[1] / 2, OLED_Y - VETRINO[0] / 2, z_basso - 0.1,
+                                      OLED_X + VETRINO[1] / 2, OLED_Y + VETRINO[0] / 2, z_basso + VETRINO[2], 1.0))
+        for x, y in fori_oled():
+            c = c.union(cilindro_z(x, y, z_basso - OLED_VETRO, OLED_VETRO + 0.1, 2 * COLONNINA_OLED_R))
+            c = c.cut(cilindro_z(x, y, z_basso - OLED_VETRO - 1, OLED_VETRO + 1 + 2.5, 1.7))
 
     # Scritta incisa sopra, leggibile con la parete frontale in alto
     try:

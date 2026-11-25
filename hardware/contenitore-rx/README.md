@@ -1,4 +1,9 @@
-# Contenitore stampabile dell'unità antenna RX
+# Contenitori stampabili dell'antenna RX
+
+Due scatole sullo stesso palo: **motore ed elettronica** (sotto) e **variabile** (sopra, regge l'anello di rame).
+La seconda è descritta in fondo, in «Scatola del variabile».
+
+## Scatola del motore
 
 Scatola stagna da stampare in 3D, da fissare al palo. Contiene:
 - il **SERVO42D** (NEMA17 con il driver sul retro) con il **riduttore planetario 20:1**, fissati con la loro
@@ -183,3 +188,46 @@ e il fondo resta chiuso.
   inserti più lunghi.
 - Disturbo dell'OLED sui 40 e 20 m: è un punto aperto anche del firmware.
 - Temperatura al sole d'estate. Se serve, coperchio chiaro o tettuccio.
+
+## Scatola del variabile
+Script: `scatola_variabile.py` (usa le parti comuni di `contenitore.py`). Pezzi: `stl/variabile-*.stl`.
+
+![Sul palo](anteprime/variabile-sul-palo.png)
+![Interno](anteprime/variabile-interno.png)
+![Sezione](anteprime/variabile-sezione.png)
+
+- **Variabile**: 1000 pF (20–1000 pF), corpo 135 × 83 × 95 mm, perno di comando di circa 29 mm, 600 g (misure
+  dell'utente). Si fissa con le due linguette sotto le fiancate a una **piastra con una griglia di fori M3** ogni
+  10 mm, con viti e dadi in nylon: si scelgono i fori che capitano sotto le linguette.
+- **Concentricità**: stesso fondo, stessa piastra e stessa staffa della scatola del motore; l'asse del variabile
+  sta 50 mm sopra la sua base (20 mm più del motore sulla sua squadra), quindi a 60 mm dal fondo interno, come
+  il motore. Sul palo le due scatole hanno la borchia una verso l'altra; tra le due borchie circa 12 mm.
+- **Tubo isolante**: giunto 8→6 sul perno del variabile; il tubo isolante lungo circa 59 mm più lo spazio tra le
+  borchie (circa 71 mm con 12 mm), con un paraolio 8×16×5 in ciascuna borchia.
+- **Anello**: i due capi del tubo di rame (1/2", parametro `TUBO_ANELLO`; 70 mm tra i capi, `INTERASSE_CAPI`)
+  entrano dall'alto in un **blocco pieno spesso 20 mm** che fa da parete superiore. Ogni capo ha un collare e una
+  svasatura per il silicone, ed è bloccato da una **vite M4 di traverso** che entra dal fianco, attraversa il tubo
+  forato da 4,2 mm e filetta la plastica oltre: una vite per capo, così i due capi restano isolati tra loro.
+- **Peso e vento**: la staffa del palo si allunga sotto il blocco e prende 2 viti M4 in più (inserti nel blocco),
+  con un blocco a V vicino all'anello: il carico dell'anello va dritto al palo. Stima da verificare: anello 1 m
+  in tubo da 1/2" circa 1 kg, più la spinta del vento.
+- **Sfiato**: valvola M12 sulla parete della borchia, che sul palo è in basso. Nessun pressacavo: dentro ci sono
+  solo variabile e piattine.
+- **Ingombro**: circa 241 × 111 × 123 mm con la borchia e il blocco: serve un piatto da almeno 250 mm. Se non
+  basta, si accorcia il perno del variabile (da 29 a 20 mm si risparmiano 9 mm, parametro `VAR_ALBERO_L`).
+
+| Pezzo | Materiale | Orientamento | Note |
+|---|---|---|---|
+| `variabile-scatola.stl` | **ASA** o PETG | Fondo sul piatto | 6 perimetri, 40 % di riempimento: il blocco dell'anello deve essere robusto |
+| `variabile-coperchio.stl` | ASA o PETG | Faccia esterna sul piatto | |
+| `variabile-piastra.stl` | PETG | Piatta | |
+| `variabile-staffa-palo.stl` | ASA o PETG | Faccia verso la scatola sul piatto | 5 perimetri, 40 % |
+| `variabile-guarnizione.stl` | TPU | Piatta | |
+
+Viti: 8 M3×12 per il coperchio (inserti M3 nel bordo), 4 M3×6 a testa bombata per la piastra (inserti nelle
+colonnine), 4 M4×8 a testa bombata per la staffa (inserti M4 nel fondo e nel blocco), 2 M4×40 per i capi
+dell'anello (dal fianco, attraverso il tubo), viti M3 in nylon per il variabile. Giunto 8→6, paraolio 8×16×5,
+valvola di sfiato M12, silicone neutro sui capi.
+
+Da verificare: diametro del perno del variabile (6 mm?), posizione dei fori delle linguette, morsetti degli
+statori rispetto ai capi (piattine), peso reale dell'anello e tenuta delle viti nei capi.

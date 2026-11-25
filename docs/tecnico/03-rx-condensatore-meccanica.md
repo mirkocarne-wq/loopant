@@ -44,6 +44,15 @@
   unica descritta sotto. Da confermare.
 - Tutte le misure dei componenti sono **stime da verificare** con il calibro (tabella nel README).
 
+## Scatola del variabile (stampata)
+- `hardware/contenitore-rx/scatola_variabile.py`: stessa costruzione della scatola del motore (fondo, staffa,
+  coperchio, borchia con paraolio), interno 105 mm di larghezza; sul palo sta sopra la scatola del motore.
+- Variabile 20–1000 pF, 135 × 83 × 95 mm, 600 g, su una piastra con griglia di fori M3 (viti in nylon);
+  asse a 60 mm dal fondo interno come il motore: alberi concentrici.
+- **Regge l'anello**: i capi del tubo di rame entrano dall'alto in un blocco pieno di 20 mm, bloccati da una vite M4
+  di traverso per capo; la staffa del palo si allunga sotto il blocco con 2 viti in più.
+- Sostituisce, se confermata, la scatola unica descritta sotto.
+
 ## Scatola stagna in plastica
 - IP65 o superiore, circa 25×15×10 cm (variabile, riduttore, motore, SERVO42D).
 - Variabile su distanziali in nylon, lontano da pareti e motore. Piattine di rame corte e larghe verso gli statori.

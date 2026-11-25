@@ -14,7 +14,9 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 ## Progetto
 - [ ] Disegno quotato della scatola RX e del gruppo TX.
 - [ ] Contenitore stampato RX (`hardware/contenitore-rx/`): misurare squadra, riduttore, SERVO42D, giunto, millefori
-  e OLED, correggere i parametri e stampare la piastra di prova; confermare il variabile in una scatola separata.
+  e OLED, correggere i parametri e stampare la piastra di prova.
+- [ ] Scatola del variabile: diametro del perno (6 mm?), fori delle linguette, morsetti degli statori, interasse dei
+  capi dell'anello, peso reale dell'anello; piatto da almeno 250 mm (o perno accorciato).
 
 ## Strumenti
 - [x] Avviso malware al primo `pio run` (21/11/2026): causa non trovata nei log; l'antenna ora si compila con
