@@ -96,7 +96,7 @@ constexpr Meccanica RX = {
     16,
     RX_PASSI_MOTORE * 20,       // per giro dell'albero del variabile
     RX_PASSI_MOTORE * 20 / 2,   // 180°: da misurare
-    2 * RX_PASSI_MOTORE,        // 2 giri/s del motore
+    RX_PASSI_MOTORE,            // 1 giro/s del motore (60 giri/min, 3 al variabile); "vel" dalla console
     2 * RX_PASSI_MOTORE,
     RX_PASSI_MOTORE / 4,
     4 * RX_PASSI_MOTORE,

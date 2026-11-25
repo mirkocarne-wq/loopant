@@ -64,6 +64,11 @@ Segue il tipo di antenna (decisione del 21/11/2026): non c'è una scelta separat
 - Protocollo: manuale ufficiale MKS «SERVO42&57D_CAN User Manual V1.0.9» (GitHub makerbase-motor/MKS-SERVO42D-57D);
   il SERVO42D dell'antenna ha il firmware V1.0.9 (comando 0x40). CRC e codici 0xFE/0x91/0xF1/0x8C ancora da
   confrontare riga per riga.
+- **Velocità (RX)**: movimenti a 60 giri/min del motore (3 al variabile; `vel` dalla console, salvata in NVS), zero
+  a 30 giri/min (`velzero`, scritto nel SERVO42D come HmSpeed). Nei comandi CAN la velocità è in giri/min: i
+  micropassi (MStep, 16) non la cambiano, cambiano solo gli impulsi per giro (e quindi `RX_PASSI_MOTORE`).
+  Rampa: acc = 2, quasi la più dolce del SERVO42D (+1 giro/min ogni 12,7 ms, circa 80 giri/min al secondo).
+  Lo zero del SERVO42D non ha rampa: parte a HmSpeed e si ferma di colpo sul finecorsa, per questo va piano.
 - **Posizione dopo uno stop**: impulsi dallo zero con 0x33, le stesse unità di 0xFE. L'encoder 0x31 conta
   dall'accensione del driver e non va usato come posizione (il 25/11/2026 dava 31 919 contro 1230 reali).
 

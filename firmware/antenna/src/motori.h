@@ -32,4 +32,8 @@ INTERFACCIA_MOTORE
 void configura(uint16_t id, uint16_t kbit);  // da chiamare prima di inizia()
 void fine();                                 // libera il bus (passaggio a STEP/DIR)
 void stampaIngressi();                       // legge i finecorsa (0x34) e li scrive sulla console
+void velocita(uint16_t giri);                // giri/min del motore per GOTO e JOG (0 = config.h)
+uint16_t velocita();
+bool velocitaZero(uint16_t giri);            // HmSpeed scritto sul SERVO42D (0x90); poi serve uno zero
+uint16_t velocitaZero();
 }  // namespace can42d

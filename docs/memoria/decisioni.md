@@ -22,6 +22,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Firmware dell'antenna | Unico per TX e RX: tipo scelto dal pannello (o `tipo tx\|rx`), salvato in NVS, riavvio al cambio; calibrazione separata per tipo; al primo avvio RX | Richiesta dell'utente; niente versioni da scegliere quando si carica |
 | Finecorsa | Antenna RX: sugli ingressi del SERVO42D, che fa lo zero; antenna TX: sull'ESP32 (GPIO 27/14), zero fatto dal firmware | Decisione dell'utente; il TMC2209 non ha ingressi per i finecorsa |
 | Finecorsa RX: zero e limite CW | Rimappatura 9E (zero su En, limite CW su Dir, COM a EVCC), EndLimit attivo, HmTrig High; il firmware li controlla all'avvio e scrive solo se serve | Il 42D ha un solo ingresso (IN_1): senza rimappatura il limite CW non veniva letto |
+| Velocità RX | Movimenti a 60 giri/min del motore (prima 120), zero a 30 (prima 60), regolabili dalla console; rampa acc = 2 | Richiesta dell'utente: troppo veloce; lo zero del SERVO42D non ha rampa |
 | Posizione RX dopo uno stop | Impulsi dallo zero (0x33), non l'encoder 0x31 | 0x31 conta dall'accensione del driver: posizione sbagliata dopo uno stop |
 | Driver del motore | Segue il tipo di antenna: TX in STEP/DIR (TMC2209), RX via CAN (SERVO42D) | Precisazione dell'utente: sono due modelli di antenna; nessuna scelta separata |
 | Transceiver CAN | Waveshare SN65HVD230 (3,3 V) su GPIO 17 (TX2) / 16 (RX2), già in possesso | Stessa tensione dell'ESP32, nessun convertitore di livello; 22/23 lasciati al display |

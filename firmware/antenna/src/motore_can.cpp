@@ -88,8 +88,10 @@ void abilita(bool si) {
   spedisci(d, sizeof(d));
 }
 
-uint16_t rpm() {  // velocità in giri/min del motore, dagli impulsi al secondo di config.h
-  uint32_t r = (uint32_t)cfg::RX.velocitaHz * 60UL / (200UL * cfg::RX.micropassi);
+uint16_t giriMovimento = 0;  // giri/min del motore per GOTO e JOG; 0 = da config.h
+
+uint16_t rpm() {  // velocità in giri/min del motore (config.h o "vel")
+  uint32_t r = giriMovimento ? giriMovimento : (uint32_t)cfg::RX.velocitaHz * 60UL / (200UL * cfg::RX.micropassi);
   return (uint16_t)(r > 3000 ? 3000 : (r < 1 ? 1 : r));
 }
 
@@ -294,6 +296,12 @@ bool limitiGiusti(const Limiti& l) {
   return l.letto && l.mappa == 1 && l.livello == cfg::SERVO_HOME_LIVELLO && l.endLimit == 1 && l.modo == 0;
 }
 
+bool scriviZero(uint8_t verso, uint16_t giri) {  // 0x90: livello di config.h, EndLimit attivo, zero sull'interruttore
+  twai_message_t r;
+  const uint8_t z[] = {0x90, cfg::SERVO_HOME_LIVELLO, verso, (uint8_t)(giri >> 8), (uint8_t)giri, 1, 0};
+  return chiedi(z, sizeof(z), 0x90, r) && r.data[1] == 1;
+}
+
 // Rimappatura (9E): zero su En, limite CW su Dir. Poi 0x90 con EndLimit attivo e il livello di config.h; verso e
 // velocità dello zero restano quelli del menu del SERVO42D (HmDir, HmSpeed). Si scrive solo se serve, per non
 // consumare la flash del driver a ogni accensione, e si rilegge per verificare: il 25/11/2026 il SERVO42D V1.0.9
@@ -308,10 +316,7 @@ bool configuraFinecorsa() {
       const uint8_t mappa[] = {0x9E, 1};
       chiedi(mappa, sizeof(mappa), 0x9E, r);
     }
-    uint8_t verso = l.letto ? l.verso : cfg::SERVO_HOME_VERSO;
-    uint16_t giri = l.letto ? l.giri : cfg::SERVO_HOME_RPM;
-    const uint8_t zero[] = {0x90, cfg::SERVO_HOME_LIVELLO, verso, (uint8_t)(giri >> 8), (uint8_t)giri, 1, 0};
-    chiedi(zero, sizeof(zero), 0x90, r);
+    scriviZero(l.letto ? l.verso : cfg::SERVO_HOME_VERSO, l.letto ? l.giri : cfg::SERVO_HOME_RPM);
     l = leggiLimiti();
   }
   livelloAttivo = cfg::SERVO_HOME_LIVELLO;
@@ -339,6 +344,22 @@ void configura(uint16_t id, uint16_t k) {
   indirizzo = id;
   kbit = k;
 }
+
+void velocita(uint16_t giri) { giriMovimento = giri; }
+uint16_t velocita() { return rpm(); }
+
+bool velocitaZero(uint16_t giri) {
+  if (!installato || fase != Fase::INATTIVO || giri < 1 || giri > 3000) return false;
+  Limiti l = leggiLimiti();
+  if (!l.letto) return false;
+  scriviZero(l.verso, giri);
+  l = leggiLimiti();
+  if (!l.letto || l.giri != giri) return false;
+  giriZero = giri;
+  azzerato_ = false;  // il manuale chiede un nuovo zero dopo ogni modifica dei parametri di zero
+  return true;
+}
+uint16_t velocitaZero() { return giriZero; }
 
 void inizia() {
   if (installato) return;

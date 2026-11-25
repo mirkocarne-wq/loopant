@@ -29,6 +29,7 @@ void salva() {
 
 void avviaCan() {
   can42d::configura(id_, kbit_);
+  can42d::velocita(nvs.getUShort("giri", 0));
   can42d::inizia();
 }
 
@@ -86,5 +87,15 @@ bool impostaCan(uint16_t id, uint16_t kbit) {
 
 uint16_t canId() { return id_; }
 uint16_t canKbit() { return kbit_; }
+
+bool impostaVelocita(uint16_t giri) {
+  if (!can() || giri < 1 || giri > 600) return false;
+  nvs.putUShort("giri", giri);
+  can42d::velocita(giri);
+  return true;
+}
+bool impostaVelocitaZero(uint16_t giri) { return can() && giri <= 300 && can42d::velocitaZero(giri); }
+uint16_t velocita() { return can() ? can42d::velocita() : 0; }
+uint16_t velocitaZero() { return can() ? can42d::velocitaZero() : 0; }
 
 }  // namespace movimento

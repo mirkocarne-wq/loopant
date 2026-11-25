@@ -37,5 +37,10 @@ bool viaCan();
 bool impostaCan(uint16_t id, uint16_t kbit);  // indirizzo 1-2047, velocità 125/250/500/1000
 uint16_t canId();
 uint16_t canKbit();
+// Solo antenna RX: giri/min del motore per i movimenti (salvati in NVS) e dello zero (scritti sul SERVO42D).
+bool impostaVelocita(uint16_t giri);      // 1-600
+bool impostaVelocitaZero(uint16_t giri);  // 1-300; poi serve uno zero
+uint16_t velocita();
+uint16_t velocitaZero();
 
 }  // namespace movimento

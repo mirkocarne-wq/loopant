@@ -324,7 +324,8 @@ void stampaStato() {
   Serial.printf("ESP-NOW: canale %u\n", canale);
   Serial.printf("Antenna: %s\n", tipo_antenna::tx() ? "TX (NEMA11 + TMC2209)" : "RX (SERVO42D)");
   if (movimento::viaCan())
-    Serial.printf("Motore: CAN (SERVO42D indirizzo %u, %u kbit/s)\n", movimento::canId(), movimento::canKbit());
+    Serial.printf("Motore: CAN (SERVO42D indirizzo %u, %u kbit/s), %u giri/min, zero a %u giri/min\n",
+                  movimento::canId(), movimento::canKbit(), movimento::velocita(), movimento::velocitaZero());
   else
     Serial.println("Motore: STEP/DIR (TMC2209)");
 }
@@ -333,7 +334,8 @@ void aiuto() {
   Serial.println(
       "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calelim <kHz> | calcanc <kHz> |\n"
       "         tabella | stato | mac <AA:BB:CC:DD:EE:FF> | canale <1-13> | associa |\n"
-      "         tipo tx|rx | canid <1-2047> | cankbit <125|250|500|1000> (solo RX) | io (finecorsa) | aiuto");
+      "         tipo tx|rx | canid <1-2047> | cankbit <125|250|500|1000> | vel <1-600> | velzero <1-300> (solo RX) |\n"
+      "         io (finecorsa) | aiuto");
 }
 
 void eseguiRiga(char* riga) {
@@ -382,6 +384,16 @@ void eseguiRiga(char* riga) {
     return;
   } else if (!strcmp(cmd, "io")) {
     movimento::stampaIngressi();
+    return;
+  } else if (!strcmp(cmd, "vel") && arg) {
+    if (movimento::impostaVelocita((uint16_t)atoi(arg)))
+      Serial.printf("Movimenti a %u giri/min del motore (salvato)\n", movimento::velocita());
+    else Serial.println("Velocità non valida (1-600, solo antenna RX)");
+    return;
+  } else if (!strcmp(cmd, "velzero") && arg) {
+    if (movimento::impostaVelocitaZero((uint16_t)atoi(arg)))
+      Serial.printf("Zero a %u giri/min (scritto sul SERVO42D): rifare lo zero\n", movimento::velocitaZero());
+    else Serial.println("Velocità dello zero non scritta (1-300, motore fermo, solo antenna RX)");
     return;
   } else if (!strcmp(cmd, "mac") && arg) {
     uint8_t mac[6];

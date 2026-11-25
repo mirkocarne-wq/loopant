@@ -17,6 +17,8 @@ un numero sopra 100 000 viene letto in Hz.
 | `calcanc <freq>` | Cancella la tabella della banda |
 | `tabella` | Stampa le tabelle di calibrazione |
 | `stato` | Stato, errore, posizione, finecorsa |
+| `vel <1-600>` | Solo RX: giri/min del motore per GOTO e JOG (salvato; predefinito 60, cioè 3 al variabile) |
+| `velzero <1-300>` | Solo RX: velocità dello zero (HmSpeed) scritta sul SERVO42D; poi serve un nuovo `zero` |
 | `io` | Finecorsa (RX: letti dal SERVO42D con 0x34, più impulsi dallo zero 0x33 ed encoder 0x31; TX: GPIO 27/14) |
 | `mac <AA:BB:CC:DD:EE:FF>` | Salva in NVS il MAC dell'unità di controllo (riavvio necessario) |
 | `associa` | Associazione con il pannello, come BOOT premuto 3 s |
