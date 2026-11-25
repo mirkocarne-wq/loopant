@@ -3,7 +3,7 @@
 Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria giusto e toglierlo da qui.
 
 ## Misure
-- [ ] Variabile 1000 pF: capacità minima e massima; continuità albero–telaio.
+- [ ] Variabile 1000 pF: capacità minima e massima; continuità albero–telaio; uno o due statori isolati (decide dove vanno i capi dell'anello).
 - [ ] Diametro dell'albero del variabile (giunto 8→6 mm?).
 - [ ] Riduttore: foro di ingresso da 5 mm (albero SERVO42D) e albero di uscita (8 mm?).
 - [ ] Tubi di rame/ottone e PTFE: disponibilità e misure reali con il calibro (diametro esterno e parete).

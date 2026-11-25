@@ -51,6 +51,9 @@
   asse a 60 mm dal fondo interno come il motore: alberi concentrici.
 - **Regge l'anello**: i capi del tubo di rame entrano dall'alto in un blocco pieno di 20 mm, bloccati da una vite M4
   di traverso per capo; la staffa del palo si allunga sotto il blocco con 2 viti in più.
+- Collegamento dei capi: piattina di rame 12 × 1 mm saldata in un taglio nella punta del tubo (al banco, prima di
+  infilarlo nel blocco); con un solo statore un capo allo statore e l'altro al telaio (corrente nei cuscinetti, da
+  verificare), con due statori isolati un capo per statore.
 - Sostituisce, se confermata, la scatola unica descritta sotto.
 
 ## Scatola stagna in plastica

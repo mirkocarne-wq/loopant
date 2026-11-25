@@ -216,6 +216,20 @@ Script: `scatola_variabile.py` (usa le parti comuni di `contenitore.py`). Pezzi:
 - **Ingombro**: circa 241 × 111 × 123 mm con la borchia e il blocco: serve un piatto da almeno 250 mm. Se non
   basta, si accorcia il perno del variabile (da 29 a 20 mm si risparmiano 9 mm, parametro `VAR_ALBERO_L`).
 
+### Collegamento dei capi dell'anello
+Dentro la scatola ogni capo sporge solo 10 mm (subito dopo c'è il variabile): non si schiaccia e non si fora.
+- **Al banco, prima di montare**: taglio di 12–15 mm nella punta del tubo con il seghetto (lama da 1 mm), dentro
+  una **piattina di rame 12 × 1 mm** lunga circa 60 mm, saldata a stagno tutto attorno (cannello o saldatore
+  grosso); foro da 4–5 mm all'altro capo della piattina.
+- Il tubo con la piattina si infila da fuori nel blocco: la piattina larga 12 mm passa nel foro da 13,1 mm. Poi
+  la vite M4 di traverso (inox o ottone) blocca il tubo, più indietro della saldatura.
+- **Variabile a farfalla** (due statori isolati tra loro, da provare col tester): i due capi ai due statori,
+  rotore libero, nessuna corrente nei cuscinetti.
+- **Un solo statore** (sembra così dalle foto): un capo al perno dello statore, l'altro al telaio sulla linguetta
+  in alto della fiancata posteriore. La corrente passa dai cuscinetti: in ricezione va bene; se ci sono
+  scricchiolii quando gira, una spazzola o una treccia sul perno.
+- Dado e rosetta dentata su ogni morsetto; silicone neutro attorno ai capi, nella svasatura del collare.
+
 | Pezzo | Materiale | Orientamento | Note |
 |---|---|---|---|
 | `variabile-scatola.stl` | **ASA** o PETG | Fondo sul piatto | 6 perimetri, 40 % di riempimento: il blocco dell'anello deve essere robusto |
@@ -225,8 +239,8 @@ Script: `scatola_variabile.py` (usa le parti comuni di `contenitore.py`). Pezzi:
 | `variabile-guarnizione.stl` | TPU | Piatta | |
 
 Viti: 8 M3×12 per il coperchio (inserti M3 nel bordo), 4 M3×6 a testa bombata per la piastra (inserti nelle
-colonnine), 4 M4×8 a testa bombata per la staffa (inserti M4 nel fondo e nel blocco), 2 M4×40 per i capi
-dell'anello (dal fianco, attraverso il tubo), viti M3 in nylon per il variabile. Giunto 8→6, paraolio 8×16×5,
+colonnine), 4 M4×8 a testa bombata per la staffa (inserti M4 nel fondo e nel blocco), 2 M4×40 inox o ottone per i
+capi dell'anello (dal fianco, attraverso il tubo), viti M3 in nylon per il variabile. Giunto 8→6, paraolio 8×16×5,
 valvola di sfiato M12, silicone neutro sui capi.
 
 Da verificare: diametro del perno del variabile (6 mm?), posizione dei fori delle linguette, morsetti degli
