@@ -71,6 +71,7 @@ def imposta():
     c.BLOCCHI_X = [45.0, LX - 15.0]
     c.VITI_STAFFA = [(24.0, LY / 2 - 28), (24.0, LY / 2 + 28), (LX + 13.0, LY / 2 - 28), (LX + 13.0, LY / 2 + 28)]
     c.SCRITTA = SCRITTA
+    c.TESTO_ROT, c.TESTO_X = -90.0, 40.0   # la scatola è girata sul palo: scritta dritta, in basso
     c.CON_OLED = False
 
 

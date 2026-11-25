@@ -56,6 +56,11 @@
   verificare), con due statori isolati un capo per statore.
 - Sostituisce, se confermata, la scatola unica descritta sotto.
 
+## Assieme
+- `hardware/contenitore-rx/assieme.py`: palo, scatola del motore, scatola del variabile sopra, anello da 1 m con i
+  capi nel blocco della scatola del variabile; cima dell'anello a circa 1,52 m dal fondo della scatola del motore.
+- Proposta: loop di accoppiamento da 20 cm in cima, braccio isolante dal palo; palo non metallico dietro l'anello.
+
 ## Scatola stagna in plastica
 - IP65 o superiore, circa 25×15×10 cm (variabile, riduttore, motore, SERVO42D).
 - Variabile su distanziali in nylon, lontano da pareti e motore. Piattine di rame corte e larghe verso gli statori.

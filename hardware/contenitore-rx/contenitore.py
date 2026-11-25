@@ -135,6 +135,7 @@ VETRINO = (31.0, 17.0, 1.6)      # lastrina in plexiglass (lato lungo Ã— corto Ã
 COLONNINA_OLED_R = 2.0
 
 SCRITTA = "loopant RX"
+TESTO_ROT, TESTO_X = 90.0, None  # verso della scritta e posizione lungo X (None: vicino alla parete posteriore)
 CON_OLED = True                  # finestra e colonnine dell'OLED nel coperchio (la scatola del variabile non le ha)
 
 # --- Finecorsa ottici (forcella, tipo Lerdge) e ruota con le bandierine sull'albero d'uscita del riduttore ---
@@ -341,7 +342,8 @@ def coperchio(z_basso):
     # Scritta incisa sopra, leggibile con la parete frontale in alto
     try:
         testo = (cq.Workplane("XY").text(SCRITTA, 12, 1.0, kind="bold")
-                 .rotate((0, 0, 0), (0, 0, 1), 90).translate((LX - 32, LY / 2, z_basso + COPERCHIO - 0.6)))
+                 .rotate((0, 0, 0), (0, 0, 1), TESTO_ROT)
+                 .translate((LX - 32 if TESTO_X is None else TESTO_X, LY / 2, z_basso + COPERCHIO - 0.6)))
         c = c.cut(testo)
     except Exception as e:  # font mancante: il coperchio va bene lo stesso
         print("scritta non incisa:", e)

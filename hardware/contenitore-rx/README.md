@@ -3,6 +3,26 @@
 Due scatole sullo stesso palo: **motore ed elettronica** (sotto) e **variabile** (sopra, regge l'anello di rame).
 La seconda è descritta in fondo, in «Scatola del variabile».
 
+## Assieme dell'antenna
+Script: `assieme.py` → immagini `anteprime/assieme-*.png` e `step/assieme.step` (tutto l'insieme con i colori, da
+aprire in FreeCAD o Fusion per guardarlo).
+
+![Assieme](anteprime/assieme.png)
+
+Altre viste: [di fronte](anteprime/assieme-fronte.png), [di lato](anteprime/assieme-lato.png),
+[le due scatole](anteprime/assieme-scatole.png).
+
+- Dal basso: scatola del motore (borchia in alto), tubo isolante, scatola del variabile (borchia in basso), anello
+  di rame da 1 m con i capi nel blocco in alto. Altezza dal fondo della scatola del motore alla cima dell'anello:
+  circa 1,52 m; centro dell'anello circa 1,01 m sopra il fondo della scatola del motore.
+- Piano dell'anello a circa 128 mm dall'asse del palo.
+- **Proposta, da confermare**: loop di accoppiamento da 20 cm in cima, dentro l'anello (circa 1/5 del diametro,
+  15 mm più vicino al palo); braccio isolante in vetroresina o PVC dal palo alla cima dell'anello, che tiene anche
+  il loop di accoppiamento; coassiale lungo il braccio e giù per il palo; cavo dei 24 V dal PG7 in basso.
+- **Palo**: nel tratto che passa dietro l'anello conviene un palo **non metallico** (vetroresina o PVC): un tubo
+  di metallo parallelo all'anello e così vicino ne peggiora il rendimento e la sintonia (da verificare con il
+  NanoVNA).
+
 ## Scatola del motore
 
 Scatola stagna da stampare in 3D, da fissare al palo. Contiene:

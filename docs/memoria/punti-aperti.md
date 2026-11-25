@@ -15,6 +15,7 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [ ] Disegno quotato della scatola RX e del gruppo TX.
 - [ ] Contenitore stampato RX (`hardware/contenitore-rx/`): misurare squadra, riduttore, SERVO42D, giunto, millefori
   e OLED, correggere i parametri e stampare la piastra di prova.
+- [ ] Assieme dell'antenna (`hardware/contenitore-rx/assieme.py`): confermare loop di accoppiamento (20 cm in cima, proposta), braccio isolante in cima e palo non metallico dietro l'anello.
 - [ ] Scatola del variabile: diametro del perno (6 mm?), fori delle linguette, morsetti degli statori, interasse dei
   capi dell'anello, peso reale dell'anello; piatto da almeno 250 mm (o perno accorciato).
 
