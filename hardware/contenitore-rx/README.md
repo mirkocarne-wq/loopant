@@ -30,20 +30,21 @@ porta il moto al variabile da 1000 pF, che resta in una scatola separata, lontan
 ![Sezione](anteprime/sezione.png)
 
 ## Finecorsa
-Il variabile lavora su circa 180°, quindi servono due finecorsa: uno per capo.
+Il variabile ha un'escursione di **190°** da fermo a fermo (`ESCURSIONE`), quindi servono due finecorsa: uno per
+capo. Scattano 5° prima di ciascun fermo (`MARGINE`), cioè a 180° l'uno dall'altro (`CORSA`).
 
 - **Ruota** (`ruota-finecorsa.stl`): va sull'albero d'uscita del riduttore, tra il riduttore e il giunto, con il
   disco verso il giunto. Si blocca con un grano M3 e un dado M3 infilato nella sua sede del mozzo. Ha due
   bandierine larghe 30°, alla stessa distanza dall'asse.
 - **Sensori**: tutti e due sotto l'albero, a 50° l'uno dall'altro (`SENSORE_A` 295°, `SENSORE_B` 245°), con la
   forcella verso la ruota. La prima bandierina entra nel sensore A allo zero; la seconda entra nel sensore B dopo
-  `CORSA` = 170°. Nessuna delle due passa mai sull'altro sensore: lo script lo controlla a passi di 5° su tutta la
+  `CORSA` = 180°. Nessuna delle due passa mai sull'altro sensore: lo script lo controlla a passi di 5° su tutta la
   corsa, con 20° di extracorsa a ogni capo.
 - **Verso di rotazione**: se lo zero si raggiunge girando nell'altro senso, si stampa
   `ruota-finecorsa-specchiata.stl`; il supporto è lo stesso.
-- **Messa a punto**: variabile al minimo (finecorsa meccanico) e poi indietro di circa 5°; ruota girata finché la
-  prima bandierina entra nel sensore A, e grano stretto. Il sensore B scatta 170° dopo. Se la corsa vera del
-  variabile è diversa, si cambia `CORSA` e si ristampa solo la ruota (pochi minuti).
+- **Messa a punto**: variabile contro il fermo del minimo e poi indietro di 5°; ruota girata finché la prima
+  bandierina entra nel sensore A, e grano stretto. Il sensore B scatta 180° dopo, 5° prima dell'altro fermo. Se
+  l'escursione vera del variabile è diversa, si cambia `ESCURSIONE` e si ristampa solo la ruota (pochi minuti).
 - **Uscita dei sensori**: alta quando la bandierina interrompe la luce. Sul SERVO42D vanno impostati di
   conseguenza il livello dei finecorsa e il verso dell'azzeramento nel menu (da verificare).
 - Il pressacavo dei finecorsa in alto non serve più: i sensori sono dentro la scatola.
