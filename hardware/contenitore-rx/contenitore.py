@@ -99,7 +99,7 @@ PARAOLIO_D, PARAOLIO_P = 16.2, 5.0  # sede per paraolio 8×16×5 (labbro verso l
 # --- Pressacavi e sfiato ---
 PG7 = 12.5                       # foro per pressacavo PG7 (cavo 3–6,5 mm)
 SFIATO = 12.3                    # valvola di sfiato a membrana M12×1,5
-FORI_FRONTE = [("PG7 finecorsa", LY - 35, 30.0, PG7)]                                # (nome, y, z, Ø)
+FORI_FRONTE = []                 # (nome, y, z, Ø): i finecorsa ora sono dentro la scatola, niente PG7 in alto
 FORI_RETRO = [("PG7 24 V", LY - 35, 28.0, PG7), ("sfiato M12", 35.0, 22.0, SFIATO)]
 
 # --- Fissaggio al palo: staffa stampata a parte, avvitata al fondo, con due blocchi a V e fascette ---
@@ -117,14 +117,16 @@ INSERTO_M4_D, INSERTO_M4_P = 5.6, 7.0  # inserti a caldo M4 nel fondo, ciechi (i
 # --- Elettronica: due strisce di millefori 35×90 (una 7×9 tagliata a metà), ai lati del motore ---
 # A: ESP32 DevKit; B: SN65HVD230 e convertitore 24→5 V (vicino al PG7 dei 24 V)
 MILLEFORI = (90.0, 35.0, 1.6)
-MILLEFORI_X0 = 45.0
+MILLEFORI_X0 = 54.0                # dietro il supporto dei finecorsa
 MILLEFORI_Y0 = [BORDO + 2.0, LY - BORDO - 2.0 - 35.0]
 MILLEFORI_FORI = 2.5             # distanza dei fori di fissaggio dal bordo
 DISTANZIALE_H, DISTANZIALE_R, DISTANZIALE_FORO = 8.0, 3.0, 1.8  # viti M2 autofilettanti
 
 # --- Display OLED 0,96" ELEGOO (SSD1306) sotto il coperchio ---
 # Con il palo verticale e la parete frontale in alto, il lato lungo del display va lungo Y e i pin verso X = 0.
-OLED_X, OLED_Y = 50.0, LY / 2    # centro della zona visibile
+# Lontano dalla ruota dei finecorsa (i pin e i connettori dell'OLED pendono verso il basso), sopra la striscia
+# di millefori dell'ESP32
+OLED_X, OLED_Y = LX / 2, 30.0    # centro della zona visibile
 OLED_VISIBILE = (25.0, 14.0)     # apertura, lato lungo × lato corto (zona attiva 21,7×10,9 + margine)
 OLED_DY_PCB = 1.5                # centro del circuito rispetto alla zona attiva, verso i pin (da verificare)
 OLED_FORI = (23.0, 23.5)         # interassi dei fori M2 del circuito (da verificare)
@@ -133,6 +135,27 @@ VETRINO = (31.0, 17.0, 1.6)      # lastrina in plexiglass (lato lungo × corto �
 COLONNINA_OLED_R = 2.0
 
 SCRITTA = "loopant RX"
+
+# --- Finecorsa ottici (forcella, tipo Lerdge) e ruota con le bandierine sull'albero d'uscita del riduttore ---
+# Il variabile lavora su circa 180°. Due sensori sotto l'albero, a SENSORE_A e SENSORE_B gradi (angoli nel piano YZ
+# attorno all'asse, 0° = +Y, 90° = in alto, 270° = in basso, verso positivo = antiorario visto dalla parete
+# frontale). La ruota ha due bandierine: la prima copre il sensore A allo zero, la seconda arriva sul sensore B
+# dopo CORSA gradi; ciascuna non passa mai sull'altro sensore.
+SENSORE_PCB = (35.0, 11.0, 1.6)  # lunghezza × larghezza (misure dell'utente), spessore della schedina
+SENSORE_FORI = 28.0              # interasse dei fori (misura dell'utente), Ø 3,2
+FORCELLA_H = 10.5                # altezza della forcella sopra la schedina (da verificare)
+FORCELLA_DX = 6.0                # dal centro della schedina al centro della fessura (da verificare)
+FORCELLA_FESSURA = 5.0           # larghezza della fessura (da verificare)
+PENETRAZIONE = 5.0               # di quanto la bandierina entra nella fessura (il raggio si interrompe a circa 3,5)
+SENSORE_A, SENSORE_B = 295.0, 245.0
+CORSA = 170.0                    # gradi tra lo scatto di A e quello di B (circa 5° di margine a ogni capo)
+BANDIERINA = 30.0                # ampiezza delle bandierine: coprono anche un po' di extracorsa
+VERSO = 1                        # 1: lo zero si cerca girando in senso orario; -1: ruota specchiata
+RUOTA_R = 30.0                   # raggio delle bandierine
+RUOTA_DISCO_R = 21.0             # raggio del disco pieno (resta fuori dalla forcella)
+RUOTA_S = 2.0                    # spessore di disco e bandierine (la fessura è larga 5)
+MOZZO_R, MOZZO_L = 11.5, 6.5     # mozzo sull'albero da 8 mm, con grano M3 e dado nascosto
+FORO_MOZZO = ALBERO_D + 0.2
 
 # ============================================================================================================
 
@@ -266,6 +289,9 @@ def piastra():
         for lato in (-1, 1):
             p = p.cut(cq.Workplane("XY").workplane(offset=z0 - 1).center(xm, Y_ASSE + lato * 23.3).rect(5, 2.2)
                       .extrude(PIASTRA + 2))
+    # Fori per il supporto dei finecorsa (viti M3 dall'alto, dadi sotto la piastra)
+    for x, y in viti_supporto_finecorsa():
+        p = p.cut(cilindro_z(x, y, z0 - 1, PIASTRA + 2, 3.4))
     # Distanziali delle due strisce di millefori
     w, h, _ = MILLEFORI
     f = MILLEFORI_FORI
@@ -332,6 +358,133 @@ def guarnizione(z_basso):
     return g
 
 
+def _angolo(a):
+    return math.radians(a)
+
+
+def _yz(r, a):
+    """Punto a raggio r e angolo a (gradi) attorno all'asse del motore, nel piano YZ."""
+    return (Y_ASSE + r * math.cos(_angolo(a)), Z_ASSE + r * math.sin(_angolo(a)))
+
+
+def x_ruota():
+    """Facce del disco della ruota lungo X (il disco sta sul lato del giunto, il mozzo verso il riduttore)."""
+    x1 = X_RIDUTTORE - 0.5
+    x0 = x1 - MOZZO_L
+    return x0, x0 + RUOTA_S, x1
+
+
+def _settore(r0, r1, a0, a1, x0, spessore):
+    pts = [_yz(r0, a0)] + [_yz(r1, a0 + (a1 - a0) * i / 12) for i in range(13)] + \
+          [_yz(r0, a0 + (a1 - a0) * i / 12) for i in range(12, -1, -1)][:-1]
+    return cq.Workplane("YZ").workplane(offset=x0).polyline(pts).close().extrude(spessore)
+
+
+def bandierine():
+    """Settori (a0, a1) delle due bandierine con la ruota allo zero."""
+    if VERSO > 0:
+        return [(SENSORE_A, SENSORE_A + BANDIERINA), (SENSORE_B - CORSA - BANDIERINA, SENSORE_B - CORSA)]
+    # specchiata: lo zero si cerca nell'altro verso
+    return [(SENSORE_A - BANDIERINA, SENSORE_A), (SENSORE_B + CORSA, SENSORE_B + CORSA + BANDIERINA)]
+
+
+def ruota():
+    """Ruota dei finecorsa nella posizione di montaggio, allo zero."""
+    x0, xd, x1 = x_ruota()
+    r = cilindro_x(x0, Y_ASSE, Z_ASSE, x1 - x0, 2 * MOZZO_R)
+    r = r.union(cilindro_x(x0, Y_ASSE, Z_ASSE, RUOTA_S, 2 * RUOTA_DISCO_R))
+    for a0, a1 in bandierine():
+        r = r.union(_settore(RUOTA_DISCO_R - 2, RUOTA_R, a0, a1, x0, RUOTA_S))
+    r = r.cut(cilindro_x(x0 - 1, Y_ASSE, Z_ASSE, x1 - x0 + 2, FORO_MOZZO))
+    # Grano M3 radiale sopra il disco, con il dado M3 infilato da fuori in una sede
+    xm = (xd + x1) / 2
+    ag = SENSORE_A + 180
+    dy, dz = math.cos(_angolo(ag)), math.sin(_angolo(ag))
+    grano = cq.Workplane("XY").cylinder(MOZZO_R + 2, 1.6, direct=(0, dy, dz)).translate(
+        (xm, Y_ASSE + dy * (MOZZO_R + 2) / 2, Z_ASSE + dz * (MOZZO_R + 2) / 2))
+    dado = (cq.Workplane("XY").box(2.7, 5.8, MOZZO_R).translate((xm, 0, 5.2 + MOZZO_R / 2))
+            .rotate((0, 0, 0), (1, 0, 0), ag - 90).translate((0, Y_ASSE, Z_ASSE)))
+    return r.cut(grano).cut(dado)
+
+
+def _scafo(punti):
+    """Inviluppo convesso di punti 2D (catena monotona)."""
+    p = sorted(set(punti))
+    def croce(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    basso, alto = [], []
+    for q in p:
+        while len(basso) >= 2 and croce(basso[-2], basso[-1], q) <= 0:
+            basso.pop()
+        basso.append(q)
+    for q in reversed(p):
+        while len(alto) >= 2 and croce(alto[-2], alto[-1], q) <= 0:
+            alto.pop()
+        alto.append(q)
+    return basso[:-1] + alto[:-1]
+
+
+def geometria_sensori():
+    """Per ogni sensore: angolo, raggio della faccia d'appoggio della schedina, posizione X del centro schedina."""
+    x0, xd, _ = x_ruota()
+    x_fascio = (x0 + xd) / 2                       # la fessura è centrata sul disco
+    r_cima = RUOTA_R - PENETRAZIONE                # cima della forcella (verso l'asse)
+    r_pcb = r_cima + FORCELLA_H                    # faccia della schedina con la forcella
+    x_pcb = x_fascio - FORCELLA_DX                 # la schedina si allunga verso la parete frontale
+    return [(a, r_pcb, x_pcb, x_fascio) for a in (SENSORE_A, SENSORE_B)]
+
+
+def supporto_finecorsa():
+    """Supporto dei due sensori, avvitato alla piastra con 2 viti M3 e dadi sotto."""
+    zb = COLONNINA_H + PIASTRA          # appoggio sulla piastra
+    L, W, T = SENSORE_PCB
+    sp = 6.0                            # spessore dell'appoggio dietro la schedina
+    geo = geometria_sensori()
+    x_pcb = geo[0][2]
+    xa, xb = x_pcb - L / 2 - 1.5, x_pcb + L / 2 + 1.5
+    ys = []
+    pezzi = []
+    for a, r_pcb, _, _ in geo:
+        r_in = r_pcb + T                # faccia d'appoggio (dietro la schedina)
+        r_out = r_in + sp
+        t = (-math.sin(_angolo(a)), math.cos(_angolo(a)))
+        mezzo = W / 2 + 1.5
+        pts = []
+        for r in (r_in, r_out):
+            cy, cz = _yz(r, a)
+            for k in (-1, 1):
+                pts.append((cy + k * mezzo * t[0], cz + k * mezzo * t[1]))
+        pts += [(py, zb + 3.9) for py, _ in pts]
+        prof = _scafo([(round(py, 4), round(pz, 4)) for py, pz in pts])
+        ys += [py for py, _ in prof]
+        blocco = cq.Workplane("YZ").workplane(offset=xa).polyline(prof).close().extrude(xb - xa)
+        # Inserti M3 per le due viti della schedina e incavo per i piedini saldati sul retro
+        for dx in (-SENSORE_FORI / 2, SENSORE_FORI / 2):
+            cy, cz = _yz(r_in - 0.1, a)
+            ry, rz = math.cos(_angolo(a)), math.sin(_angolo(a))
+            foro = cq.Workplane("XY").cylinder(6.5, INSERTO_D / 2, direct=(0, ry, rz)).translate(
+                (x_pcb + dx, cy + ry * 3.25, cz + rz * 3.25))
+            blocco = blocco.cut(foro)
+        incavo = (cq.Workplane("XY").box(SENSORE_FORI - 9, W + 4, 4.0)
+                  .translate((x_pcb, 0, r_in))
+                  .rotate((0, 0, 0), (1, 0, 0), a - 90).translate((0, Y_ASSE, Z_ASSE)))
+        pezzi.append(blocco.cut(incavo))
+    y0, y1 = min(ys) - 2, max(ys) + 2
+    base = scatola_arrotondata(xa, y0, zb, xb, y1, zb + 4, 3.0)
+    for x, y in viti_supporto_finecorsa():
+        base = base.cut(cilindro_z(x, y, zb - 1, 6, 3.4))
+    s = base
+    for b in pezzi:
+        s = s.union(b)
+    return s
+
+
+def viti_supporto_finecorsa():
+    x_pcb = geometria_sensori()[0][2]
+    L = SENSORE_PCB[0]
+    return [(x_pcb - L / 2 + 3, Y_ASSE), (x_pcb + L / 2 - 3, Y_ASSE)]
+
+
 def ingombri():
     """Componenti finti, solo per le anteprime e per controllare gli spazi."""
     zp = COLONNINA_H + PIASTRA
@@ -372,6 +525,18 @@ def ingombri():
                      .translate((OLED_X - OLED_DY_PCB - 13.9, OLED_Y - 13.65, zc - OLED_VETRO - 1.6))
                      .union(cq.Workplane("XY").box(19.3, 26.7, OLED_VETRO, centered=False)
                             .translate((OLED_X - 9.65, OLED_Y - 13.35, zc - OLED_VETRO))), "#fbbc04")
+    # Sensori ottici: schedina, due bracci della forcella, connettore
+    L, W, T = SENSORE_PCB
+    for i, (a, r_pcb, x_pcb, x_fascio) in enumerate(geometria_sensori()):
+        def blocco(dx, dy, dz, cx, cr):
+            return (cq.Workplane("XY").box(dx, dy, dz).translate((cx, 0, cr))
+                    .rotate((0, 0, 0), (1, 0, 0), a - 90).translate((0, Y_ASSE, Z_ASSE)))
+        s = blocco(L, W, T, x_pcb, r_pcb + T / 2)
+        for k in (-1, 1):
+            s = s.union(blocco(3.5, 6.3, FORCELLA_H, x_fascio + k * (FORCELLA_FESSURA / 2 + 1.75),
+                               r_pcb - FORCELLA_H / 2))
+        s = s.union(blocco(6, 8, 7, x_pcb - L / 2 + 8, r_pcb - 3.5))
+        pezzi[f"sensore {'AB'[i]}"] = (s, "#202124")
     return pezzi
 
 
@@ -416,6 +581,23 @@ def controlla(sc, pi, pezzi):
         errori.append("il riduttore non sta sopra la base della squadra: H_ASSE troppo piccolo")
     if FORO_ALBERO < TUBO_ISOLANTE:
         errori.append("foro dell'albero più stretto del tubo isolante")
+    # Ruota: in tutta la corsa ogni bandierina deve entrare solo nella forcella del suo sensore
+    ru = ruota()
+    for i, nome in enumerate(("sensore A", "sensore B")):
+        for t in range(-20, int(CORSA) + 21, 5):
+            r = ru.rotate((0, Y_ASSE, Z_ASSE), (1, Y_ASSE, Z_ASSE), VERSO * t)
+            if r.intersect(pezzi[nome][0]).val().Volume() > 0.5:
+                errori.append(f"la ruota tocca il {nome} a {t}°")
+                break
+    for nome in ("riduttore", "giunto", "squadra"):
+        if ru.intersect(pezzi[nome][0]).val().Volume() > 0.5:
+            errori.append(f"la ruota tocca {nome}")
+    sf = supporto_finecorsa()
+    for nome in ("riduttore", "giunto", "squadra", "millefori A", "millefori B", "sensore A", "sensore B"):
+        if sf.intersect(pezzi[nome][0]).val().Volume() > 0.5:
+            errori.append(f"il supporto dei finecorsa tocca {nome}")
+    if sf.intersect(pi).val().Volume() > 0.5 or sf.intersect(sc).val().Volume() > 0.5:
+        errori.append("il supporto dei finecorsa entra nella piastra o nella scatola")
     return errori
 
 
@@ -456,9 +638,17 @@ def main():
         "coperchio": sul_piatto(co.rotate((0, 0, 0), (1, 0, 0), 180)),       # faccia esterna sul piatto
         "guarnizione": sul_piatto(gu),
         "vetrino-oled": sul_piatto(vetrino(zc)),                             # in PETG trasparente o come dima
+        # disco sul piatto, mozzo in alto; asse della ruota da X a Z
+        "ruota-finecorsa": sul_piatto(ruota().rotate((0, 0, 0), (0, 1, 0), -90)),
+        "supporto-finecorsa": sul_piatto(supporto_finecorsa()),               # base sul piatto
         "staffa-palo": sul_piatto(st.rotate((0, 0, 0), (1, 0, 0), 180)),     # faccia verso la scatola sul piatto
     }
     esporta(stampa)
+    # Ruota specchiata, se il variabile va a zero nell'altro verso
+    global VERSO
+    VERSO = -VERSO
+    esporta({"ruota-finecorsa-specchiata": sul_piatto(ruota().rotate((0, 0, 0), (0, 1, 0), -90))})
+    VERSO = -VERSO
 
     if "--niente-anteprime" not in sys.argv:
         import anteprime
@@ -473,7 +663,8 @@ def main():
             viti = v if viti is None else viti.union(v)
             inserti = i if inserti is None else inserti.union(i)
         anteprime.disegna(QUI, {"scatola": sc, "piastra": pi, "coperchio": co, "guarnizione": gu, "staffa": st,
-                                "palo": palo, "viti_staffa": viti, "inserti_staffa": inserti, "vetrino": vetrino(zc)}, pezzi)
+                                "palo": palo, "viti_staffa": viti, "inserti_staffa": inserti, "vetrino": vetrino(zc),
+                                "ruota": ruota(), "supporto_finecorsa": supporto_finecorsa()}, pezzi)
     return 1 if errori else 0
 
 

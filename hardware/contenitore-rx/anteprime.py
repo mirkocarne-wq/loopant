@@ -109,6 +109,10 @@ def disegna(qui, parti, pezzi):
     t = {n: triangoli(o) for n, o in parti.items()}
     c = COLORI
 
+    if "ruota" in parti:
+        c["ruota"], c["supporto_finecorsa"] = "#e53935", "#8e24aa"
+        finti_senza_oled = finti_senza_oled + [(t["ruota"], c["ruota"]),
+                                               (t["supporto_finecorsa"], c["supporto_finecorsa"])]
     interno = [(t["scatola"], c["scatola"]), (t["piastra"], c["piastra"]), (t["staffa"], c["staffa"])] + finti_senza_oled
     figura(interno, os.path.join(cart, "montaggio.png"), 42, -135,
            "Interno: riduttore, squadra e SERVO42D al centro; strisce di millefori ai lati")
@@ -146,6 +150,16 @@ def disegna(qui, parti, pezzi):
         figura([(t["scatola"], c["scatola"]), (triangoli(st_ruotata), c["staffa"])],
                os.path.join(cart, "fondo-e-staffa.png"), -89.9, -90,
                "Da sotto: 4 fori ciechi per gli inserti M4 nel fondo (sopra) e 4 fori della staffa (sotto), stesse posizioni")
+    if "ruota" in parti:
+        # Finecorsa: vista dalla parete frontale lungo l'asse (senza scatola), e di tre quarti
+        vicini = [(t["piastra"], c["piastra"]), (t["ruota"], c["ruota"]),
+                  (t["supporto_finecorsa"], c["supporto_finecorsa"])]
+        vicini += [(triangoli(pezzi[n][0]), pezzi[n][1]) for n in ("sensore A", "sensore B", "riduttore", "squadra",
+                                                                  "motore", "servo42d", "giunto", "tubo isolante")]
+        figura(vicini, os.path.join(cart, "finecorsa-fronte.png"), 0, 180,
+               "Finecorsa visti dalla parete frontale: ruota con due bandierine, sensori A e B sotto l'albero")
+        figura(vicini, os.path.join(cart, "finecorsa.png"), 25, -150,
+               "Ruota sull'albero del riduttore e supporto dei due sensori ottici")
     figura([(t["piastra"], c["piastra"])], os.path.join(cart, "piastra-sotto.png"), -50, -60,
            "Piastra da sotto: asole della squadra (interasse 30 mm) con l'asola larga per testa e rondella")
     figura([(t["staffa"], c["staffa"])], os.path.join(cart, "staffa-palo.png"), -40, -60,

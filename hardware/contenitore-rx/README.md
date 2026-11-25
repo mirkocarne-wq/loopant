@@ -9,7 +9,9 @@ Scatola stagna da stampare in 3D, da fissare al palo. Contiene:
   variabile ha l'asse 20 mm più alto del motore, e così i due alberi restano concentrici;
 - l'**elettronica** su due strisce di millefori 35×90, ai lati del motore: ESP32 DevKit 30 pin da una parte,
   SN65HVD230 e convertitore 24→5 V dall'altra;
-- il **display OLED 0,96"** sotto il coperchio, dietro una finestra con vetrino.
+- il **display OLED 0,96"** sotto il coperchio, dietro una finestra con vetrino;
+- i **due finecorsa ottici** (forcella, schedina 35 × 11 mm, fori a 28 mm) su un supporto avvitato alla piastra,
+  sotto l'albero, e la **ruota con due bandierine** sull'albero d'uscita del riduttore.
 
 L'albero esce **al centro della parete frontale**. Il foro è per il **tubo isolante da 8 mm**, con un paraolio, e
 porta il moto al variabile da 1000 pF, che resta in una scatola separata, lontano dall'elettronica.
@@ -26,6 +28,28 @@ porta il moto al variabile da 1000 pF, che resta in una scatola separata, lontan
 ![Interno](anteprime/montaggio.png)
 ![Esploso](anteprime/esploso.png)
 ![Sezione](anteprime/sezione.png)
+
+## Finecorsa
+Il variabile lavora su circa 180°, quindi servono due finecorsa: uno per capo.
+
+- **Ruota** (`ruota-finecorsa.stl`): va sull'albero d'uscita del riduttore, tra il riduttore e il giunto, con il
+  disco verso il giunto. Si blocca con un grano M3 e un dado M3 infilato nella sua sede del mozzo. Ha due
+  bandierine larghe 30°, alla stessa distanza dall'asse.
+- **Sensori**: tutti e due sotto l'albero, a 50° l'uno dall'altro (`SENSORE_A` 295°, `SENSORE_B` 245°), con la
+  forcella verso la ruota. La prima bandierina entra nel sensore A allo zero; la seconda entra nel sensore B dopo
+  `CORSA` = 170°. Nessuna delle due passa mai sull'altro sensore: lo script lo controlla a passi di 5° su tutta la
+  corsa, con 20° di extracorsa a ogni capo.
+- **Verso di rotazione**: se lo zero si raggiunge girando nell'altro senso, si stampa
+  `ruota-finecorsa-specchiata.stl`; il supporto è lo stesso.
+- **Messa a punto**: variabile al minimo (finecorsa meccanico) e poi indietro di circa 5°; ruota girata finché la
+  prima bandierina entra nel sensore A, e grano stretto. Il sensore B scatta 170° dopo. Se la corsa vera del
+  variabile è diversa, si cambia `CORSA` e si ristampa solo la ruota (pochi minuti).
+- **Uscita dei sensori**: alta quando la bandierina interrompe la luce. Sul SERVO42D vanno impostati di
+  conseguenza il livello dei finecorsa e il verso dell'azzeramento nel menu (da verificare).
+- Il pressacavo dei finecorsa in alto non serve più: i sensori sono dentro la scatola.
+
+![Finecorsa](anteprime/finecorsa.png)
+![Finecorsa visti dal fronte](anteprime/finecorsa-fronte.png)
 
 Altre viste: [staffa](anteprime/staffa-palo.png), [staffa sul palo](anteprime/sul-palo-retro.png),
 [interno dal retro](anteprime/montaggio-retro.png), [coperchio da dentro](anteprime/coperchio-interno.png).
@@ -91,6 +115,9 @@ La scatola occupa sul piatto circa 201 × 141 mm (con la borchia dell'albero): s
 | `scatola.stl` | **ASA** (o PETG) | Fondo sul piatto | Bordo interno smussato a 45° e borchia con mento a 45°: nessun supporto. 4 perimetri, 25–30 % di riempimento |
 | `coperchio.stl` | ASA o PETG | Faccia esterna sul piatto (la scritta è incisa sotto) | Nessun supporto |
 | `piastra.stl` | PETG | Piatta, rialzo verso l'alto | 3 perimetri, 30 % di riempimento (rialzo e appoggio del motore sono pieni) |
+| `ruota-finecorsa.stl` | PETG (meglio scuro e opaco: le bandierine devono fermare la luce) | Disco sul piatto, mozzo in alto | Nessun supporto; 100 % di riempimento |
+| `ruota-finecorsa-specchiata.stl` | come sopra | come sopra | Solo se lo zero è nell'altro verso |
+| `supporto-finecorsa.stl` | PETG | Base sul piatto | Nessun supporto |
 | `staffa-palo.stl` | **ASA** o PETG | Faccia verso la scatola sul piatto | Le V sono aperte verso l'alto e i passaggi delle fascette sono ponti da 14 mm: nessun supporto. 5 perimetri, 40 % di riempimento |
 | `guarnizione.stl` | **TPU 85A–95A** | Piatta | In alternativa: foglio di silicone o EPDM da 1,5 mm, ritagliato usando lo STL come dima |
 | `vetrino-oled.stl` | PETG **trasparente** | Piatto | Vetrino della finestra dell'OLED, 30,6×16,6×1,5 mm. Stampato è traslucido: si legge, ma meno nitido del plexiglass. Serve anche come dima per tagliare il plexiglass |
@@ -109,17 +136,19 @@ Viti in **acciaio inox A2** (sono all'aperto). Le lunghezze sono calcolate sui f
 | Staffa sul fondo | 4 | **M4×8 testa bombata** (ISO 7380) | inserti a caldo M4 nel fondo, da fuori | testa nell'incasso della staffa dal lato del palo; una testa cilindrica sporgerebbe di 1 mm |
 | Millefori sui distanziali | 8 | **M2×6 autofilettanti** (per plastica) | foro da 1,8 mm nei distanziali | vanno bene fino a M2×8 |
 | OLED sulle colonnine del coperchio | 4 | **M2×5 autofilettanti** | foro da 1,7 mm nelle colonnine | non più lunghe: il foro è profondo 4,3 mm e una M2×6 arriverebbe in fondo |
+| Sensori ottici sul supporto | 4 | **M3×6** testa cilindrica | inserti a caldo M3 nel supporto | |
+| Supporto dei finecorsa sulla piastra | 2 | **M3×12** + rondella + dado | dado sotto la piastra | |
+| Ruota sull'albero | 1 | **grano M3×6** + dado M3 | dado nella sede del mozzo | sull'eventuale spianatura dell'albero |
 | Riduttore e motore sulla squadra | — | quelle in dotazione | squadra | NEMA17: M3; riduttore: secondo la flangia |
 
-Inserti a caldo: **12 M3** (Ø foro 4,0 mm, lunghi 5–6 mm: 8 nel bordo, 4 nelle colonnine) e **4 M4** (Ø foro
+Inserti a caldo: **16 M3** (Ø foro 4,0 mm, lunghi 5–6 mm: 8 nel bordo, 4 nelle colonnine, 4 nel supporto dei finecorsa) e **4 M4** (Ø foro
 5,6 mm, lunghi 6–8 mm, nel fondo da fuori). I fori M4 sono ciechi: dentro la scatola ci sono 4 rinforzi alti 5 mm
 e il fondo resta chiuso.
 
 ## Altro materiale
 - 2 **fascette stringitubo inox** (banda da 9–12 mm) adatte al diametro del palo.
 - Una fascetta di plastica che tiene il motore sul suo appoggio (fessure nella piastra ai lati).
-- 2 pressacavi **PG7**: 24 V in basso e cavo dei finecorsa in alto, verso la scatola del variabile. Quello in alto
-  va stretto bene: è rivolto verso la pioggia.
+- 1 pressacavo **PG7** per i 24 V, in basso.
 - Valvola di sfiato a membrana **M12×1,5**, in basso, più un sacchetto di silica gel.
 - **Paraolio 8×16×5** nella borchia frontale, con il labbro verso l'esterno; un velo di grasso al silicone sul
   tubo isolante.
@@ -135,7 +164,7 @@ e il fondo resta chiuso.
    strisce di millefori sui distanziali.
 3. Piastra nella scatola. L'apertura del bordo è 179×125 mm e la piastra 177×123 mm.
 4. Giunto sull'albero del riduttore. Tubo isolante infilato dall'esterno attraverso il paraolio, fino al giunto.
-5. Cavi nei PG7 e fascette nelle fessure della piastra. Vetrino incollato nella sua sede da dentro, poi OLED sulle colonnine del coperchio: il vetro del display
+5. Ruota sull'albero e supporto dei finecorsa sulla piastra (vedi «Finecorsa»). Cavo dei 24 V nel PG7 e fascette nelle fessure della piastra. Vetrino incollato nella sua sede da dentro, poi OLED sulle colonnine del coperchio: il vetro del display
    preme sul vetrino.
 6. Coperchio con la guarnizione; viti strette in modo uniforme, a croce.
 7. Staffa appoggiata al fondo e fissata con le 4 viti M4×8 negli inserti, dal lato del palo: le viti stanno fuori

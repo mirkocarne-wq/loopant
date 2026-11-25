@@ -92,6 +92,9 @@ pull-down interna e il driver (EN attivo basso) resterebbe abilitato durante l'a
 - Velocità del bus: deve essere uguale a quella impostata nel menu del SERVO42D (500 kbit/s di solito; da verificare).
 - Sull'antenna RX il motore è comandato via CAN (il tipo di antenna si sceglie dal pannello). I finecorsa sono
   sul SERVO42D e l'azzeramento lo fa il driver con i parametri impostati nel suo menu (livello, verso, velocità): da provare.
+  Sensori: due finecorsa ottici a forcella (VCC 2,7–5 V; SIG basso a luce libera, alto con la bandierina nella
+  forcella), meccanica in `hardware/contenitore-rx/`. Alimentazione e livello attivo sugli ingressi del SERVO42D
+  da verificare sul manuale.
 - Il manuale non indica isolamento dell'interfaccia: considerarla **non isolata**.
   Con l'ESP32 nella scatola il cavo CAN è corto e non serve isolatore.
 - Con un cavo lungo in futuro: transceiver isolato (ISO1050 con DC-DC, 3,3 V).

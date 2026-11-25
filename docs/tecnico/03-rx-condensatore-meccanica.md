@@ -35,7 +35,11 @@
   inox, avvitata al fondo con 4 inserti M4 ciechi. Palo verticale, parete frontale in alto verso il variabile,
   24 V e sfiato in basso.
 - Gruppo giunto, riduttore, squadra e motore lungo circa 150 mm (misura dell'utente). Ingombro di circa 195 × 141 × 100 mm più il coperchio e la staffa (32 mm); guarnizione piatta in TPU, 8 viti M3
-  con inserti a caldo, 2 PG7 (24 V e finecorsa), valvola di sfiato M12.
+  con inserti a caldo, 1 PG7 (24 V), valvola di sfiato M12.
+- **Finecorsa** (il variabile lavora su circa 180°): due sensori ottici a forcella (schedina 35 × 11 mm, fori a 28 mm)
+  su un supporto stampato sotto l'albero, a 50° l'uno dall'altro, e una ruota con due bandierine sull'albero
+  d'uscita del riduttore; il sensore B scatta 170° dopo il sensore A (parametro `CORSA`). Uscita alta con la luce
+  interrotta, collegati agli ingressi dei finecorsa del SERVO42D.
 - **Proposta:** il variabile va in una scatola separata, lontano dall'elettronica, invece di stare nella scatola
   unica descritta sotto. Da confermare.
 - Tutte le misure dei componenti sono **stime da verificare** con il calibro (tabella nel README).
