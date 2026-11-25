@@ -245,7 +245,7 @@ def piastra():
     p = scatola_arrotondata(BORDO + 1, BORDO + 1, z0, LX - BORDO - 1, LY - BORDO - 1, z0 + PIASTRA, 4.0)
     for x, y in COLONNINE:
         p = p.cut(cilindro_z(x, y, z0 - 1, PIASTRA + 2, 3.4))
-        p = p.cut(cilindro_z(x, y, z0 + PIASTRA - 3.2, 4, 6.2))  # testa della vite incassata
+        p = p.cut(cilindro_z(x, y, z0 + PIASTRA - 2.0, 4, 6.2))  # testa bombata M3 incassata, 2 mm sotto
     # Rialzo sotto la squadra (dislivello con il variabile); le asole lo attraversano: viti M4 lunghe con i dadi
     # sotto la piastra
     if RIALZO_MOTORE > 0:

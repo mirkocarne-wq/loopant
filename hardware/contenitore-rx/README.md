@@ -98,18 +98,26 @@ La scatola occupa sul piatto circa 201 × 141 mm (con la borchia dell'albero): s
 Il PLA non va bene sul balcone: al sole si deforma e con i raggi UV diventa fragile. Con il PETG conviene una
 mano di vernice.
 
-## Materiale
-- 8 inserti a caldo M3 (Ø 4,0 mm, lunghi 5–6 mm) per il coperchio e 4 per la piastra; 8 viti M3×12 e 4 viti M3×8.
-- 4 inserti a caldo **M4** (Ø 5,6 mm, lunghi circa 6–8 mm) nel fondo per la staffa, messi da fuori. I fori sono
-  ciechi: dentro la scatola ci sono 4 rinforzi alti 5 mm e il fondo resta chiuso. 4 viti **M4×8 a testa bombata**
-  (ISO 7380, testa alta 2,2 mm): la testa sta nell'incasso della staffa dal lato del palo, non quella cilindrica
-  normale, che sporgerebbe di 1 mm.
+## Viti e inserti
+Viti in **acciaio inox A2** (sono all'aperto). Le lunghezze sono calcolate sui fori del modello.
+
+| Dove | Quante | Vite | Si avvita in | Note |
+|---|---|---|---|---|
+| Coperchio | 8 | **M3×12** testa cilindrica o bombata | inserti a caldo M3 nel bordo della scatola | coperchio 4 mm + guarnizione 1,5 mm, poi 6,5 mm nell'inserto |
+| Piastra sulle colonnine | 4 | **M3×6 testa bombata** (ISO 7380) | inserti a caldo M3 nelle colonnine del fondo | testa nell'incasso da 2 mm della piastra |
+| Squadra sulla piastra | 2 | **M4×20** + 2 rondelle + dado (meglio autobloccante) | dado sopra la squadra | vite dal basso, testa e rondella nell'asola larga sotto la piastra |
+| Staffa sul fondo | 4 | **M4×8 testa bombata** (ISO 7380) | inserti a caldo M4 nel fondo, da fuori | testa nell'incasso della staffa dal lato del palo; una testa cilindrica sporgerebbe di 1 mm |
+| Millefori sui distanziali | 8 | **M2×6 autofilettanti** (per plastica) | foro da 1,8 mm nei distanziali | vanno bene fino a M2×8 |
+| OLED sulle colonnine del coperchio | 4 | **M2×5 autofilettanti** | foro da 1,7 mm nelle colonnine | non più lunghe: il foro è profondo 4,3 mm e una M2×6 arriverebbe in fondo |
+| Riduttore e motore sulla squadra | — | quelle in dotazione | squadra | NEMA17: M3; riduttore: secondo la flangia |
+
+Inserti a caldo: **12 M3** (Ø foro 4,0 mm, lunghi 5–6 mm: 8 nel bordo, 4 nelle colonnine) e **4 M4** (Ø foro
+5,6 mm, lunghi 6–8 mm, nel fondo da fuori). I fori M4 sono ciechi: dentro la scatola ci sono 4 rinforzi alti 5 mm
+e il fondo resta chiuso.
+
+## Altro materiale
 - 2 **fascette stringitubo inox** (banda da 9–12 mm) adatte al diametro del palo.
-- 2 viti M4×20 con rondelle e dadi per la squadra (asole a 30 mm di interasse): la vite entra dal basso, con testa
-  e rondella nell'asola larga sotto la piastra (sotto la squadra restano 8 mm di materiale), e il dado si stringe
-  sopra la squadra.
 - Una fascetta di plastica che tiene il motore sul suo appoggio (fessure nella piastra ai lati).
-- 8 viti M2×6 autofilettanti per le due strisce di millefori e 4 per l'OLED.
 - 2 pressacavi **PG7**: 24 V in basso e cavo dei finecorsa in alto, verso la scatola del variabile. Quello in alto
   va stretto bene: è rivolto verso la pioggia.
 - Valvola di sfiato a membrana **M12×1,5**, in basso, più un sacchetto di silica gel.
