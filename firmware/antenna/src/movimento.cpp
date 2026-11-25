@@ -61,6 +61,11 @@ bool azzerato() { return can() ? can42d::azzerato() : stepdir::azzerato(); }
 int32_t posizione() { return (can() ? can42d::posizione() : stepdir::posizione()) - origine(); }
 bool finecorsaMin() { return can() ? can42d::finecorsaMin() : stepdir::finecorsaMin(); }
 bool finecorsaMax() { return can() ? can42d::finecorsaMax() : stepdir::finecorsaMax(); }
+void stampaIngressi() {
+  if (can()) can42d::stampaIngressi();
+  else Serial.printf("Finecorsa: MIN %s, MAX %s\n", stepdir::finecorsaMin() ? "PREMUTO" : "libero",
+                     stepdir::finecorsaMax() ? "PREMUTO" : "libero");
+}
 bool driverAbilitato() { return can() ? can42d::driverAbilitato() : stepdir::driverAbilitato(); }
 proto::Errore errore() { return can() ? can42d::errore() : stepdir::errore(); }
 void cancellaErrore() { can() ? can42d::cancellaErrore() : stepdir::cancellaErrore(); }

@@ -17,12 +17,14 @@ un numero sopra 100 000 viene letto in Hz.
 | `calcanc <freq>` | Cancella la tabella della banda |
 | `tabella` | Stampa le tabelle di calibrazione |
 | `stato` | Stato, errore, posizione, finecorsa |
+| `io` | Finecorsa (RX: letti dal SERVO42D con 0x34, più impulsi dallo zero 0x33 ed encoder 0x31; TX: GPIO 27/14) |
 | `mac <AA:BB:CC:DD:EE:FF>` | Salva in NVS il MAC dell'unità di controllo (riavvio necessario) |
 | `associa` | Associazione con il pannello, come BOOT premuto 3 s |
 | `canale <1-13>` | Salva in NVS il canale ESP-NOW: quello del router se il pannello usa il WiFi (riavvio necessario) |
 | `aiuto` | Elenco comandi |
 
-I comandi da console non attivano il controllo dell'heartbeat.
+I comandi da console non attivano il controllo dell'heartbeat. Aprire la porta seriale dell'antenna (CH340) da macOS
+la riavvia: dopo serve un nuovo `zero`.
 
 ## Pannello in casa (unità di controllo)
 La console risponde su **entrambe le USB-C** del 7B: "USB TO UART" (CH343) e USB nativa (firmware compilato con

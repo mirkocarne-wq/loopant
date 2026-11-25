@@ -333,7 +333,7 @@ void aiuto() {
   Serial.println(
       "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calelim <kHz> | calcanc <kHz> |\n"
       "         tabella | stato | mac <AA:BB:CC:DD:EE:FF> | canale <1-13> | associa |\n"
-      "         tipo tx|rx | canid <1-2047> | cankbit <125|250|500|1000> (solo RX) | aiuto");
+      "         tipo tx|rx | canid <1-2047> | cankbit <125|250|500|1000> (solo RX) | io (finecorsa) | aiuto");
 }
 
 void eseguiRiga(char* riga) {
@@ -379,6 +379,9 @@ void eseguiRiga(char* riga) {
     return;
   } else if (!strcmp(cmd, "stato")) {
     stampaStato();
+    return;
+  } else if (!strcmp(cmd, "io")) {
+    movimento::stampaIngressi();
     return;
   } else if (!strcmp(cmd, "mac") && arg) {
     uint8_t mac[6];

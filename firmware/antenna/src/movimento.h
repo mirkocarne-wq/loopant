@@ -25,6 +25,7 @@ bool azzerato();
 int32_t posizione();
 bool finecorsaMin();
 bool finecorsaMax();
+void stampaIngressi();  // console "io": stato dei finecorsa (RX: letto dal SERVO42D, arriva con la risposta)
 bool driverAbilitato();
 
 proto::Errore errore();

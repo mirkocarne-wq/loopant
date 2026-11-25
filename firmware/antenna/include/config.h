@@ -22,13 +22,16 @@ constexpr int PIN_CAN_TX = 17;  // TX2 -> CTX del transceiver
 constexpr int PIN_CAN_RX = 16;  // RX2 -> CRX del transceiver
 constexpr uint16_t CAN_ID_PREDEFINITO = 1;      // indirizzo del SERVO42D (menu del driver)
 constexpr uint16_t CAN_KBIT_PREDEFINITO = 500;  // deve essere uguale a quello del SERVO42D
-// Comandi del SERVO42D (protocollo da verificare sul manuale ufficiale V1.0.3)
+// Comandi del SERVO42D (manuale CAN V1.0.9; CRC, 0xFE, 0x91, 0xF1, 0x31, 0x8C ancora da confrontare)
 constexpr uint8_t SERVO_MODO_CAN = 5;       // SR_vFOC: comandi dal bus
 constexpr uint8_t SERVO_MODO_IMPULSI = 2;   // CR_vFOC: STEP/DIR
 constexpr uint8_t SERVO_ACCELERAZIONE = 2;  // 0-255 (0 = senza rampa)
-// Parametri di azzeramento: oggi NON inviati, il SERVO42D usa quelli del suo menu (HmTrig, HmDir, HmSpeed)
-constexpr uint8_t SERVO_HOME_LIVELLO = 0;   // finecorsa attivo basso (da verificare)
-constexpr uint8_t SERVO_HOME_VERSO = 1;     // 0 = CW, 1 = CCW verso il finecorsa (da verificare)
+// Parametri di zero (0x90). Il livello lo impone sempre il firmware; verso e velocità solo se il SERVO42D non li
+// fa leggere (firmware prima di V1.0.6), altrimenti restano quelli del suo menu (HmDir, HmSpeed).
+// Finecorsa ottici a forcella alimentati da EVCC/EGND, uscita su En (zero) e Dir (limite CW), COM a EVCC: con la
+// bandierina nella forcella danno 1 nella lettura 0x34 (provato a mano il 25/11/2026), quindi HmTrig High.
+constexpr uint8_t SERVO_HOME_LIVELLO = 1;
+constexpr uint8_t SERVO_HOME_VERSO = 1;     // 0 = CW, 1 = CCW: lo zero è sul lato CCW (HmDir invertito il 21/11/2026)
 constexpr uint16_t SERVO_HOME_RPM = 60;
 constexpr uint32_t SERVO_TIMEOUT_MS = 250;  // attesa della risposta prima di ripetere
 

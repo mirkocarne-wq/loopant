@@ -54,15 +54,46 @@ Segue il tipo di antenna (decisione del 21/11/2026): non c'è una scelta separat
 | Tipo | Driver | Comandi | Finecorsa e azzeramento | Codice |
 |---|---|---|---|---|
 | TX | TMC2209 | STEP/DIR/EN con FastAccelStepper, configurazione via UART | sull'ESP32 (GPIO 27 MIN, 14 MAX), azzeramento fatto dal firmware | `motore_stepdir.cpp` |
-| RX | SERVO42D | CAN via SN65HVD230 (GPIO 17/16) | sugli ingressi del SERVO42D, azzeramento con il suo comando 0x91 (parametri dal menu del driver) | `motore_can.cpp` |
+| RX | SERVO42D | CAN via SN65HVD230 (GPIO 17/16) | sul SERVO42D: zero su En, limite CW su Dir (rimappatura 9E); azzeramento con il suo comando 0x91 | `motore_can.cpp` |
 
 - Per l'RX si impostano dal pannello (o con `canid` / `cankbit`) indirizzo e velocità del bus, salvati in NVS.
 - All'avvio con il tipo RX il firmware mette il SERVO42D nel modo CAN (SR_vFOC).
-- **Verso dello zero (RX)**: lo decide il menu del SERVO42D (HmDir, con HmTrig e HmSpeed); il firmware manda solo
-  il comando 0x91. Il 21/11/2026 è servito invertire HmDir. Dopo lo zero, «+» in Calibrazione deve allontanarsi dal
-  finecorsa: se va verso il finecorsa, invertire anche Dir nel menu (zero e «+» devono avere versi opposti).
-- Protocollo CAN ricavato da una libreria della comunità (MKSServoCAN): **da verificare sul manuale ufficiale**
-  (CRC, codici 0xFE/0x91/0xF1/0x31, risposte attive con 0x8C, parametri di azzeramento 0x90).
+- **Verso e velocità dello zero (RX)**: li decide il menu del SERVO42D (HmDir, HmSpeed). Il 21/11/2026 è servito
+  invertire HmDir: lo zero è sul lato CCW. Dopo lo zero, «+» in Calibrazione deve allontanarsi dal finecorsa: se va
+  verso il finecorsa, invertire anche Dir nel menu (zero e «+» devono avere versi opposti).
+- Protocollo: manuale ufficiale MKS «SERVO42&57D_CAN User Manual V1.0.9» (GitHub makerbase-motor/MKS-SERVO42D-57D);
+  il SERVO42D dell'antenna ha il firmware V1.0.9 (comando 0x40). CRC e codici 0xFE/0x91/0xF1/0x8C ancora da
+  confrontare riga per riga.
+- **Posizione dopo uno stop**: impulsi dallo zero con 0x33, le stesse unità di 0xFE. L'encoder 0x31 conta
+  dall'accensione del driver e non va usato come posizione (il 25/11/2026 dava 31 919 contro 1230 reali).
+
+### Finecorsa dell'antenna RX (provati il 25/11/2026)
+Il SERVO42D ha **un solo ingresso per i finecorsa** (IN_1, zero o limite sinistro); il limite destro (IN_2) c'è solo
+sul 57D. Per avere zero e limite CW si usa la **rimappatura** (comando 9E, solo nel modo CAN, non c'è nel menu):
+zero su **En**, limite CW su **Dir**, COM a un livello alto; IN_1 non conta più.
+
+| Filo | Morsetto del SERVO42D |
+|---|---|
+| VCC dei due finecorsa ottici a forcella | EVCC (5 V) |
+| GND dei due finecorsa | EGND |
+| uscita del finecorsa dello zero (lato CCW) | En |
+| uscita del finecorsa CW | Dir |
+| ponticello | COM → EVCC |
+
+- Uscita dei finecorsa ottici **alta con la bandierina nella forcella**: HmTrig **High** (`SERVO_HOME_LIVELLO = 1`).
+  Con HmTrig Low il SERVO42D li vede premuti a riposo; senza COM collegato non li vede mai. Meccanica (ruota a due
+  bandierine, supporto) in `hardware/contenitore-rx/`.
+- I limiti valgono solo con **EndLimit** attivo e dopo uno zero (manuale, parte 8): il finecorsa dello zero ferma il
+  moto verso CCW, quello CW il moto verso CW; il driver risponde «fermato dal finecorsa» (stato 3).
+- All'avvio del bus il firmware legge rimappatura e parametri di zero (0x00, firmware V1.0.6 e successivi) e scrive
+  solo quello che manca: rimappatura, EndLimit, livello di `config.h`; verso e velocità restano quelli del menu.
+  Rilegge per verificare; se qualcosa non torna lo scrive sulla console e **lo zero non parte**.
+- Lo zero si ferma da solo dopo la corsa intera più metà alla velocità di zero (circa 20 s a 60 giri/min), con
+  l'arresto d'emergenza F7, errore `AZZERAMENTO_FALLITO`. Anche STOP durante lo zero usa F7.
+- Stato dei finecorsa letto con 0x34 durante i movimenti e alla fine di ognuno (a motore fermo niente traffico sul
+  bus): FC MIN / FC MAX nella Diagnostica del pannello. Console: `io` (ingressi, impulsi 0x33, encoder 0x31).
+- Il 25/11/2026 il SERVO42D ha rifiutato per qualche minuto tutte le scritture via CAN (stato 0), poi la 0x90 è
+  passata: forse con il suo menu aperto, **da verificare**.
 
 ## Regole di movimento
 1. **Arrivo sempre dallo stesso verso** (verso crescente, lato opposto al finecorsa MIN). Unica eccezione: il JOG
@@ -80,6 +111,8 @@ Segue il tipo di antenna (decisione del 21/11/2026): non c'è una scelta separat
 3. **Driver disabilitato dopo ogni movimento** (motore libero, nessun rumore HF).
 4. **Limiti software**: il target viene limitato tra `POS_MIN` e `POS_MAX`.
 5. **Finecorsa inatteso** durante un movimento → arresto immediato, errore `FINECORSA`, azzeramento da rifare.
+   Eccezione (RX): il jog libero che scende verso lo 0 e tocca il finecorsa dello zero (l'interruttore scatta un
+   soffio sopra il punto dove l'azzeramento si è fermato) non è un errore: la posizione vale 0.
 6. **StallGuard** (solo TX): durante il movimento si legge `SG_RESULT`; sotto `SOGLIA_BLOCCO`
    arresto ed errore `BLOCCO`. Soglia 0 = disabilitato (da tarare sul banco).
 7. **Heartbeat**: se il movimento è stato chiesto via radio e per `TIMEOUT_HEARTBEAT_MS`

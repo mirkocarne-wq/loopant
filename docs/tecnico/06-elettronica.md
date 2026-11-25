@@ -13,7 +13,8 @@ Il software è descritto in [`../software/`](../software/README.md).
 - Driver **TMC2209** (STEP/DIR/EN), in **stealthChop**; driver disabilitato dopo ogni movimento.
 - Corrente del NEMA11: da regolare sul valore nominale (0,5–1 A, controllare la scheda tecnica).
 - Finecorsa: **antenna TX** sull'ESP32 (GPIO 27 MIN, 14 MAX, pull-up e filtro RC/100 nF), lo zero lo fa il firmware;
-  **antenna RX** sugli ingressi del SERVO42D, che fa lo zero da solo (decisione del 21/11/2026).
+  **antenna RX** sul SERVO42D, che fa lo zero da solo (decisione del 21/11/2026): zero su En, limite CW su Dir,
+  COM a EVCC, moduli alimentati da EVCC/EGND (rimappatura 9E; collegamenti in `../software/02-unita-antenna.md`).
 - Versione RX: SERVO42D pilotato dallo stesso ESP32 **via CAN**. La versione TX accorda in STEP/DIR con il TMC2209.
 
 ### Pinout suggerito (da confermare in fase di cablaggio)
@@ -91,10 +92,10 @@ pull-down interna e il driver (EN attivo basso) resterebbe abilitato durante l'a
   cavo corto basta quella: non aggiungere altri terminatori.
 - Velocità del bus: deve essere uguale a quella impostata nel menu del SERVO42D (500 kbit/s di solito; da verificare).
 - Sull'antenna RX il motore è comandato via CAN (il tipo di antenna si sceglie dal pannello). I finecorsa sono
-  sul SERVO42D e l'azzeramento lo fa il driver con i parametri impostati nel suo menu (livello, verso, velocità): da provare.
+  sul SERVO42D (zero su En, limite CW su Dir, COM a EVCC) e l'azzeramento lo fa il driver: provato il 25/11/2026.
   Sensori: due finecorsa ottici a forcella (VCC 2,7–5 V; SIG basso a luce libera, alto con la bandierina nella
-  forcella), meccanica in `hardware/contenitore-rx/`. Alimentazione e livello attivo sugli ingressi del SERVO42D
-  da verificare sul manuale.
+  forcella, quindi HmTrig High), alimentati da EVCC/EGND (5 V); meccanica in `hardware/contenitore-rx/`.
+  EVCC regge 20 mA (manuale): i due sensori più un ingresso attivo dovrebbero starci, **da misurare**.
 - Il manuale non indica isolamento dell'interfaccia: considerarla **non isolata**.
   Con l'ESP32 nella scatola il cavo CAN è corto e non serve isolatore.
 - Con un cavo lungo in futuro: transceiver isolato (ISO1050 con DC-DC, 3,3 V).
