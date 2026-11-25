@@ -318,6 +318,13 @@ def coperchio(z_basso):
     return c
 
 
+def vetrino(z_basso):
+    """Vetrino della finestra dell'OLED, nella sua sede da dentro (0,2 mm di gioco per lato), spesso 1,5 mm."""
+    g = 0.2
+    return scatola_arrotondata(OLED_X - VETRINO[1] / 2 + g, OLED_Y - VETRINO[0] / 2 + g, z_basso,
+                               OLED_X + VETRINO[1] / 2 - g, OLED_Y + VETRINO[0] / 2 - g, z_basso + 1.5, 0.8)
+
+
 def guarnizione(z_basso):
     g = contorno_esterno(z_basso, z_basso + GUARNIZIONE).cut(apertura(z_basso - 1, z_basso + GUARNIZIONE + 1))
     for x, y in viti_coperchio():
@@ -448,6 +455,7 @@ def main():
         "piastra": sul_piatto(pi),
         "coperchio": sul_piatto(co.rotate((0, 0, 0), (1, 0, 0), 180)),       # faccia esterna sul piatto
         "guarnizione": sul_piatto(gu),
+        "vetrino-oled": sul_piatto(vetrino(zc)),                             # in PETG trasparente o come dima
         "staffa-palo": sul_piatto(st.rotate((0, 0, 0), (1, 0, 0), 180)),     # faccia verso la scatola sul piatto
     }
     esporta(stampa)
@@ -465,7 +473,7 @@ def main():
             viti = v if viti is None else viti.union(v)
             inserti = i if inserti is None else inserti.union(i)
         anteprime.disegna(QUI, {"scatola": sc, "piastra": pi, "coperchio": co, "guarnizione": gu, "staffa": st,
-                                "palo": palo, "viti_staffa": viti, "inserti_staffa": inserti}, pezzi)
+                                "palo": palo, "viti_staffa": viti, "inserti_staffa": inserti, "vetrino": vetrino(zc)}, pezzi)
     return 1 if errori else 0
 
 

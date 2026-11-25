@@ -93,6 +93,7 @@ La scatola occupa sul piatto circa 201 × 141 mm (con la borchia dell'albero): s
 | `piastra.stl` | PETG | Piatta, rialzo verso l'alto | 3 perimetri, 30 % di riempimento (rialzo e appoggio del motore sono pieni) |
 | `staffa-palo.stl` | **ASA** o PETG | Faccia verso la scatola sul piatto | Le V sono aperte verso l'alto e i passaggi delle fascette sono ponti da 14 mm: nessun supporto. 5 perimetri, 40 % di riempimento |
 | `guarnizione.stl` | **TPU 85A–95A** | Piatta | In alternativa: foglio di silicone o EPDM da 1,5 mm, ritagliato usando lo STL come dima |
+| `vetrino-oled.stl` | PETG **trasparente** | Piatto | Vetrino della finestra dell'OLED, 30,6×16,6×1,5 mm. Stampato è traslucido: si legge, ma meno nitido del plexiglass. Serve anche come dima per tagliare il plexiglass |
 
 Il PLA non va bene sul balcone: al sole si deforma e con i raggi UV diventa fragile. Con il PETG conviene una
 mano di vernice.
@@ -114,7 +115,9 @@ mano di vernice.
 - Valvola di sfiato a membrana **M12×1,5**, in basso, più un sacchetto di silica gel.
 - **Paraolio 8×16×5** nella borchia frontale, con il labbro verso l'esterno; un velo di grasso al silicone sul
   tubo isolante.
-- Vetrino in plexiglass 31×17 mm, spesso 1,5 mm, incollato da dentro con silicone neutro.
+- Vetrino 30,6×16,6 mm, spesso 1,5 mm, incollato da dentro nella sua sede con silicone neutro: meglio in plexiglass
+  (più nitido), oppure `vetrino-oled.stl` stampato in PETG trasparente. Il buco grande che si vede da fuori è lo
+  smusso a 45° della finestra; la tenuta la fa il vetrino ([immagine](anteprime/finestra-oled.png)).
 
 ## Montaggio
 1. Inserti a caldo nel bordo (8), nelle colonnine del fondo (4) e, da fuori, nei rinforzi del fondo per la
@@ -124,7 +127,8 @@ mano di vernice.
    strisce di millefori sui distanziali.
 3. Piastra nella scatola. L'apertura del bordo è 179×125 mm e la piastra 177×123 mm.
 4. Giunto sull'albero del riduttore. Tubo isolante infilato dall'esterno attraverso il paraolio, fino al giunto.
-5. Cavi nei PG7 e fascette nelle fessure della piastra. OLED sulle colonnine del coperchio, vetrino incollato.
+5. Cavi nei PG7 e fascette nelle fessure della piastra. Vetrino incollato nella sua sede da dentro, poi OLED sulle colonnine del coperchio: il vetro del display
+   preme sul vetrino.
 6. Coperchio con la guarnizione; viti strette in modo uniforme, a croce.
 7. Staffa appoggiata al fondo e fissata con le 4 viti M4×8 negli inserti, dal lato del palo: le viti stanno fuori
    dai blocchi a V e si raggiungono anche con la scatola montata. Poi le fascette nei passaggi dei blocchi,

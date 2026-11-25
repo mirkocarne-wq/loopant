@@ -150,5 +150,11 @@ def disegna(qui, parti, pezzi):
            "Piastra da sotto: asole della squadra (interasse 30 mm) con l'asola larga per testa e rondella")
     figura([(t["staffa"], c["staffa"])], os.path.join(cart, "staffa-palo.png"), -40, -60,
            "Staffa: due blocchi a V, passaggi per le fascette, 4 viti M4 nel fondo")
+    if "vetrino" in parti:
+        # Finestra dell'OLED esplosa, vista da dentro: coperchio, vetrino, display
+        figura([(t["coperchio"], c["coperchio"]), (triangoli(parti["vetrino"], (0, 0, -12)), "#b3e5fc"),
+                (triangoli(pezzi["OLED"][0], (0, 0, -26)), pezzi["OLED"][1])],
+               os.path.join(cart, "finestra-oled.png"), -40, -120,
+               "Finestra dell'OLED da dentro: vetrino nella sua sede, poi il display sulle 4 colonnine")
     figura([(t["coperchio"], c["coperchio"]), oled],
            os.path.join(cart, "coperchio-interno.png"), -55, -100, "Coperchio da dentro: OLED sulle colonnine")
