@@ -50,6 +50,9 @@ Stato stato();
 // lo usa per far ripartire da 0 il ritocco fine.
 uint32_t comandiPosizione();
 
+// Un comando in attesa di risposta, comandi in coda o una tabella in lettura
+bool occupato();
+
 // Chiede all'antenna tutti i punti di calibrazione della banda (uno alla volta).
 void richiediTabella(bande::Banda banda);
 Tabella tabella();

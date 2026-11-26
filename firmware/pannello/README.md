@@ -37,6 +37,7 @@ src/display7.*          widget display a 7 segmenti (poligoni LVGL, nessun font 
 src/icona.*             icone delle schede disegnate con linee e archi (come nel mockup)
 src/link_antenna.*      ESP-NOW verso l'antenna (usa ../lib/Comune)
 src/console.*           comandi da seriale
+src/copia_sd.*          copia e ripristino su microSD (impostazioni, memorie, calibrazione dell'antenna)
 src/eventi.*            registro eventi e contatori (Diagnostica)
 src/memorie.*           memorie predefinite e personali
 src/sole.* locator.*    posizione del sole, alba/tramonto, locator Maidenhead

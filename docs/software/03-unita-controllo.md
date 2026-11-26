@@ -105,6 +105,7 @@ voce dice «non regolabile sul 5″»). Dettagli in `firmware/pannello/README.md
 | I5 | Luminosità; ora nella barra UTC / locale / entrambe | [D] |
 | I6 | WiFi: pulsante **Cerca reti**, elenco delle reti trovate (segnale, protetta/aperta), tocco sulla rete, password con tastiera e collegamento; campo manuale per le reti nascoste | [D] |
 | I7 | **Associazione**: quando un'antenna ha BOOT premuto compare su qualsiasi schermata la finestra «Antenna trovata» (TX/RX, MAC, segnale, antenna che sostituisce) con «Associa» e «Ignora»; l'antenna già associata si conferma da sola | [D] |
+| I9 | **Copia su microSD** (slot del pannello, FAT32): «Salva su microSD» scrive impostazioni, ultime frequenze, memorie personali e le tabelle di calibrazione lette dall'antenna in `/loopant/copia.txt` (più una copia con data e ora se l'ora è nota); «Ripristina» (doppio tocco) le rimette, riscrive le tabelle sull'antenna (`CAL_SCRIVI`), le rilegge per controllo e riavvia il pannello. Password del WiFi e di QRZ non salvate; l'associazione con l'antenna resta quella attuale; la calibrazione si ripristina solo sull'antenna dello stesso tipo (TX/RX) | [D] (26/11/2026) |
 | I8 | **Manopola remota**: stato del collegamento, sorgente del decoder (Microfono / Segnale di prova), passi per scatto del ritocco fine ([12-manopola.md](12-manopola.md)) | [D] |
 
 ### C7. Calibrazione (da Impostazioni)

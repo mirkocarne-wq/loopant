@@ -10,6 +10,7 @@
 #include <string>
 
 #include "collegamento.h"
+#include "copia_sd.h"
 #include "decodifica.h"
 #include "eventi.h"
 #include "impostazioni.h"
@@ -58,6 +59,7 @@ Stato stato() {
   return s;
 }
 void richiediTabella(bande::Banda) {}
+bool occupato() { return false; }
 Tabella tabella() {
   Tabella t = {};
   t.banda = bande::Banda::B40M;
@@ -79,6 +81,17 @@ void rispondiAssociazione(bool conferma) {
   richiestaFinta.presente = false;
 }
 }  // namespace link_antenna
+
+// --- microSD finta ----------------------------------------------------------------------------------
+namespace copia_sd {
+bool salva() { return true; }
+bool ripristina() { return true; }
+void aggiorna() {}
+Stato stato() {
+  Stato s = {Fase::FINITA, "Copia salvata in /loopant/copia.txt: impostazioni, 1 memorie, calibrazione RX (6 punti)"};
+  return s;
+}
+}  // namespace copia_sd
 
 // --- Manopola remota finta (non associata) ---------------------------------------------------------
 namespace link_manopola {

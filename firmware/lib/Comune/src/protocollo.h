@@ -25,6 +25,8 @@ enum class Tipo : uint8_t {
   CAL_LEGGI = 9,     // chiede il punto numero 'valore' della banda di freq_hz
   CAL_ELIMINA = 10,  // elimina il punto più vicino a freq_hz (entro 1 kHz)
   IMPOSTA = 11,      // imposta il parametro freq_hz (Parametro) al valore 'valore'
+  CAL_SCRIVI = 12,   // scrive il punto freq_hz -> posizione 'valore' senza muovere (ripristino dalla microSD);
+                     // aggiunto senza cambiare VERSIONE: un'antenna vecchia lo ignora (il pannello rilegge e controlla)
   RISPOSTA = 0x80,      // antenna -> controllo: stato
   RISPOSTA_CAL = 0x81,  // antenna -> controllo: un punto di calibrazione
   // Associazione (struttura Associa, in chiaro e in broadcast)

@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 
+#include "../copia_sd.h"
 #include "../impostazioni.h"
 #include "../link_manopola.h"
 #include "../scheda.h"
@@ -37,6 +38,10 @@ uint32_t cambioTipoAlle = 0;  // millis della richiesta di cambio tipo (0 = ness
 lv_obj_t* testoCanId;
 lv_obj_t* statoMotore;
 lv_obj_t* sezioneAntenna;
+lv_obj_t* btnSalvaSd;
+lv_obj_t* btnRipristinaSd;
+lv_obj_t* testoSd;
+uint32_t confermaRipristinoFino = 0;  // secondo tocco su Ripristina entro 5 s
 lv_obj_t* testoManopola;
 lv_obj_t* testoPassi;
 lv_obj_t* campoQrzUtente;
@@ -486,6 +491,21 @@ void luce(lv_event_t* e) {
   schermo::luminosita(v);
 }
 
+void salvaSd(lv_event_t*) { copia_sd::salva(); }
+
+// Il ripristino sostituisce impostazioni, memorie e calibrazione: serve un secondo tocco
+void ripristinaSd(lv_event_t*) {
+  lv_obj_t* l = lv_obj_get_child(btnRipristinaSd, 0);
+  if (confermaRipristinoFino && (int32_t)(confermaRipristinoFino - millis()) > 0) {
+    confermaRipristinoFino = 0;
+    lv_label_set_text(l, "Ripristina");
+    copia_sd::ripristina();
+  } else {
+    confermaRipristinoFino = millis() + 5000;
+    lv_label_set_text(l, "Tocca ancora per sostituire");
+  }
+}
+
 lv_obj_t* sezione(lv_obj_t* parent, const char* titolo) {
   lv_obj_t* s = ui::scheda(parent);
   lv_obj_set_width(s, LV_PCT(100));
@@ -712,6 +732,28 @@ void crea(lv_obj_t* c) {
   lv_obj_add_event_cb(cr, apriReti, LV_EVENT_CLICKED, nullptr);
   lv_obj_add_event_cb(ai, aggiornaIndici, LV_EVENT_CLICKED, nullptr);
 
+  // Copia su microSD
+  lv_obj_t* sd = sezione(dx, "COPIA SU MICROSD");
+  lv_obj_t* nsd = ui::etichetta(sd, "Impostazioni, memorie personali e calibrazione dell'antenna nel file "
+                                    "/loopant/copia.txt. Le password del WiFi e di QRZ non vengono salvate.",
+                                &font_12, t.text2);
+  lv_label_set_long_mode(nsd, LV_LABEL_LONG_WRAP);
+  lv_obj_set_width(nsd, LV_PCT(100));
+  lv_obj_t* psd = ui::contenitore(sd, LV_FLEX_FLOW_ROW, 10);
+  lv_obj_set_width(psd, LV_PCT(100));
+  btnSalvaSd = ui::pulsante(psd, LV_SYMBOL_SAVE "  Salva su microSD", &font_16, ui::Stile::PRIMARIO);
+  btnRipristinaSd = ui::pulsante(psd, "Ripristina", &font_16, ui::Stile::SCHEDA);
+  for (lv_obj_t* b : {btnSalvaSd, btnRipristinaSd}) {
+    lv_obj_set_height(b, 48);
+    lv_obj_set_flex_grow(b, 1);
+  }
+  lv_obj_add_event_cb(btnSalvaSd, salvaSd, LV_EVENT_CLICKED, nullptr);
+  lv_obj_add_event_cb(btnRipristinaSd, ripristinaSd, LV_EVENT_CLICKED, nullptr);
+  confermaRipristinoFino = 0;
+  testoSd = ui::etichetta(sd, "", &font_14, t.text2);
+  lv_label_set_long_mode(testoSd, LV_LABEL_LONG_WRAP);
+  lv_obj_set_width(testoSd, LV_PCT(100));
+
   creaTastiera();
 }
 
@@ -749,6 +791,17 @@ void aggiorna(const link_antenna::Stato& s) {
   else
     lv_label_set_text_fmt(testoManopola, "Collegata · segnale %s%d dBm · decoder sulla manopola", ms.rssi < 0 ? "−" : "",
                           ms.rssi < 0 ? -ms.rssi : ms.rssi);
+
+  copia_sd::Stato cs = copia_sd::stato();
+  lv_label_set_text(testoSd, cs.testo);
+  for (lv_obj_t* b : {btnSalvaSd, btnRipristinaSd}) {
+    if (cs.fase == copia_sd::Fase::IN_CORSO) lv_obj_add_state(b, LV_STATE_DISABLED);
+    else lv_obj_clear_state(b, LV_STATE_DISABLED);
+  }
+  if (confermaRipristinoFino && (int32_t)(confermaRipristinoFino - millis()) <= 0) {
+    confermaRipristinoFino = 0;
+    lv_label_set_text(lv_obj_get_child(btnRipristinaSd, 0), "Ripristina");
+  }
 
   rete::stato(buf, sizeof(buf));
   char web[72];

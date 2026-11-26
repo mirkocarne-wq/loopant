@@ -38,9 +38,10 @@ Versione 4 (21/11/2026): associazione con il pulsante BOOT (messaggi `ASSOCIA_*`
 | `HEARTBEAT` | 5 | Mantiene vivo il collegamento (ogni 1 s) |
 | `JOG` | 6 | Movimento relativo di `valore` passi (calibrazione). `freq_hz` = `JOG_LIBERO` (1): ritocco della manopola senza recupero del gioco; una frequenza di banda: prima i relè di quella banda (RX); con `valore` 0 cambia solo i relè |
 | `CAL_SALVA` | 7 | Associa la posizione attuale a `freq_hz` |
-| `CAL_CANCELLA` | 8 | Cancella la tabella della banda di `freq_hz` |
+| `CAL_CANCELLA` | 8 | Cancella la tabella della banda di `freq_hz` (e l'errore dell'ultimo comando) |
 | `CAL_LEGGI` | 9 | Chiede il punto numero `valore` (da 0) della banda di `freq_hz`; risposta `RISPOSTA_CAL` |
 | `CAL_ELIMINA` | 10 | Elimina il punto più vicino a `freq_hz` (entro 1 kHz) |
+| `CAL_SCRIVI` | 12 | Scrive il punto `freq_hz` → posizione `valore` senza muovere (ripristino dalla microSD del pannello); `COMANDO_NON_VALIDO` fuori dalle bande dell'antenna o con la tabella piena. Aggiunto il 26/11/2026 senza cambiare `VERSIONE`: un'antenna vecchia lo ignora e il pannello se ne accorge rileggendo le tabelle |
 | `IMPOSTA` | 11 | Imposta il parametro `freq_hz` al valore `valore`: 1 = driver del motore (non più usato: segue il tipo di antenna), 2 = indirizzo CAN del SERVO42D (1-2047), 3 = velocità del bus (125/250/500/1000 kbit/s), solo antenna RX; 4 = tipo di antenna (0 RX, 1 TX): l'antenna risponde e si riavvia |
 
 ### Risposta (antenna → controllo)

@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <string.h>
 
+#include "copia_sd.h"
 #include "impostazioni.h"
 #include "link_antenna.h"
 #include "ora.h"
@@ -52,8 +53,8 @@ void aiuto() {
       "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calcanc <kHz> | stato |\n"
       "         mac <AA:BB:CC:DD:EE:FF> | call <nominativo> | loc <locator> | tema <0-3> |\n"
       "         ora <AAAA-MM-GG HH:MM> (UTC) | wifi <ssid> <password> | wificancella | reti | rete |\n"
-      "         qrz <utente> <password> | qrzkey <chiave> | qrzcancella | cerca <nominativo> | qso [40|20] |\n"
-      "         mem | lcd [MHz | sync 0|1] | aiuto");
+      "         qrz <utente> <password> | qrzkey <chiave> | qrzcancella | cerca <nominativo> | qso [banda in m] |\n"
+      "         sd [salva | ripristina] (copia su microSD) | mem | lcd [MHz | sync 0|1] | aiuto");
 }
 
 void stato() {
@@ -161,6 +162,14 @@ void esegui(char* riga) {
     copiaMaiuscolo(q.chiave, sizeof(q.chiave), a1);
     impostazioni::salvaQrz();
     uscita.println("Chiave API del logbook salvata");
+  } else if (!strcmp(cmd, "sd")) {
+    if (a1 && !strcmp(a1, "salva")) {
+      if (!copia_sd::salva()) uscita.println("microSD: operazione già in corso");
+    } else if (a1 && !strcmp(a1, "ripristina")) {
+      if (!copia_sd::ripristina()) uscita.println("microSD: operazione già in corso");
+    } else {
+      uscita.printf("microSD: %s\n", copia_sd::stato().testo);
+    }
   } else if (!strcmp(cmd, "mem")) {
     uscita.printf("RAM interna: libera %u, minimo %u, blocco più grande %u · PSRAM libera %u\n",
                   (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT),

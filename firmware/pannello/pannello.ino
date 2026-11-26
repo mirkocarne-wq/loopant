@@ -10,6 +10,7 @@
 #include <protocollo.h>
 
 #include "src/console.h"
+#include "src/copia_sd.h"
 #include "src/decodifica.h"
 #include "src/eventi.h"
 #include "src/impostazioni.h"
@@ -69,5 +70,6 @@ void loop() {
   link_manopola::aggiorna();
   eventi::osserva(link_antenna::stato());
   console::aggiorna();
+  copia_sd::aggiorna();  // copia e ripristino su microSD
   delay(5);
 }

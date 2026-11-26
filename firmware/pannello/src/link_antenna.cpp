@@ -286,6 +286,13 @@ void richiediTabella(bande::Banda banda) {
   invia(proto::Tipo::CAL_LEGGI, freqDiBanda(banda), 0);
 }
 
+bool occupato() {
+  portENTER_CRITICAL(&mux);
+  bool o = inAttesa || nCoda > 0 || letturaInCorso;
+  portEXIT_CRITICAL(&mux);
+  return o;
+}
+
 Tabella tabella() {
   Tabella t;
   portENTER_CRITICAL(&mux);

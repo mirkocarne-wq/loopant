@@ -188,7 +188,15 @@ void esegui(const proto::Comando& c, bool daRadio) {
       break;
 
     case proto::Tipo::CAL_CANCELLA:
+      cancellaErrori();
       calibrazione::cancella(bande::di(c.freq_hz));
+      break;
+
+    case proto::Tipo::CAL_SCRIVI:  // ripristino dalla microSD del pannello: punto scritto senza muovere
+      cancellaErrori();
+      if (bande::di(c.freq_hz, tipo_antenna::tx()) == bande::Banda::NESSUNA ||
+          !calibrazione::salvaPunto(c.freq_hz, c.valore))
+        erroreComando = proto::Errore::COMANDO_NON_VALIDO;
       break;
 
     case proto::Tipo::CAL_ELIMINA:
