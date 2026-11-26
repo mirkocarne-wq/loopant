@@ -33,6 +33,26 @@
 - Pulizia: lima, carta fine e alcol; nessuna sbavatura.
 - Il PTFE non si incolla: bloccarlo nel tubo esterno con anelli o spine in nylon.
 
+## Collegamenti all'anello
+- **Tubo esterno** (fisso): collare di rame o ottone stretto sul tubo, verso il fondo e lontano dalla bocca, oppure
+  linguetta saldata; piattina di rame larga e corta (20–25 × 1 mm) fino al primo capo dell'anello.
+  Corrente RF stimata 9–13 A a 100 W: niente filo sottile.
+- **Pistone** (mobile, 150 mm di corsa): **treccia piatta di rame stagnato** a trefoli fini, circa 20 mm di larghezza
+  (10–16 mm²), fissata alla coda del pistone (l'estremità fuori dal tubo esterno, dove si attacca l'asta isolante)
+  con un collare di rame o saldata; all'altro capo dell'anello con un'ansa a U più lunga della corsa (circa 16–18 cm).
+- La treccia è allo stesso potenziale del pistone: deve stare **lontana dalla bocca del tubo esterno** (almeno 2–3 cm),
+  dove ci sono 4–5 kV di picco. L'asta isolante spinge dietro l'attacco della treccia: il motore resta fuori dalla RF.
+- La treccia si piega a ogni sintonia: controllarla ogni tanto (affaticamento dei trefoli).
+- Scartato il pistone "flottante" tra due tubi esterni (nessun collegamento mobile): con circa 7 pF/cm la parte fissa
+  dovrebbe essere lunga circa 70 cm per non limitare la capacità.
+
+## Rondelle in PTFE da 2 mm (già acquistate)
+- Non sostituiscono il manicotto: impilate, ogni giunto è una fessura d'aria tra pistone e tubo esterno, proprio dove
+  la tensione è più alta.
+- Usi utili: fermo isolante sul fondo del tubo esterno (5 rondelle = i 10 mm minimi), fermi del manicotto ai capi del
+  tubo esterno, distanziali isolanti sotto le staffe. Diametri da verificare (interno almeno 22, esterno al massimo 26
+  per entrare nel 28×1).
+
 ## Materiali
 - Rame consigliato (resistenza più bassa). Ottone liscio e nudo accettabile
   (perdita stimata circa 0,7 W per tubo contro circa 0,35 W); mix rame/ottone senza problemi di corrosione.

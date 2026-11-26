@@ -7,6 +7,7 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [ ] Diametro dell'albero del variabile (giunto 8→6 mm?).
 - [ ] Riduttore: foro di ingresso da 5 mm (albero SERVO42D) e albero di uscita (8 mm?).
 - [ ] Tubi di rame/ottone e PTFE: disponibilità e misure reali con il calibro (diametro esterno e parete).
+- [ ] Condensatore TX: manicotto in PTFE continuo (tubo 22/25 o 18/20, barra forata o foglio avvolto); misure delle rondelle in PTFE da 2 mm già prese (per fermi e distanziali); treccia piatta di rame stagnato per il pistone.
 - [ ] Modulo NEMA11: corrente nominale, finecorsa inclusi?, giunti.
 - [ ] Rumore dell'alimentatore da 24 V sui 40 e 20 m.
 - [ ] Efficienza reale e Q dell'anello (NanoVNA).
