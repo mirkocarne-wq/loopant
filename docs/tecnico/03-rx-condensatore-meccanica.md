@@ -60,7 +60,8 @@
 ## Assieme
 - `hardware/contenitore-rx/assieme.py`: palo, scatola del motore, scatola del variabile sopra, anello da 1 m con i
   capi nel blocco della scatola del variabile; cima dell'anello a circa 1,52 m dal fondo della scatola del motore.
-- Proposta: loop di accoppiamento da 20 cm in cima, braccio isolante dal palo; palo non metallico dietro l'anello.
+- Alimentazione: coassiale solo sul loop di accoppiamento (20 cm, in cima dentro l'anello); l'anello grande è accoppiato magneticamente.
+- Proposta: cima stampata (`cima.py`) su braccio in PVC Ø 40 con raccordo a T sul palo in PVC da 40; SO-239 nella scatoletta del sostegno.
 
 ## Scatola stagna in plastica
 - IP65 o superiore, circa 25×15×10 cm (variabile, riduttore, motore, SERVO42D).

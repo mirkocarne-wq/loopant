@@ -9,16 +9,33 @@ aprire in FreeCAD o Fusion per guardarlo).
 
 ![Assieme](anteprime/assieme.png)
 
-Altre viste: [di fronte](anteprime/assieme-fronte.png), [di lato](anteprime/assieme-lato.png),
+Altre viste: [di fronte](anteprime/assieme-fronte.png), [di lato](anteprime/assieme-lato.png), [cima](anteprime/assieme-cima.png),
 [le due scatole](anteprime/assieme-scatole.png).
 
 - Dal basso: scatola del motore (borchia in alto), tubo isolante, scatola del variabile (borchia in basso), anello
   di rame da 1 m con i capi nel blocco in alto. Altezza dal fondo della scatola del motore alla cima dell'anello:
   circa 1,52 m; centro dell'anello circa 1,01 m sopra il fondo della scatola del motore.
 - Piano dell'anello a circa 128 mm dall'asse del palo.
-- **Proposta, da confermare**: loop di accoppiamento da 20 cm in cima, dentro l'anello (circa 1/5 del diametro,
-  15 mm più vicino al palo); braccio isolante in vetroresina o PVC dal palo alla cima dell'anello, che tiene anche
-  il loop di accoppiamento; coassiale lungo il braccio e giù per il palo; cavo dei 24 V dal PG7 in basso.
+- **Alimentazione**: il coassiale va solo al **loop di accoppiamento** (cerchio piccolo da 20 cm, circa 1/5 del
+  diametro, in cima dentro l'anello). L'anello grande non ha collegamenti al cavo: con il variabile è un circuito
+  risonante e scambia il segnale con il loop piccolo per accoppiamento magnetico, come un trasformatore.
+- **Cima** (proposta, `cima.py`): braccio in **PVC Ø 40** unito al palo in PVC da 40 con un **raccordo a T** da
+  incollare; in punta il **sostegno** stampato (bullone M5 di traverso nel braccio), con la sede della cima
+  dell'anello chiusa dal **cappello** (4 viti M3 in inserti a caldo) e, dietro l'anello, la scatoletta con l'**SO-239**
+  rivolto verso il palo; il **fondo** della scatoletta (4 viti M3) ha i due fori da 6,6 mm per i capi del loop
+  piccolo (tubetto di rame da 6 mm o RG-58), che sta 21 mm dietro il piano dell'anello. Coassiale lungo il palo;
+  cavo dei 24 V dal PG7 in basso.
+
+![Cima](anteprime/assieme-cima.png)
+
+| Pezzo | Materiale | Orientamento | Note |
+|---|---|---|---|
+| `cima-sostegno.stl` | ASA o PETG | Faccia verso il palo sul piatto (sede del braccio verticale) | 5 perimetri, 40 %; nessun supporto |
+| `cima-cappello.stl` | ASA o PETG | Sede verso l'alto | |
+| `cima-fondo.stl` | ASA o PETG | Piatto | |
+
+Viti: 1 bullone M5×60 con dado (sostegno e braccio, il PVC va forato da 5,5 mm), 4 M3×12 per il cappello, 4 M3×8
+per il fondo, 8 inserti a caldo M3, SO-239 con 4 viti M3×10 e dadi; silicone sui fori del fondo.
 - **Palo**: nel tratto che passa dietro l'anello conviene un palo **non metallico** (vetroresina o PVC): un tubo
   di metallo parallelo all'anello e così vicino ne peggiora il rendimento e la sintonia (da verificare con il
   NanoVNA).
