@@ -16,7 +16,7 @@
 firmware/
   lib/Comune/src/     codice condiviso dalle due unità
     protocollo.h        messaggi ESP-NOW
-    bande.h             limiti delle bande 40 m / 20 m
+    bande.h             limiti delle bande 80–10 m (la TX solo 40 e 20 m)
     collegamento.*      ESP-NOW cifrato con un solo peer
     segreti.esempio.h   chiavi PMK/LMK di esempio (copiare in segreti.h, non versionato)
   antenna/            progetto PlatformIO dell'unità antenna (ESP32 DevKit)

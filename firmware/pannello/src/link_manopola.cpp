@@ -95,7 +95,7 @@ void inviaImpostazioni() {
   m.antFlag = a.r.flag;
   m.antPosizione = a.r.posizione;
   m.antFreqHz = a.r.freq_hz;
-  m.freqProposta = imp.ultima40_hz;
+  m.freqProposta = impostazioni::ultimaUsata();  // ultima frequenza accordata, in qualsiasi banda
   m.passiScatto = scelte_.passiScatto;
   m.decoderAttivo = decodifica::attivo();
   m.fineValido = riferimentoValido && faseRiferimento == 0;

@@ -63,20 +63,28 @@ void testoKhz(uint32_t hz, char* out, size_t n) {
   else snprintf(out, n, "%lu,%lu", (unsigned long)k, (unsigned long)(d % 10));
 }
 
-// Passo della frequenza: banda attuale, oltre i bordi si passa all'altra banda
+// Bande dell'antenna collegata al pannello (la TX solo 40 e 20 m; finché non si sa, tutte)
+bool usabile(const bande::Info& i) {
+  condiviso::Pannello p = condiviso::pannello();
+  return bande::disponibile(i.banda, p.valida && (p.imp.antFlag & proto::FLAG_VERSIONE_TX));
+}
+
+// Passo della frequenza: banda attuale, oltre i bordi si passa alla banda vicina dell'antenna
 uint32_t passa(uint32_t f, int32_t delta, uint32_t passo) {
   int64_t g = (int64_t)f + (int64_t)delta * passo;
   bande::Banda b = bande::di(f);
   const bande::Info* i = bande::info(b == bande::Banda::NESSUNA ? bande::Banda::B40M : b);
-  if (g > (int64_t)i->max_hz) {  // oltre il bordo alto: inizio della banda successiva
-    for (size_t k = 0; k < bande::NUMERO; k++)
-      if (bande::ELENCO[k].min_hz > i->max_hz) return bande::ELENCO[k].min_hz;
-    return bande::ELENCO[0].min_hz;
+  if (g > (int64_t)i->max_hz) {  // oltre il bordo alto: inizio della banda successiva (o la prima)
+    for (const bande::Info& k : bande::ELENCO)
+      if (k.min_hz > i->max_hz && usabile(k)) return k.min_hz;
+    for (const bande::Info& k : bande::ELENCO)
+      if (usabile(k)) return k.min_hz;
   }
-  if (g < (int64_t)i->min_hz) {  // sotto il bordo basso: fine della banda precedente
+  if (g < (int64_t)i->min_hz) {  // sotto il bordo basso: fine della banda precedente (o l'ultima)
     for (size_t k = bande::NUMERO; k-- > 0;)
-      if (bande::ELENCO[k].max_hz < i->min_hz) return bande::ELENCO[k].max_hz;
-    return bande::ELENCO[bande::NUMERO - 1].max_hz;
+      if (bande::ELENCO[k].max_hz < i->min_hz && usabile(bande::ELENCO[k])) return bande::ELENCO[k].max_hz;
+    for (size_t k = bande::NUMERO; k-- > 0;)
+      if (usabile(bande::ELENCO[k])) return bande::ELENCO[k].max_hz;
   }
   return (uint32_t)g;
 }

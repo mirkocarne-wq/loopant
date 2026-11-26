@@ -22,7 +22,8 @@ Serve solo l'ora UTC esatta e la posizione della stazione (dal locator).
 - Città di riferimento: New York, Los Angeles, Rio de Janeiro, Città del Capo, Mosca, Nuova Delhi, Tokyo, Sydney.
 
 ## Dati via WiFi [D]
-- Indici solari **SFI, SSN, A, K** e stima delle condizioni di banda (40/20 m, giorno/notte).
+- Indici solari **SFI, SSN, A, K** e stima delle condizioni di banda giorno/notte nelle quattro fasce del feed:
+  80–40, 30–20, 17–15 e 12–10 m (dal 26/11/2026; prima solo le prime due).
 - Fonte proposta: il feed XML di hamqsl.com (N0NBH), aggiornato ogni 1–3 ore. [N] Da verificare formato e condizioni d'uso.
 - Il WiFi del pannello si collega al router di casa: **il canale ESP-NOW diventa quello del router**,
   da impostare anche sull'antenna (requisito E7).

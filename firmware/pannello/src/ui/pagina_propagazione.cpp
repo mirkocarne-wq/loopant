@@ -26,7 +26,7 @@ lv_obj_t* testoTramonto;
 lv_obj_t* chipGreyLine;
 lv_obj_t* valori[4];
 lv_obj_t* notaIndici;
-lv_obj_t* cond[4];  // 40 giorno, 40 notte, 20 giorno, 20 notte
+lv_obj_t* cond[indici::FASCE * 2];  // per fascia: giorno, notte
 
 time_t ultimoDisegno = 0;
 const lv_coord_t LARGHEZZA_BARRA = 568;
@@ -57,8 +57,8 @@ lv_obj_t* tessera(lv_obj_t* parent, const char* nome) {
   lv_obj_set_style_bg_color(c, t.surface2, 0);
   lv_obj_set_style_bg_opa(c, LV_OPA_COVER, 0);
   lv_obj_set_style_radius(c, 8, 0);
-  lv_obj_set_style_pad_ver(c, 8, 0);
-  lv_obj_t* v = ui::etichetta(c, "—", &font_24, t.text);
+  lv_obj_set_style_pad_ver(c, 4, 0);
+  lv_obj_t* v = ui::etichetta(c, "—", &font_22, t.text);
   ui::etichetta(c, nome, &font_12, t.text2);
   return v;
 }
@@ -110,13 +110,14 @@ void crea(lv_obj_t* c) {
   lv_obj_set_flex_align(ore, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
   for (const char* h : {"00", "06", "12", "18", "24"}) ui::etichetta(ore, h, &font_12, t.text2);
 
-  // Destra
-  lv_obj_t* dx = ui::contenitore(c, LV_FLEX_FLOW_COLUMN, 12);
+  // Destra (compatta: quattro fasce di bande nell'ultima scheda)
+  lv_obj_t* dx = ui::contenitore(c, LV_FLEX_FLOW_COLUMN, 8);
   lv_obj_set_height(dx, LV_PCT(100));
   lv_obj_set_flex_grow(dx, 1);
 
   lv_obj_t* st = ui::scheda(dx);
   lv_obj_set_width(st, LV_PCT(100));
+  lv_obj_set_style_pad_ver(st, 10, 0);
   ui::titoletto(st, "ALLA STAZIONE");
   lv_obj_t* at = ui::contenitore(st, LV_FLEX_FLOW_ROW, 10);
   lv_obj_set_width(at, LV_PCT(100));
@@ -134,6 +135,7 @@ void crea(lv_obj_t* c) {
 
   lv_obj_t* in = ui::scheda(dx);
   lv_obj_set_width(in, LV_PCT(100));
+  lv_obj_set_style_pad_ver(in, 10, 0);
   ui::titoletto(in, "INDICI SOLARI");
   lv_obj_t* tes = ui::contenitore(in, LV_FLEX_FLOW_ROW, 8);
   lv_obj_set_width(tes, LV_PCT(100));
@@ -146,23 +148,25 @@ void crea(lv_obj_t* c) {
   lv_obj_t* bd = ui::scheda(dx);
   lv_obj_set_width(bd, LV_PCT(100));
   lv_obj_set_flex_grow(bd, 1);
+  lv_obj_set_style_pad_ver(bd, 10, 0);
+  lv_obj_set_style_pad_row(bd, 4, 0);
   lv_obj_t* intest = ui::contenitore(bd, LV_FLEX_FLOW_ROW, 8);
   lv_obj_set_width(intest, LV_PCT(100));
   const char* col[] = {"BANDE", "GIORNO", "NOTTE"};
   for (int i = 0; i < 3; i++) {
     lv_obj_t* l = ui::titoletto(intest, col[i]);
     if (i) lv_obj_set_flex_grow(l, 1);
-    else lv_obj_set_width(l, 64);
+    else lv_obj_set_width(l, 84);
   }
-  const char* bande[] = {"40 m", "20 m"};
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < indici::FASCE; i++) {
     lv_obj_t* rr = ui::contenitore(bd, LV_FLEX_FLOW_ROW, 8);
     lv_obj_set_width(rr, LV_PCT(100));
     lv_obj_set_flex_align(rr, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    lv_obj_t* n = ui::etichetta(rr, bande[i], &font_18, t.text);
-    lv_obj_set_width(n, 64);
+    lv_obj_t* n = ui::etichetta(rr, indici::FASCIA_NOME[i], &font_16, t.text);
+    lv_obj_set_width(n, 84);
     for (int j = 0; j < 2; j++) {
       lv_obj_t* ch = ui::chip(rr, &font_14);
+      lv_obj_set_style_pad_ver(ch, 3, 0);
       lv_obj_set_flex_grow(ch, 1);
       lv_obj_set_style_text_align(ch, LV_TEXT_ALIGN_CENTER, 0);
       cond[i * 2 + j] = ch;
@@ -238,10 +242,10 @@ void aggiorna(const link_antenna::Stato&) {
     for (int i = 0; i < 4; i++) lv_label_set_text(valori[i], "—");
     lv_label_set_text(notaIndici, d.errore[0] ? d.errore : "Servono il WiFi e la rete (Impostazioni)");
   }
-  coloriCondizione(cond[0], d.b40Giorno);
-  coloriCondizione(cond[1], d.b40Notte);
-  coloriCondizione(cond[2], d.b20Giorno);
-  coloriCondizione(cond[3], d.b20Notte);
+  for (int i = 0; i < indici::FASCE; i++) {
+    coloriCondizione(cond[i * 2], d.giorno[i]);
+    coloriCondizione(cond[i * 2 + 1], d.notte[i]);
+  }
 }
 
 void mostrata() { ultimoDisegno = 0; }

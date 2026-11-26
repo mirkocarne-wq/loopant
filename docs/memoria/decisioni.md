@@ -5,7 +5,9 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 ## Prese
 | Ambito | Decisione | Motivo |
 |---|---|---|
-| Bande | 40 m e 20 m | Obiettivo del progetto |
+| Bande | RX dagli 80 ai 10 m (80, 60, 40, 30, 20, 17, 15, 12, 10); TX 40 e 20 m | Obiettivo iniziale 40 e 20 m; RX allargata il 26/11/2026 (decisione dell'utente): il variabile da 1000 pF arriva a circa 3 MHz; la TX resta su 40/20 (stantuffo da circa 100 pF) |
+| Bande RX 17–10 m | Condensatori in serie al variabile inseriti da due relè (C1 per 17–15 m, C1+C2 per 12–10 m, combinazione per banda dalla console); **proposta da costruire**, valori da misurare | Sotto circa 28 pF il variabile (minimo circa 20 pF più le parassite) non scende; scelta dell'utente dopo la proposta del relè |
+| Pulsanti delle bande sul pannello | Solo le bande dell'antenna associata; con l'RX una fila 80–10 m in Sintonia, filtri per banda in Memorie e QRZ, pulsanti piccoli in Calibrazione; interfaccia ricostruita quando cambia il tipo di antenna | Nove bande non stanno accanto ai passi come le due della TX |
 | Versioni | Due antenne: RX (1 m) e TX 100 W (1,5 m) | Il variabile a lamelle non regge il TX |
 | Anello RX | Ø 1 m, rame ricotto 1/2" (o 5/8"), circa 3,3 m di tubo | In ricezione la perdita in più del tubo sottile è trascurabile |
 | Anello TX | Ø 1,5 m, tubo 22 mm, rame | Corrente 9–13 A, serve bassa resistenza |

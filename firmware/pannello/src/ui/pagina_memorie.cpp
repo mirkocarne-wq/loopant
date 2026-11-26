@@ -16,14 +16,17 @@
 namespace pag_memorie {
 namespace {
 
-enum Filtro : uint8_t { TUTTE, B40, B20, MIE };
-const char* NOMI_FILTRI[] = {"Tutte", "40 m", "20 m", "Mie"};
+// Filtri: 0 tutte, 1..nBande una banda dell'antenna associata, nBande + 1 le personali
+constexpr uint8_t TUTTE = 0;
+const bande::Info* bandeVis[bande::NUMERO];
+uint8_t nBande = 0;
+uint8_t mie() { return nBande + 1; }
 
-Filtro filtro = TUTTE;
+uint8_t filtro = TUTTE;
 bool collegato = false;
 
 lv_obj_t* griglia;
-lv_obj_t* btnFiltri[4];
+lv_obj_t* btnFiltri[bande::NUMERO + 2];
 lv_obj_t* finestra = nullptr;  // finestra "nuova memoria" / "elimina"
 lv_obj_t* tastiera = nullptr;
 lv_obj_t* campoNome;
@@ -61,14 +64,11 @@ const memorie::Memoria& memoria(uint8_t codice) {
 }
 
 bool visibile(const memorie::Memoria& m, bool personale) {
-  bande::Banda b = bande::di(m.freq_hz);
-  switch (filtro) {
-    case TUTTE: return true;
-    case B40: return b == bande::Banda::B40M;
-    case B20: return b == bande::Banda::B20M;
-    case MIE: return personale;
-  }
-  return true;
+  bande::Banda b = ui::bandaDi(m.freq_hz);
+  if (b == bande::Banda::NESSUNA) return false;  // banda che l'antenna associata non accorda
+  if (filtro == TUTTE) return true;
+  if (filtro == mie()) return personale;
+  return filtro <= nBande && bandeVis[filtro - 1]->banda == b;
 }
 
 void chiudiFinestra() {
@@ -107,10 +107,7 @@ void premiMemoria(lv_event_t* e) {
   pag_sintonia::proponi(m.freq_hz);
   if (collegato) {
     link_antenna::invia(proto::Tipo::GOTO, m.freq_hz);
-    Impostazioni& imp = impostazioni::get();
-    if (bande::di(m.freq_hz) == bande::Banda::B40M) imp.ultima40_hz = m.freq_hz;
-    else imp.ultima20_hz = m.freq_hz;
-    impostazioni::salva();
+    impostazioni::ricorda(m.freq_hz);
   }
   ui::vaiA(ui::SINTONIA);
 }
@@ -144,7 +141,7 @@ void tieniMemoria(lv_event_t* e) {
 void salvaNuova(lv_event_t*) {
   memorie::aggiungi(lv_textarea_get_text(campoNome), freqNuova);
   chiudiFinestra();
-  filtro = MIE;
+  filtro = mie();
   ricostruisci();
 }
 
@@ -156,7 +153,7 @@ void tastieraFatto(lv_event_t* e) {
 void nuovaMemoria(lv_event_t*) {
   const Tema& t = tema::corrente();
   freqNuova = pag_sintonia::frequenzaDigitata();
-  bool valida = bande::di(freqNuova) != bande::Banda::NESSUNA;
+  bool valida = ui::bandaDi(freqNuova) != bande::Banda::NESSUNA;
   lv_obj_t* box = apriFinestra("Nuova memoria", 270);
   char f[16];
   testoDisplay(freqNuova, f, sizeof(f));
@@ -256,7 +253,7 @@ void ricostruisci() {
   lv_obj_center(l);
   lv_obj_add_event_cb(n, nuovaMemoria, LV_EVENT_CLICKED, nullptr);
 
-  for (uint8_t i = 0; i < 4; i++) {
+  for (uint8_t i = 0; i < nBande + 2; i++) {
     lv_obj_set_style_bg_color(btnFiltri[i], i == filtro ? t.accentBg : t.surface, 0);
     lv_obj_set_style_border_color(btnFiltri[i], i == filtro ? t.accent : t.border, 0);
     lv_obj_set_style_text_color(btnFiltri[i], i == filtro ? t.accent : t.text, 0);
@@ -264,7 +261,7 @@ void ricostruisci() {
 }
 
 void premiFiltro(lv_event_t* e) {
-  filtro = (Filtro)(uintptr_t)lv_event_get_user_data(e);
+  filtro = (uint8_t)(uintptr_t)lv_event_get_user_data(e);
   ricostruisci();
 }
 
@@ -283,9 +280,19 @@ void crea(lv_obj_t* c) {
   lv_obj_t* tit = ui::etichetta(testa, "Memorie", &font_24, t.text);
   lv_obj_set_flex_grow(tit, 1);
   ui::etichetta(testa, "Pressione lunga su una memoria personale per eliminarla", &font_14, t.text2);
-  for (uint8_t i = 0; i < 4; i++) {
-    lv_obj_t* b = ui::pulsante(testa, NOMI_FILTRI[i], &font_16, ui::Stile::SCHEDA);
-    lv_obj_set_size(b, 96, 44);
+  // Filtri: accanto al titolo con le due bande della TX, in una fila a parte con tutte quelle dell'RX
+  nBande = ui::bandeDisponibili(bandeVis);
+  bool pochi = nBande <= 2;
+  if (filtro > mie()) filtro = TUTTE;
+  lv_obj_t* filaFiltri = testa;
+  if (!pochi) {
+    filaFiltri = ui::contenitore(c, LV_FLEX_FLOW_ROW, 8);
+    lv_obj_set_width(filaFiltri, LV_PCT(100));
+  }
+  for (uint8_t i = 0; i < nBande + 2; i++) {
+    const char* nome = i == TUTTE ? "Tutte" : (i == mie() ? "Mie" : bandeVis[i - 1]->nome);
+    lv_obj_t* b = ui::pulsante(filaFiltri, nome, &font_16, ui::Stile::SCHEDA);
+    lv_obj_set_size(b, pochi ? 96 : 76, 44);
     lv_obj_set_style_radius(b, 22, 0);
     lv_obj_set_style_border_width(b, 2, 0);
     lv_obj_add_event_cb(b, premiFiltro, LV_EVENT_CLICKED, (void*)(uintptr_t)i);

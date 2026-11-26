@@ -58,8 +58,17 @@ void stato() {
   o += ",\"freq_hz\":" + String((unsigned long)s.r.freq_hz);
   o += ",\"posizione\":" + String((long)s.r.posizione);
   o += ",\"azzerata\":" + String((s.r.flag & proto::FLAG_AZZERATA) ? "true" : "false");
-  o += ",\"ultima40\":" + String((unsigned long)imp.ultima40_hz);
-  o += ",\"ultima20\":" + String((unsigned long)imp.ultima20_hz);
+  // Bande dell'antenna associata con l'ultima frequenza usata (pulsanti della pagina)
+  o += ",\"ultima\":" + String((unsigned long)impostazioni::ultimaUsata());
+  o += ",\"bande\":[";
+  bool primo = true;
+  for (const bande::Info& b : bande::ELENCO) {
+    if (!bande::disponibile(b.banda, impostazioni::antennaTx())) continue;
+    o += String(primo ? "" : ",") + "{\"nome\":" + json(b.nome) + ",\"hz\":" +
+         String((unsigned long)impostazioni::ultima(b.banda)) + "}";
+    primo = false;
+  }
+  o += "]";
   o += ",\"rete\":" + json(r);
   o += "}";
   rispondiJson(200, o);
@@ -75,9 +84,15 @@ void comando() {
     String k = server.arg("khz");
     k.replace(",", ".");
     uint32_t hz = (uint32_t)(k.toFloat() * 1000.0f + 0.5f);
-    bande::Banda b = bande::di(hz);
-    if (b == bande::Banda::NESSUNA) {
-      rispondiJson(400, "{\"ok\":false,\"errore\":\"Frequenza fuori banda: 7000-7200 o 14000-14350 kHz\"}");
+    if (bande::di(hz, impostazioni::antennaTx()) == bande::Banda::NESSUNA) {
+      String e = "Frequenza fuori banda:";
+      bool primo = true;
+      for (const bande::Info& b : bande::ELENCO)
+        if (bande::disponibile(b.banda, impostazioni::antennaTx())) {
+          e += String(primo ? " " : ", ") + String(b.min_hz / 1000.0, 1) + "-" + String(b.max_hz / 1000.0, 1);
+          primo = false;
+        }
+      rispondiJson(400, "{\"ok\":false,\"errore\":" + json(e.c_str()) + "}");
       return;
     }
     if (!link_antenna::stato().collegato) {
@@ -85,10 +100,7 @@ void comando() {
       return;
     }
     link_antenna::invia(proto::Tipo::GOTO, hz);
-    Impostazioni& imp = impostazioni::get();
-    if (b == bande::Banda::B40M) imp.ultima40_hz = hz;
-    else imp.ultima20_hz = hz;
-    impostazioni::salva();
+    impostazioni::ricorda(hz);
   } else {
     rispondiJson(400, "{\"ok\":false,\"errore\":\"Comando sconosciuto\"}");
     return;

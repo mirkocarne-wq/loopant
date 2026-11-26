@@ -19,6 +19,8 @@ un numero sopra 100 000 viene letto in Hz.
 | `stato` | Stato, errore, posizione, finecorsa |
 | `vel <1-600>` | Solo RX: giri/min del motore per GOTO e JOG (salvato; predefinito 60, cioè 3 al variabile) |
 | `velzero <1-300>` | Solo RX: velocità dello zero (HmSpeed) scritta sul SERVO42D; poi serve un nuovo `zero` |
+| `serie` | Solo RX: relè dei condensatori in serie, stato e combinazione per banda |
+| `serie <banda> <0-3>` | Solo RX: combinazione della banda in metri (0 variabile da solo, 1 C1, 2 C2, 3 C1+C2), salvata in NVS; poi va ricalibrata |
 | `io` | Finecorsa (RX: letti dal SERVO42D con 0x34, più impulsi dallo zero 0x33 ed encoder 0x31; TX: GPIO 27/14) |
 | `mac <AA:BB:CC:DD:EE:FF>` | Salva in NVS il MAC dell'unità di controllo (riavvio necessario) |
 | `associa` | Associazione con il pannello, come BOOT premuto 3 s |

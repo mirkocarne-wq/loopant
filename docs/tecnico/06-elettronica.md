@@ -26,11 +26,20 @@ Il software è descritto in [`../software/`](../software/README.md).
 | Ingressi analogici | solo ADC1 (32–39) | L'ADC2 non funziona con WiFi/ESP-NOW |
 | CAN (solo SERVO42D via CAN) | TX 17 (TX2) / RX 16 (RX2) | Transceiver Waveshare SN65HVD230 (3,3 V) |
 | Display OLED 0,96" (I2C) | SDA 21 / SCL 22 | SSD1306 128×64 a 0x3C, pin I2C standard; bus libero per altri moduli I2C (es. ADS1115) |
+| Relè C1 / C2 (solo antenna RX, 17–10 m) | 4 / 13 | Proposta del 26/11/2026: transistor NPN (o MOSFET logico) e diodo di ricircolo per relè; sul 13 resistenza da 10 kΩ verso massa (il 4 ha già la pull-down all'avvio) |
 | Da evitare | 0, 2, 12, 15 | Pin di strapping |
 
 I valori sono in `firmware/antenna/include/config.h`. Il 21/11/2026 EN e CAN sono stati spostati (prima EN 21,
 CAN 22/23) per lasciare al display OLED i pin I2C standard. Il GPIO 4 non va bene per EN: all'accensione ha una
 pull-down interna e il driver (EN attivo basso) resterebbe abilitato durante l'avvio.
+
+### Relè dei condensatori in serie (solo antenna RX, proposta da costruire)
+- Due relè a 5 V nella scatola del variabile ([03](03-rx-condensatore-meccanica.md)): K1 inserisce C1, K2 inserisce C2.
+- Pilotaggio: GPIO 4 (K1) e 13 (K2) → resistenza da 1 kΩ → base di un NPN (es. BC337), bobina tra +5 V e
+  collettore, diodo 1N4148 in parallelo alla bobina; sul 13 una resistenza da 10 kΩ tra base e massa tiene il relè
+  spento durante l'avvio. A riposo (ESP32 spento o in avvio) il variabile resta da solo.
+- Corrente delle bobine dal convertitore 24→5 V (circa 30–70 mA per relè, da verificare sul modello scelto).
+- Sui fili verso la scatola del variabile: ferrite e 100 nF verso massa alle due estremità.
 
 ### Display OLED (facoltativo)
 - Modulo ELEGOO 0,96" blu e giallo: SSD1306 128×64 su I2C, indirizzo 0x3C; le prime 16 righe sono gialle.

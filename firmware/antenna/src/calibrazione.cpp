@@ -15,14 +15,10 @@ struct Tabella {
   Punto p[MAX_PUNTI];  // ordinati per frequenza crescente
 };
 
-Tabella tabelle[bande::NUMERO];
+Tabella tabelle[bande::NUMERO];  // una per banda dell'ELENCO, chiave NVS "cal<metri>"
 Preferences nvs;
+bool antennaTx = false;
 
-int indice(bande::Banda b) {
-  for (size_t i = 0; i < bande::NUMERO; i++)
-    if (bande::ELENCO[i].banda == b) return (int)i;
-  return -1;
-}
 
 void chiave(int i, char out[8]) { snprintf(out, 8, "cal%u", (unsigned)bande::ELENCO[i].banda); }
 
@@ -40,6 +36,7 @@ double x(uint32_t f) {  // 1/f² con f in MHz
 }  // namespace
 
 void inizia(bool tx) {
+  antennaTx = tx;
   nvs.begin(tx ? "cal_tx" : "cal_rx", false);
   for (size_t i = 0; i < bande::NUMERO; i++) {
     char k[8];
@@ -51,7 +48,7 @@ void inizia(bool tx) {
 }
 
 bool salvaPunto(uint32_t f, int32_t pos) {
-  int i = indice(bande::di(f));
+  int i = bande::indice(bande::di(f));
   if (i < 0) return false;
   Tabella& t = tabelle[i];
 
@@ -76,19 +73,19 @@ bool salvaPunto(uint32_t f, int32_t pos) {
 }
 
 void cancella(bande::Banda b) {
-  int i = indice(b);
+  int i = bande::indice(b);
   if (i < 0) return;
   tabelle[i].n = 0;
   scrivi(i);
 }
 
 uint8_t numeroPunti(bande::Banda b) {
-  int i = indice(b);
+  int i = bande::indice(b);
   return i < 0 ? 0 : tabelle[i].n;
 }
 
 bool punto(bande::Banda b, uint8_t j, uint32_t& f, int32_t& pos) {
-  int i = indice(b);
+  int i = bande::indice(b);
   if (i < 0 || j >= tabelle[i].n) return false;
   f = tabelle[i].p[j].freq_hz;
   pos = tabelle[i].p[j].posizione;
@@ -96,7 +93,7 @@ bool punto(bande::Banda b, uint8_t j, uint32_t& f, int32_t& pos) {
 }
 
 bool eliminaPunto(uint32_t f) {
-  int i = indice(bande::di(f));
+  int i = bande::indice(bande::di(f));
   if (i < 0) return false;
   Tabella& t = tabelle[i];
   for (uint8_t j = 0; j < t.n; j++) {
@@ -111,12 +108,12 @@ bool eliminaPunto(uint32_t f) {
 }
 
 bool calibrata(bande::Banda b) {
-  int i = indice(b);
+  int i = bande::indice(b);
   return i >= 0 && tabelle[i].n >= 2;
 }
 
 bool posizionePer(uint32_t f, int32_t& pos) {
-  int i = indice(bande::di(f));
+  int i = bande::indice(bande::di(f));
   if (i < 0 || tabelle[i].n < 2) return false;
   const Tabella& t = tabelle[i];
 
@@ -135,6 +132,7 @@ bool posizionePer(uint32_t f, int32_t& pos) {
 void stampa(Print& out) {
   for (size_t i = 0; i < bande::NUMERO; i++) {
     const Tabella& t = tabelle[i];
+    if (!bande::ELENCO[i].tx && antennaTx) continue;  // banda che l'antenna TX non accorda
     out.printf("Banda %s: %u punti%s\n", bande::ELENCO[i].nome, t.n,
                t.n >= 2 ? "" : " (non calibrata)");
     for (uint8_t j = 0; j < t.n; j++)

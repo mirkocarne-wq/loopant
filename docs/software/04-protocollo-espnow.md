@@ -26,7 +26,7 @@ Versione 4 (21/11/2026): associazione con il pulsante BOOT (messaggi `ASSOCIA_*`
 | versione | uint8 | `proto::VERSIONE` |
 | tipo | uint8 | vedi tabella sotto |
 | seq | uint16 | numero di sequenza del controllo |
-| freq_hz | uint32 | frequenza (GOTO, CAL_SALVA, CAL_CANCELLA) |
+| freq_hz | uint32 | frequenza (GOTO, CAL_SALVA, CAL_CANCELLA; nel JOG della calibrazione la frequenza della banda scelta) |
 | valore | int32 | passi (JOG) |
 
 | Tipo | Valore | Effetto |
@@ -36,7 +36,7 @@ Versione 4 (21/11/2026): associazione con il pulsante BOOT (messaggi `ASSOCIA_*`
 | `ZERO` | 3 | Azzeramento sul finecorsa |
 | `STATO` | 4 | Chiede lo stato |
 | `HEARTBEAT` | 5 | Mantiene vivo il collegamento (ogni 1 s) |
-| `JOG` | 6 | Movimento relativo di `valore` passi (calibrazione) |
+| `JOG` | 6 | Movimento relativo di `valore` passi (calibrazione). `freq_hz` = `JOG_LIBERO` (1): ritocco della manopola senza recupero del gioco; una frequenza di banda: prima i relè di quella banda (RX); con `valore` 0 cambia solo i relè |
 | `CAL_SALVA` | 7 | Associa la posizione attuale a `freq_hz` |
 | `CAL_CANCELLA` | 8 | Cancella la tabella della banda di `freq_hz` |
 | `CAL_LEGGI` | 9 | Chiede il punto numero `valore` (da 0) della banda di `freq_hz`; risposta `RISPOSTA_CAL` |
@@ -51,7 +51,7 @@ Versione 4 (21/11/2026): associazione con il pulsante BOOT (messaggi `ASSOCIA_*`
 | seq_comando | uint16 | `seq` del comando a cui risponde (0 = invio spontaneo) |
 | stato | uint8 | `NON_AZZERATA`, `FERMO`, `IN_MOVIMENTO`, `AZZERAMENTO`, `ERRORE` |
 | errore | uint8 | `NESSUNO`, `FINECORSA`, `BLOCCO`, `FUORI_BANDA`, `NON_CALIBRATA`, `HEARTBEAT`, `AZZERAMENTO_FALLITO`, `COMANDO_NON_VALIDO`, `MOTORE_CAN` (il SERVO42D non risponde) |
-| banda | uint8 | 40, 20 oppure 0 |
+| banda | uint8 | banda in metri (80, 60, 40, 30, 20, 17, 15, 12, 10) oppure 0; la TX accorda solo 40 e 20 |
 | posizione | int32 | passi dallo zero |
 | freq_hz | uint32 | ultima frequenza richiesta (0 se sconosciuta) |
 | flag | uint8 | bit 0 finecorsa MIN, bit 1 finecorsa MAX, bit 2 driver abilitato, bit 3 antenna TX, bit 4 posizione nota, bit 5 motore via CAN |

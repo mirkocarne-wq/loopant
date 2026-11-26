@@ -55,10 +55,10 @@ bool analizza(const char* xml, Dati& out) {
   ok &= intero(xml, "sunspots", out.ssn);
   ok &= intero(xml, "aindex", out.a);
   ok &= intero(xml, "kindex", out.k);
-  out.b40Giorno = banda(xml, "80m-40m", "day");
-  out.b40Notte = banda(xml, "80m-40m", "night");
-  out.b20Giorno = banda(xml, "30m-20m", "day");
-  out.b20Notte = banda(xml, "30m-20m", "night");
+  for (int i = 0; i < FASCE; i++) {
+    out.giorno[i] = banda(xml, FASCIA_FEED[i], "day");
+    out.notte[i] = banda(xml, FASCIA_FEED[i], "night");
+  }
   out.validi = ok;
   return ok;
 }

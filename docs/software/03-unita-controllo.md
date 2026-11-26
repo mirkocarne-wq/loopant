@@ -58,18 +58,18 @@ voce dice «non regolabile sul 5″»). Dettagli in `firmware/pannello/README.md
 |---|---|---|
 | S1 | Frequenza da tastierino in **kHz** con un decimale, su **display a 7 segmenti** (5 cifre intere, posizioni vuote "spente") | [D] |
 | S2 | Frequenza su cui è accordata l'antenna, distinta da quella che si sta digitando; posizione del motore | [D] |
-| S3 | Segmento del band plan IARU Regione 1 per la frequenza digitata (CW, digitale, tutti i modi, radiofari; "FT8" vicino a 7 074 / 14 074) | [D] (band plan da verificare) |
-| S4 | Pulsanti **40 m** / **20 m** (propongono l'ultima frequenza usata nella banda) | [D] |
+| S3 | Segmento del band plan IARU Regione 1 per la frequenza digitata (CW, digitale, tutti i modi, radiofari, satelliti, FM; "FT8" vicino alle frequenze FT8 di ogni banda) | [D] (band plan da verificare) |
+| S4 | Pulsanti delle bande dell'antenna associata (propongono l'ultima frequenza usata nella banda): **40 m** / **20 m** accanto ai passi con la TX, una fila **80–10 m** sopra i passi con l'RX | [D] (fila RX dal 26/11/2026) |
 | S5 | Tasti di passo **±1** e **±5 kHz** | [D] |
-| S6 | **TUNE** invia la frequenza; disattivato se fuori banda (7 000–7 200, 14 000–14 350 kHz), con avviso | [D] |
-| S7 | **ZERO** accanto a TUNE: azzeramento sul finecorsa a richiesta (il primo TUNE di ogni banda lo fa da solo); disattivato senza antenna | [D] |
+| S6 | **TUNE** invia la frequenza; disattivato se fuori dalle bande dell'antenna (TX: 7 000–7 200, 14 000–14 350 kHz), con avviso | [D] |
+| S7 | **ZERO** accanto a TUNE: azzeramento sul finecorsa a richiesta (il primo TUNE dopo l'accensione lo fa da solo, la TX anche a ogni cambio banda); disattivato senza antenna | [D] |
 
 ### C2. Memorie
 | ID | Requisito | |
 |---|---|---|
-| M1 | Memorie predefinite per 40 e 20 m: FT8, FT4, WSPR, QRP CW, QRP SSB (frequenze da verificare) | [D] |
+| M1 | Memorie predefinite per ogni banda: FT8, FT4, WSPR, QRP CW, QRP SSB dove esistono (frequenze da verificare); compaiono solo quelle delle bande dell'antenna associata | [D] |
 | M2 | Memorie personali con un nome; "Nuova memoria" | [D] |
-| M3 | Filtri Tutte / 40 m / 20 m / Mie; etichetta colorata per modo | [D] |
+| M3 | Filtri Tutte / una per banda dell'antenna / Mie (con l'RX in una fila sotto il titolo); etichetta colorata per modo | [D] |
 | M4 | Un tocco su una memoria accorda l'antenna | [D] |
 
 ### C3. Propagazione — vedi [09-propagazione.md](09-propagazione.md)
@@ -77,7 +77,7 @@ voce dice «non regolabile sul 5″»). Dettagli in `firmware/pannello/README.md
 |---|---|---|
 | P1 | Mappa del mondo con notte, **grey line**, punto subsolare, stazione e alcune città, calcolata dall'ora UTC (senza Internet) | [D] |
 | P2 | Alba e tramonto alla stazione (UTC), tempo al prossimo passaggio della grey line, fascia giorno/notte sulle 24 ore | [D] |
-| P3 | Indici solari SFI, SSN, A, K e stima delle bande 40/20 m giorno/notte, **via WiFi** | [D] |
+| P3 | Indici solari SFI, SSN, A, K e stima delle fasce 80–40, 30–20, 17–15 e 12–10 m giorno/notte, **via WiFi** | [D] |
 
 ### C4. Decoder CW / RTTY — vedi [08-decoder.md](08-decoder.md)
 | ID | Requisito | |
@@ -110,7 +110,7 @@ voce dice «non regolabile sul 5″»). Dettagli in `firmware/pannello/README.md
 ### C7. Calibrazione (da Impostazioni)
 | ID | Requisito | |
 |---|---|---|
-| K1 | Scelta banda 40 / 20 m; posizione del motore su display a 7 segmenti, con pulsante **ZERO** (serve prima del jog) | [D] |
+| K1 | Scelta della banda (quelle dell'antenna; con l'RX la scelta mette anche i relè dei condensatori in serie); posizione del motore su display a 7 segmenti, con pulsante **ZERO** (serve prima del jog) | [D] |
 | K2 | Jog ±10 / ±100 / ±1000 passi; frequenza del dip letta sul NanoVNA; **Salva punto** | [D] |
 | K3 | Grafico posizione ↔ frequenza e tabella dei punti con eliminazione | [D] |
 

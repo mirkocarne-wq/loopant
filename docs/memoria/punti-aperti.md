@@ -11,9 +11,13 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [ ] Modulo NEMA11: corrente nominale, finecorsa inclusi?, giunti.
 - [ ] Rumore dell'alimentatore da 24 V sui 40 e 20 m.
 - [ ] Efficienza reale e Q dell'anello (NanoVNA).
+- [ ] Anello RX: induttanza vera, capacità parassite e minimo vero del variabile (con il finecorsa 5° prima del
+  fermo) per scegliere C1 e C2; adattamento della spira d'accoppiamento da 3,5 a 29,7 MHz (8:1 in frequenza).
 
 ## Progetto
 - [ ] Disegno quotato della scatola RX e del gruppo TX.
+- [ ] Relè dei condensatori in serie (RX, 17–10 m): scelta dei relè e di C1/C2 (compensatori?), posto nella scatola
+  del variabile, scheda con transistor e diodi; poi prova con `serie` e calibrazione di 17–10 m.
 - [ ] Contenitore stampato RX (`hardware/contenitore-rx/`): misurare squadra, riduttore, SERVO42D, giunto, millefori
   e OLED, correggere i parametri e stampare la piastra di prova.
 - [ ] Assieme dell'antenna (`hardware/contenitore-rx/assieme.py`): confermare loop di accoppiamento (20 cm in cima, tubetto da 6 mm o RG-58, proposta), cima stampata (`cima.py`: sostegno, cappello, fondo con SO-239) su braccio in PVC Ø 40 con raccordo a T sul palo in PVC da 40; regolare il loop piccolo per il ROS minimo.
@@ -70,6 +74,6 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 - [ ] Mappa per la grey line in flash (Natural Earth), una per tema.
 - [ ] Indici solari: verificare formato e condizioni d'uso del feed hamqsl.com; con il WiFi l'antenna va sul canale del router.
 - [x] Ora esatta sul pannello: NTP via WiFi oppure impostazione dalla console.
-- [ ] Verificare band plan IARU R1 e frequenze delle memorie predefinite.
+- [ ] Verificare band plan IARU R1 (80–10 m), limiti dei 60 m in Italia e frequenze delle memorie predefinite.
 - [x] UART per il futuro CI-V sul 7B: connettore H3 «UART2» (GPIO 43/44) con SW1 su UART2 (scollega il CH343).
 - [ ] Procedura di calibrazione e tabella posizione ↔ frequenza.

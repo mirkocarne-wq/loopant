@@ -1,10 +1,11 @@
-# loopant — Mag Loop automatica 40 m / 20 m
+# loopant — Mag Loop automatica (RX 80–10 m, TX 40/20 m)
 
-Progetto personale. Antenna magnetic loop per **40 m e 20 m**, da balcone (circa 4 m), con **sintonia automatica**:
-sul pannello touch in casa si digita la frequenza e l'antenna va in risonanza.
+Progetto personale. Antenna magnetic loop da balcone (circa 4 m), con **sintonia automatica**: sul pannello touch
+in casa si digita la frequenza e l'antenna va in risonanza. Bande: **RX dagli 80 ai 10 m**, **TX 40 e 20 m**.
 
 Due versioni:
-1. **RX** (solo ricezione): anello 1 m, variabile a lamelle 1000 pF, NEMA17 + MKS SERVO42D + riduttore 20:1.
+1. **RX** (solo ricezione): anello 1 m, variabile a lamelle 1000 pF, NEMA17 + MKS SERVO42D + riduttore 20:1;
+   per 17–10 m condensatori in serie (C1, C2) inseriti da due relè (proposta, da costruire).
 2. **TX 100 W**: anello 1,5 m in tubo da 22 mm, condensatore a stantuffo (tubo in tubo con PTFE),
    attuatore lineare NEMA11 (vite T6×1, corsa 150 mm) pilotato da un TMC2209.
 

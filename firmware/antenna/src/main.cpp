@@ -12,6 +12,7 @@
 #include "movimento.h"
 #include "oled.h"
 #include "protocollo.h"
+#include "rele.h"
 #include "ricerca_canale.h"
 #include "tipo_antenna.h"
 #include "segreti_scelti.h"
@@ -84,7 +85,7 @@ void cancellaErrori() {
 }
 
 void vaiAFrequenza(uint32_t f) {
-  bande::Banda b = bande::di(f);
+  bande::Banda b = bande::di(f, tipo_antenna::tx());  // la TX accorda solo 40 e 20 m
   int32_t pos;
   if (b == bande::Banda::NESSUNA) {
     erroreComando = proto::Errore::FUORI_BANDA;
@@ -95,6 +96,7 @@ void vaiAFrequenza(uint32_t f) {
     return;
   }
   freqCorrente = f;
+  rele::scegli(b);  // condensatori in serie della banda (RX, 17-10 m), prima di muovere
   // Prima l'azzeramento se la posizione è sconosciuta (accensione, errore, stop durante lo zero) e, solo per il TX,
   // a ogni cambio banda: il TMC2209 è in ciclo aperto. Il SERVO42D dell'RX è in ciclo chiuso e non perde passi.
   if (!movimento::azzerato() || (tipo_antenna::tx() && b != bandaAzzerata)) {
@@ -152,6 +154,17 @@ void esegui(const proto::Comando& c, bool daRadio) {
 
     case proto::Tipo::JOG:
       cancellaErrori();
+      // La calibrazione manda la frequenza della banda scelta: prima i relè di quella banda.
+      // Con 0 passi cambia solo i relè (scelta della banda nella pagina Calibrazione).
+      if (c.freq_hz != proto::JOG_LIBERO && c.freq_hz != 0) {
+        bande::Banda b = bande::di(c.freq_hz, tipo_antenna::tx());
+        if (b == bande::Banda::NESSUNA) {
+          erroreComando = proto::Errore::FUORI_BANDA;
+          break;
+        }
+        if (!movimento::inMovimento()) rele::scegli(b);
+      }
+      if (c.valore == 0) break;
       if (!movimento::azzerato() || movimento::inMovimento()) {
         erroreComando = proto::Errore::COMANDO_NON_VALIDO;
         break;
@@ -163,8 +176,10 @@ void esegui(const proto::Comando& c, bool daRadio) {
 
     case proto::Tipo::CAL_SALVA:
       cancellaErrori();
+      // Il punto vale solo con i relè della sua banda: altrimenti la posizione è di un'altra capacità
       if (!movimento::azzerato() || movimento::inMovimento() ||
-          !calibrazione::salvaPunto(c.freq_hz, movimento::posizione())) {
+          bande::di(c.freq_hz, tipo_antenna::tx()) == bande::Banda::NESSUNA ||
+          !rele::giusti(bande::di(c.freq_hz)) || !calibrazione::salvaPunto(c.freq_hz, movimento::posizione())) {
         erroreComando = proto::Errore::COMANDO_NON_VALIDO;
         break;
       }
@@ -329,6 +344,7 @@ void stampaStato() {
                   movimento::canId(), movimento::canKbit(), movimento::velocita(), movimento::velocitaZero());
   else
     Serial.println("Motore: STEP/DIR (TMC2209)");
+  if (!tipo_antenna::tx()) Serial.printf("Relè: %s\n", rele::nome(rele::attuale()));
 }
 
 void aiuto() {
@@ -336,7 +352,7 @@ void aiuto() {
       "Comandi: goto <kHz> | stop | zero | jog <passi> | cal <kHz> | calelim <kHz> | calcanc <kHz> |\n"
       "         tabella | stato | mac <AA:BB:CC:DD:EE:FF> | canale <1-13> | associa |\n"
       "         tipo tx|rx | canid <1-2047> | cankbit <125|250|500|1000> | vel <1-600> | velzero <1-300> (solo RX) |\n"
-      "         io (finecorsa) | aiuto");
+      "         io (finecorsa) | serie [<banda in m> <0-3>] (relè dei condensatori in serie, solo RX) | aiuto");
 }
 
 void eseguiRiga(char* riga) {
@@ -396,6 +412,20 @@ void eseguiRiga(char* riga) {
       Serial.printf("Zero a %u giri/min (scritto sul SERVO42D): rifare lo zero\n", movimento::velocitaZero());
     else Serial.println("Velocità dello zero non scritta (1-300, motore fermo, solo antenna RX)");
     return;
+  } else if (!strcmp(cmd, "serie")) {
+    char* val = strtok(nullptr, " \t");
+    if (arg && val) {
+      bande::Banda b = (bande::Banda)atoi(arg);
+      int m = atoi(val);
+      if (!rele::imposta(b, (uint8_t)m)) {
+        Serial.println("Valori non validi: serie <80|60|40|30|20|17|15|12|10> <0 variabile, 1 C1, 2 C2, 3 C1+C2>");
+        return;
+      }
+      Serial.printf("%s: %s (salvato; vale dal prossimo GOTO, da ricalibrare)\n", bande::info(b)->nome,
+                    rele::nome((uint8_t)m));
+    }
+    rele::stampa(Serial);
+    return;
   } else if (!strcmp(cmd, "mac") && arg) {
     uint8_t mac[6];
     if (!Collegamento::leggiMac(arg, mac)) {
@@ -449,6 +479,7 @@ void setup() {
   Serial.begin(115200);
   delay(200);
   tipo_antenna::inizia();
+  rele::inizia(tipo_antenna::tx());  // relè a riposo il prima possibile
   Serial.printf("\nloopant - unità antenna %s\n", tipo_antenna::tx() ? "TX (NEMA11 + TMC2209)" : "RX (SERVO42D)");
 
   nvs.begin("loopant", false);

@@ -35,6 +35,14 @@ constexpr uint8_t SERVO_HOME_VERSO = 1;     // 0 = CW, 1 = CCW: lo zero è sul l
 constexpr uint16_t SERVO_HOME_RPM = 60;
 constexpr uint32_t SERVO_TIMEOUT_MS = 250;  // attesa della risposta prima di ripetere
 
+// Relè dei condensatori in serie al variabile (solo antenna RX, bande 17-10 m; proposta del 26/11/2026, da
+// costruire): K1 apre il corto su C1, K2 quello su C2. Diseccitati = variabile da solo (80-20 m).
+// GPIO 4 ha una pull-down interna all'avvio (relè spento); sul 13 serve una resistenza da 10 kΩ verso massa
+// sulla base del transistor. Valori di C1/C2 e bande: docs/tecnico/03-rx-condensatore-meccanica.md.
+constexpr int PIN_RELE_C1 = 4;
+constexpr int PIN_RELE_C2 = 13;
+constexpr uint32_t RELE_ASSESTAMENTO_MS = 20;  // contatti fermi prima di muovere il motore
+
 // Display OLED 0,96" (SSD1306 128x64, I2C 0x3C, prime 16 righe gialle) sui pin I2C standard dell'ESP32.
 // Facoltativo: se non risponde il firmware funziona senza.
 constexpr int PIN_OLED_SDA = 21;

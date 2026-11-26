@@ -52,7 +52,7 @@ label{color:var(--text2);font-size:14px;display:flex;gap:6px;align-items:center}
     <div class="riga">
       <input id="khz" inputmode="decimal" placeholder="kHz" aria-label="Frequenza in kHz">
       <button class="primario" onclick="tune()">TUNE</button>
-      <button onclick="banda(40)">40 m</button><button onclick="banda(20)">20 m</button>
+      <span id="bande" style="display:contents"></span>
       <button onclick="passo(-5)">−5</button><button onclick="passo(-1)">−1</button>
       <button onclick="passo(1)">+1</button><button onclick="passo(5)">+5</button>
       <button onclick="comando('zero')">ZERO</button>
@@ -92,7 +92,18 @@ async function aggiornaStato(){
     $('#pos').textContent = s.collegato ? migliaia(s.posizione) : '—';
     $('#err').textContent = s.collegato ? (s.azzerata ? 'azzerata' : 'non azzerata') : '';
     $('#rete').textContent = s.rete || '';
-    if (!$('#khz').value && s.ultima40) scrivi(s.ultima40 / 1000);
+    if (!$('#khz').value && s.ultima) scrivi(s.ultima / 1000);
+    const elenco = (s.bande || []).map(b => b.nome).join();
+    if ($('#bande').dataset.elenco !== elenco) {  // pulsanti delle bande dell'antenna associata
+      $('#bande').dataset.elenco = elenco;
+      $('#bande').innerHTML = '';
+      (s.bande || []).forEach((b, i) => {
+        const p = document.createElement('button');
+        p.textContent = b.nome;
+        p.onclick = () => banda(i);
+        $('#bande').appendChild(p);
+      });
+    }
   } catch (e) {
     const c = $('#stato'); c.className = 'chip err'; c.textContent = 'PANNELLO NON RAGGIUNGIBILE';
   }
@@ -107,7 +118,7 @@ async function comando(azione, extra){
   aggiornaStato();
 }
 function tune(){ const k = valore(); if (isNaN(k)) return; comando('goto', {khz: k.toFixed(1)}); }
-function banda(b){ if (ultimo) scrivi((b === 40 ? ultimo.ultima40 : ultimo.ultima20) / 1000); }
+function banda(i){ if (ultimo && ultimo.bande && ultimo.bande[i]) scrivi(ultimo.bande[i].hz / 1000); }
 function passo(d){ const k = valore(); if (!isNaN(k)) scrivi(k + d); }
 
 const img = $('#schermo');

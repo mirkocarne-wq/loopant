@@ -22,7 +22,7 @@ namespace {
 
 enum Vista : uint8_t { RICERCA, LOGBOOK };
 Vista vista = RICERCA;
-uint8_t filtro = 0;  // 0 tutte, 40, 20
+uint8_t filtro = 0;  // 0 tutte, altrimenti la banda in metri
 bool collegato = false;
 
 lv_obj_t* btnVista[2];
@@ -45,7 +45,9 @@ lv_obj_t* notaDati;
 uint32_t versioneRicerca = 0xFFFFFFFF;
 
 // Logbook
-lv_obj_t* btnFiltri[3];
+lv_obj_t* btnFiltri[bande::NUMERO + 1];  // Tutti e le bande dell'antenna associata
+uint8_t metriFiltri[bande::NUMERO + 1];
+uint8_t nFiltri = 0;
 lv_obj_t* riepilogo;
 lv_obj_t* elencoQso;
 lv_obj_t* esitoLogbook;
@@ -263,15 +265,11 @@ void premiAccorda(lv_event_t* e) {
   uint16_t i = (uint16_t)(uintptr_t)lv_event_get_user_data(e);
   if (i >= logbook.n) return;
   uint32_t hz = logbook.qso[i].freq_hz;
-  bande::Banda b = bande::di(hz);
-  if (b == bande::Banda::NESSUNA) return;
+  if (ui::bandaDi(hz) == bande::Banda::NESSUNA) return;
   pag_sintonia::proponi(hz);
   if (collegato) {
     link_antenna::invia(proto::Tipo::GOTO, hz);
-    Impostazioni& imp = impostazioni::get();
-    if (b == bande::Banda::B40M) imp.ultima40_hz = hz;
-    else imp.ultima20_hz = hz;
-    impostazioni::salva();
+    impostazioni::ricorda(hz);
   }
   ui::vaiA(ui::SINTONIA);
 }
@@ -287,10 +285,8 @@ lv_obj_t* cella(lv_obj_t* riga, const char* testo, lv_coord_t larghezza, const l
 void mostraLogbookDati() {
   const Tema& t = tema::corrente();
   using servizio_qrz::Esito;
-  for (int i = 0; i < 3; i++) {
-    const uint8_t f[] = {0, 40, 20};
-    ui::stilePulsante(btnFiltri[i], f[i] == filtro ? ui::Stile::ATTIVO : ui::Stile::NORMALE);
-  }
+  for (uint8_t i = 0; i < nFiltri; i++)
+    ui::stilePulsante(btnFiltri[i], metriFiltri[i] == filtro ? ui::Stile::ATTIVO : ui::Stile::NORMALE);
 
   char a[16], b[16];
   if (logbook.esito == Esito::OK) {
@@ -346,7 +342,7 @@ void mostraLogbookDati() {
     snprintf(b, sizeof(b), "%s/%s", q.rstTx[0] ? q.rstTx : "—", q.rstRx[0] ? q.rstRx : "—");
     cella(r, b, 80, &font_14, t.text2);
     cella(r, q.confermato ? LV_SYMBOL_OK : "", 40, &font_16, t.okText);
-    if (bande::di(q.freq_hz) != bande::Banda::NESSUNA) {
+    if (ui::bandaDi(q.freq_hz) != bande::Banda::NESSUNA) {
       lv_obj_t* acc = ui::pulsante(r, "Accorda", &font_14, ui::Stile::NORMALE);
       lv_obj_set_size(acc, 96, 36);
       lv_obj_add_event_cb(acc, premiAccorda, LV_EVENT_CLICKED, (void*)(uintptr_t)i);
@@ -458,12 +454,20 @@ void creaLogbook(lv_obj_t* parent) {
   lv_obj_t* su = ui::contenitore(pannelloLogbook, LV_FLEX_FLOW_ROW, 8);
   lv_obj_set_width(su, LV_PCT(100));
   lv_obj_set_flex_align(su, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-  const char* nomi[] = {"Tutti", "40 m", "20 m"};
-  const uint8_t f[] = {0, 40, 20};
-  for (int i = 0; i < 3; i++) {
-    btnFiltri[i] = ui::pulsante(su, nomi[i], &font_16, ui::Stile::NORMALE);
-    lv_obj_set_size(btnFiltri[i], 92, 42);
-    lv_obj_add_event_cb(btnFiltri[i], premiFiltro, LV_EVENT_CLICKED, (void*)(uintptr_t)f[i]);
+  const bande::Info* bv[bande::NUMERO];
+  uint8_t nb = ui::bandeDisponibili(bv);
+  bool pochi = nb <= 2;
+  nFiltri = nb + 1;
+  metriFiltri[0] = 0;
+  for (uint8_t i = 0; i < nb; i++) metriFiltri[i + 1] = (uint8_t)bv[i]->banda;
+  bool filtroValido = false;
+  for (uint8_t i = 0; i < nFiltri; i++) filtroValido |= metriFiltri[i] == filtro;
+  if (!filtroValido) filtro = 0;
+  if (!pochi) lv_obj_set_style_pad_column(su, 6, 0);
+  for (uint8_t i = 0; i < nFiltri; i++) {
+    btnFiltri[i] = ui::pulsante(su, i ? bv[i - 1]->nome : "Tutti", &font_16, ui::Stile::NORMALE);
+    lv_obj_set_size(btnFiltri[i], pochi ? 92 : 58, 42);
+    lv_obj_add_event_cb(btnFiltri[i], premiFiltro, LV_EVENT_CLICKED, (void*)(uintptr_t)metriFiltri[i]);
   }
   riepilogo = ui::etichetta(su, "", &font_16, t.text2);
   lv_obj_set_flex_grow(riepilogo, 1);

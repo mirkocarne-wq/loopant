@@ -243,6 +243,8 @@ void aggiornaTutto(lv_timer_t*) {
     costruisci();
   }
   link_antenna::Stato s = link_antenna::stato();
+  // Antenna di tipo diverso da quello noto (la TX accorda solo 40 e 20 m): pulsanti delle bande da rifare
+  if (s.collegato && impostazioni::ricordaTipo(s.r.flag & proto::FLAG_VERSIONE_TX)) richiediRicostruzione();
   finestra_associazione::controlla();  // prima dello screensaver: una richiesta lo chiude
   screensaver::aggiorna(s);
   if (screensaver::attivo()) return;  // schermo coperto: niente aggiornamenti

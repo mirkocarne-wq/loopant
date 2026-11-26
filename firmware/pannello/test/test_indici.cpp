@@ -10,6 +10,8 @@ static const char* ESEMPIO =
     "<kindex> 2</kindex><sunspots>98</sunspots><calculatedconditions>"
     "<band name=\"80m-40m\" time=\"day\">Fair</band><band name=\"30m-20m\" time=\"day\">Good</band>"
     "<band name=\"80m-40m\" time=\"night\">Good</band><band name=\"30m-20m\" time=\"night\">Poor</band>"
+    "<band name=\"17m-15m\" time=\"day\">Good</band><band name=\"12m-10m\" time=\"day\">Poor</band>"
+    "<band name=\"17m-15m\" time=\"night\">Poor</band><band name=\"12m-10m\" time=\"night\">Poor</band>"
     "</calculatedconditions></solardata></solar>";
 
 int main() {
@@ -21,8 +23,11 @@ int main() {
   indici::Dati d;
   verifica(indici::analizza(ESEMPIO, d), "feed di esempio riconosciuto");
   verifica(d.sfi == 145 && d.ssn == 98 && d.a == 8 && d.k == 2, "SFI 145, SSN 98, A 8, K 2");
-  verifica(d.b40Giorno == indici::Condizione::DISCRETA && d.b40Notte == indici::Condizione::BUONA, "40 m: discreta di giorno, buona di notte");
-  verifica(d.b20Giorno == indici::Condizione::BUONA && d.b20Notte == indici::Condizione::SCARSA, "20 m: buona di giorno, scarsa di notte");
+  using C = indici::Condizione;
+  verifica(d.giorno[0] == C::DISCRETA && d.notte[0] == C::BUONA, "80-40 m: discreta di giorno, buona di notte");
+  verifica(d.giorno[1] == C::BUONA && d.notte[1] == C::SCARSA, "30-20 m: buona di giorno, scarsa di notte");
+  verifica(d.giorno[2] == C::BUONA && d.notte[2] == C::SCARSA, "17-15 m: buona di giorno, scarsa di notte");
+  verifica(d.giorno[3] == C::SCARSA && d.notte[3] == C::SCARSA, "12-10 m: scarsa di giorno e di notte");
   verifica(!indici::analizza("<html>errore</html>", d), "pagina non valida rifiutata");
   printf(errori ? "\n%d ERRORI\n" : "\nTutti i test superati\n", errori);
   return errori ? 1 : 0;

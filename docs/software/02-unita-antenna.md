@@ -103,6 +103,21 @@ zero su **En**, limite CW su **Dir**, COM a un livello alto; IN_1 non conta più
 - Il 25/11/2026 il SERVO42D ha rifiutato per qualche minuto tutte le scritture via CAN (stato 0), poi la 0x90 è
   passata: forse con il suo menu aperto, **da verificare**.
 
+## Bande e relè dei condensatori in serie
+- Bande in `firmware/lib/Comune/src/bande.h` (limiti IARU Regione 1, da verificare): l'**RX accorda dagli 80 ai
+  10 m**, la **TX solo 40 e 20 m** (`Info::tx`). Fuori dalle bande del tipo: errore `FUORI_BANDA`. Una tabella di
+  calibrazione per banda (NVS `cal<metri>`), come prima.
+- RX, 17–10 m: il variabile non scende abbastanza e due relè inseriscono C1, o C1 e C2, in serie
+  (`src/rele.cpp`, GPIO 4 e 13; hardware in `../tecnico/03-rx-condensatore-meccanica.md`, proposta da costruire).
+  Combinazione predefinita: 80–20 m variabile da solo, 17 e 15 m C1, 12 e 10 m C1+C2 (stime); si cambia dalla
+  console con `serie <banda> <0-3>` (NVS) e poi la banda va ricalibrata.
+- I relè cambiano prima di muovere il motore (20 ms di assestamento): al GOTO e al JOG della calibrazione, che
+  porta la frequenza della banda scelta (con 0 passi cambia solo i relè: lo manda il pannello quando si sceglie la
+  banda in Calibrazione). Il ritocco libero della manopola lascia i relè come sono.
+- `CAL_SALVA` viene rifiutato (`COMANDO_NON_VALIDO`) se i relè non sono nella combinazione della banda del punto:
+  la posizione varrebbe per un'altra capacità.
+- All'accensione i relè sono a riposo (variabile da solo). Sulla TX i pin non vengono toccati.
+
 ## Regole di movimento
 1. **Arrivo sempre dallo stesso verso** (verso crescente, lato opposto al finecorsa MIN). Unica eccezione: il JOG
    libero del ritocco fine della manopola (`JOG_LIBERO`), che va diretto; il GOTO successivo riallinea.

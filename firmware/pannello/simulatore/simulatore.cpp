@@ -393,5 +393,22 @@ int main(int argc, char** argv) {
       avanza(100);
     }
   }
+
+  // Antenna RX (80-10 m): pagine con i pulsanti di tutte le bande
+  imp.tema = 0;
+  statoFinto.r.flag = proto::FLAG_AZZERATA;
+  statoFinto.r.freq_hz = 28074000;
+  statoFinto.r.banda = 10;
+  avanza(300);  // il pannello vede il tipo nuovo e ricostruisce l'interfaccia
+  avanza(300);
+  pag_sintonia::proponi(28074000);
+  for (uint8_t p : {ui::SINTONIA, ui::MEMORIE, ui::PROPAGAZIONE, ui::CALIBRAZIONE}) {
+    ui::vaiA(p);
+    salva((std::string("rx-") + std::to_string(p + 1) + "-" + nomi[p]).c_str());
+  }
+  ui::vaiA(ui::QRZ);
+  pag_qrz::mostraLogbook();
+  servizio_qrz::caricaQso(0);
+  salva("rx-5b-qrz-logbook");
   return 0;
 }

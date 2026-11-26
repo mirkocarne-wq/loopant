@@ -23,7 +23,7 @@ Legenda: **[D]** = deciso; **[N]** = proposta tecnica, da confermare.
 | Q2 | Distanza e direzione dalla propria stazione (percorso corto e lungo), calcolate sul pannello | [D] |
 | Q3 | Mappa con la propria stazione, la stazione cercata e il percorso sul cerchio massimo, sopra notte e grey line | [D] |
 | Q4 | Ricerche recenti (ultime 5, in memoria fino allo spegnimento) | [D] |
-| Q5 | I miei QSO: ultimi 40, filtri Tutti / 40 m / 20 m, totale e confermati; tocco su un QSO → ricerca del nominativo; **Accorda** sulla frequenza del QSO (solo 40/20 m) | [D] |
+| Q5 | I miei QSO: ultimi 40, filtri Tutti e una per banda dell'antenna, totale e confermati; tocco su un QSO → ricerca del nominativo; **Accorda** sulla frequenza del QSO (solo nelle bande dell'antenna) | [D] |
 | Q6 | Senza abbonamento: la ricerca funziona con i dati disponibili; il logbook mostra perché non è disponibile | [D] |
 | Q7 | Credenziali in Impostazioni (utente, password, chiave API), «Prova accesso» | [D] |
 | Q8 | Foto della stazione cercata (JPEG da QRZ) | [N] più avanti |

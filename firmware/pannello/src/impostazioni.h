@@ -1,5 +1,6 @@
 // Impostazioni del pannello salvate in NVS.
 #pragma once
+#include <bande.h>
 #include <stdint.h>
 
 struct Impostazioni {
@@ -8,7 +9,7 @@ struct Impostazioni {
   char locator[7];
   uint8_t tema;     // indice in tema::ELENCO
   uint8_t peer[6];  // MAC dell'unità antenna
-  uint32_t ultima40_hz;
+  uint32_t ultima40_hz;  // non più usati (restano per non cambiare il blocco in NVS): ultime frequenze in "ultime"
   uint32_t ultima20_hz;
 
   // Schermo e ora
@@ -54,5 +55,12 @@ Impostazioni& get();
 
 ImpostazioniQrz& qrz();
 void salvaQrz();
+
+// Ultima frequenza accordata in ogni banda (blocco "ultime" in NVS) e tipo dell'antenna associata.
+uint32_t ultima(bande::Banda b);  // proposta della banda se non ancora usata
+uint32_t ultimaUsata();           // ultima frequenza accordata in assoluto
+void ricorda(uint32_t hz);        // dopo un GOTO: salva in NVS
+bool antennaTx();                 // ultimo tipo noto (all'inizio RX)
+bool ricordaTipo(bool tx);        // true se è cambiato (salvato)
 
 }  // namespace impostazioni

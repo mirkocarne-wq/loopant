@@ -7,11 +7,26 @@
 namespace memorie {
 namespace {
 
+// Frequenze d'uso comune (FT8/FT4/WSPR e centri di attività QRP): da verificare sul band plan IARU R1.
+// Quelle delle bande che l'antenna associata non accorda non compaiono (la TX solo 40 e 20 m).
 const Memoria PREDEFINITE[] = {
+    {"FT8", Modo::FT8, 3573000},      {"FT4", Modo::FT4, 3575500},     {"WSPR", Modo::WSPR, 3568600},
+    {"QRP CW", Modo::CW, 3560000},    {"QRP SSB", Modo::SSB, 3690000},
+    {"FT8", Modo::FT8, 5357000},      {"WSPR", Modo::WSPR, 5364700},
     {"FT8", Modo::FT8, 7074000},      {"FT4", Modo::FT4, 7047500},     {"WSPR", Modo::WSPR, 7038600},
-    {"QRP CW", Modo::CW, 7030000},    {"QRP SSB", Modo::SSB, 7090000}, {"FT8", Modo::FT8, 14074000},
-    {"FT4", Modo::FT4, 14080000},     {"WSPR", Modo::WSPR, 14095600},  {"QRP CW", Modo::CW, 14060000},
-    {"QRP SSB", Modo::SSB, 14285000},
+    {"QRP CW", Modo::CW, 7030000},    {"QRP SSB", Modo::SSB, 7090000},
+    {"FT8", Modo::FT8, 10136000},     {"FT4", Modo::FT4, 10140000},    {"WSPR", Modo::WSPR, 10138700},
+    {"QRP CW", Modo::CW, 10116000},
+    {"FT8", Modo::FT8, 14074000},     {"FT4", Modo::FT4, 14080000},    {"WSPR", Modo::WSPR, 14095600},
+    {"QRP CW", Modo::CW, 14060000},   {"QRP SSB", Modo::SSB, 14285000},
+    {"FT8", Modo::FT8, 18100000},     {"FT4", Modo::FT4, 18104000},    {"WSPR", Modo::WSPR, 18104600},
+    {"QRP CW", Modo::CW, 18086000},   {"QRP SSB", Modo::SSB, 18130000},
+    {"FT8", Modo::FT8, 21074000},     {"FT4", Modo::FT4, 21140000},    {"WSPR", Modo::WSPR, 21094600},
+    {"QRP CW", Modo::CW, 21060000},   {"QRP SSB", Modo::SSB, 21285000},
+    {"FT8", Modo::FT8, 24915000},     {"FT4", Modo::FT4, 24919000},    {"WSPR", Modo::WSPR, 24924600},
+    {"QRP CW", Modo::CW, 24906000},   {"QRP SSB", Modo::SSB, 24950000},
+    {"FT8", Modo::FT8, 28074000},     {"FT4", Modo::FT4, 28180000},    {"WSPR", Modo::WSPR, 28124600},
+    {"QRP CW", Modo::CW, 28060000},   {"QRP SSB", Modo::SSB, 28360000},
 };
 constexpr uint8_t N_PREDEFINITE = sizeof(PREDEFINITE) / sizeof(PREDEFINITE[0]);
 

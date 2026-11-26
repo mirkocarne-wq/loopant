@@ -3,7 +3,32 @@
 ## Condensatore
 - Variabile ad aria 1000 pF "1000V CC" (Jieotwice, Amazon).
 - Da misurare con il NanoVNA: capacità minima e massima, **continuità albero–telaio** (probabile contatto strisciante).
-- Per i 20 m servono circa 50 pF: se il minimo è più alto, quella banda non è raggiungibile.
+- Bande 80–20 m con il variabile da solo (circa 45–800 pF, tabella in [01](01-obiettivo-principi.md)). Per i 20 m
+  servono circa 50 pF: se il minimo vero, con le parassite, è più alto, serve C1 in serie anche lì.
+
+## Condensatori in serie per 17–10 m (proposta del 26/11/2026, da costruire)
+Sotto i circa 28 pF il variabile non scende (minimo circa 20 pF più le parassite). Con un condensatore fisso in serie
+la capacità totale è C·Cv/(C + Cv): resta sotto C qualunque sia la posizione del variabile.
+
+```
+ anello ──┬── C1 ──┬── C2 ──┬── variabile ── anello
+          └─ K1 ───┘└─ K2 ──┘
+```
+- **K1 e K2 a riposo** (contatti chiusi, C1 e C2 in corto): variabile da solo, 80–20 m.
+- **K1 eccitato** (C1 in serie): 17 e 15 m. Con C1 circa 33 pF il totale va da circa 14,5 a 34 pF.
+- **K1 e K2 eccitati** (C1 e C2 in serie, con C2 circa 27 pF: circa 15 pF): 12 e 10 m, totale da circa 10,5 a
+  16,5 pF. La parte alta dei 10 m (29,5–29,7 MHz) potrebbe restare appena fuori.
+- Valori **stimati** (L 2,6–2,8 µH, 2 pF di parassite, variabile lineare): C1 e C2 vanno scelti dopo aver misurato
+  con il NanoVNA il minimo vero del variabile e le parassite. Comodi due compensatori (trimmer) da circa 5–40 pF
+  per tararli sul posto, poi eventualmente fissi a mica o NP0. La combinazione per banda si cambia dalla console
+  (`serie <banda> <0-3>`), senza ricaricare il firmware.
+- Relè **nella scatola del variabile**, sui collegamenti più corti possibile: piccoli relè di segnale o reed a 5 V
+  con poca capacità tra i contatti aperti. In RX la tensione sul condensatore è bassa.
+- I fili delle bobine arrivano dall'elettronica: impedenze (ferrite) e condensatori di fuga a 100 nF sulle due
+  estremità, perché l'albero è isolato apposta (porta RF) e i fili non devono riportarla nella scatola del motore.
+- Comandati dall'ESP32 (GPIO 4 e 13) con un transistor e un diodo di ricircolo ciascuno ([06](06-elettronica.md)).
+- Con C1/C2 inseriti anche la tabella di calibrazione è un'altra: ogni banda ha la sua, e il firmware salva un punto
+  solo se i relè sono nella combinazione di quella banda.
 
 ## Motore e riduttore
 - Motore: **NEMA17 + MKS SERVO42D CAN** (closed loop, encoder 16384 conteggi, OLED) — già ordinato.

@@ -24,8 +24,9 @@ lv_obj_t* display;
 lv_obj_t* chipBanda;
 lv_obj_t* testoAccordata;
 lv_obj_t* testoPosizione;
-lv_obj_t* btn40;
-lv_obj_t* btn20;
+lv_obj_t* btnBande[bande::NUMERO];      // solo le bande dell'antenna associata
+const bande::Info* bandeVis[bande::NUMERO];
+uint8_t nBande = 0;
 lv_obj_t* btnTune;
 lv_obj_t* btnZero;
 
@@ -79,17 +80,19 @@ void aggiornaIngresso() {
   display7::testo(display, buf);
 
   uint32_t hz = frequenzaHz();
-  bande::Banda b = bande::di(hz);
+  bande::Banda b = ui::bandaDi(hz);
   bool valida = b != bande::Banda::NESSUNA;
   if (valida) {
-    lv_label_set_text_fmt(chipBanda, "%s · %s", bande::info(b)->nome, bandplan::segmento(hz));
+    const char* seg = bandplan::segmento(hz);
+    if (*seg) lv_label_set_text_fmt(chipBanda, "%s · %s", bande::info(b)->nome, seg);
+    else lv_label_set_text(chipBanda, bande::info(b)->nome);
     ui::coloriChip(chipBanda, t.surface2, t.text);
   } else {
-    lv_label_set_text(chipBanda, "Fuori banda: 7 000–7 200 o 14 000–14 350 kHz");
+    lv_label_set_text(chipBanda, ui::testoFuoriBanda());
     ui::coloriChip(chipBanda, t.dangerBg, t.dangerText);
   }
-  ui::stilePulsante(btn40, b == bande::Banda::B40M ? ui::Stile::ATTIVO : ui::Stile::NORMALE);
-  ui::stilePulsante(btn20, b == bande::Banda::B20M ? ui::Stile::ATTIVO : ui::Stile::NORMALE);
+  for (uint8_t i = 0; i < nBande; i++)
+    ui::stilePulsante(btnBande[i], bandeVis[i]->banda == b ? ui::Stile::ATTIVO : ui::Stile::NORMALE);
 
   if (collegato) lv_obj_clear_state(btnZero, LV_STATE_DISABLED);
   else lv_obj_add_state(btnZero, LV_STATE_DISABLED);
@@ -142,9 +145,8 @@ void premiTasto(lv_event_t* e) {
 }
 
 void premiBanda(lv_event_t* e) {
-  bool b40 = lv_event_get_user_data(e) != nullptr;
-  const Impostazioni& imp = impostazioni::get();
-  imposta(b40 ? imp.ultima40_hz : imp.ultima20_hz);
+  uint8_t i = (uint8_t)(uintptr_t)lv_event_get_user_data(e);
+  if (i < nBande) imposta(impostazioni::ultima(bandeVis[i]->banda));
 }
 
 void premiPasso(lv_event_t* e) {
@@ -155,17 +157,13 @@ void premiPasso(lv_event_t* e) {
 
 void premiTune(lv_event_t*) {
   uint32_t hz = frequenzaHz();
-  bande::Banda b = bande::di(hz);
-  if (b == bande::Banda::NESSUNA) return;
+  if (ui::bandaDi(hz) == bande::Banda::NESSUNA) return;
   link_antenna::invia(proto::Tipo::GOTO, hz);
-  Impostazioni& imp = impostazioni::get();
-  if (b == bande::Banda::B40M) imp.ultima40_hz = hz;
-  else imp.ultima20_hz = hz;
-  impostazioni::salva();
+  impostazioni::ricorda(hz);
   fresco = true;
 }
 
-// Azzeramento sul finecorsa (anche il primo TUNE di ogni banda lo fa da solo)
+// Azzeramento sul finecorsa (il primo TUNE dopo l'accensione lo fa da solo; la TX anche a ogni cambio banda)
 void premiZero(lv_event_t*) { link_antenna::invia(proto::Tipo::ZERO); }
 
 }  // namespace
@@ -196,21 +194,27 @@ void crea(lv_obj_t* c) {
   testoAccordata = ui::etichetta(info, "Antenna accordata su —", &font_16, t.text2);
   testoPosizione = ui::etichetta(info, "Posizione —", &font_16, t.text2);
 
+  // Pulsanti delle bande: con le due della TX accanto ai passi (come nel mockup), con tutte quelle dell'RX
+  // in una fila a parte sopra i passi.
+  nBande = ui::bandeDisponibili(bandeVis);
+  bool pochi = nBande <= 2;
+  lv_obj_t* filaBande = pochi ? nullptr : ui::contenitore(sx, LV_FLEX_FLOW_ROW, 8);
   lv_obj_t* tasti = ui::contenitore(sx, LV_FLEX_FLOW_ROW, 10);
   lv_obj_set_width(tasti, LV_PCT(100));
-  btn40 = ui::pulsante(tasti, "40 m", &font_22, ui::Stile::NORMALE);
-  btn20 = ui::pulsante(tasti, "20 m", &font_22, ui::Stile::NORMALE);
-  for (lv_obj_t* b : {btn40, btn20}) {
-    lv_obj_set_height(b, 62);
-    lv_obj_set_flex_grow(b, 1);
+  if (filaBande) lv_obj_set_width(filaBande, LV_PCT(100));
+  for (uint8_t i = 0; i < nBande; i++) {
+    btnBande[i] = ui::pulsante(pochi ? tasti : filaBande, bandeVis[i]->nome, pochi ? &font_22 : &font_18,
+                               ui::Stile::NORMALE);
+    lv_obj_set_height(btnBande[i], pochi ? 62 : 54);
+    lv_obj_set_flex_grow(btnBande[i], 1);
+    lv_obj_add_event_cb(btnBande[i], premiBanda, LV_EVENT_CLICKED, (void*)(uintptr_t)i);
   }
-  lv_obj_add_event_cb(btn40, premiBanda, LV_EVENT_CLICKED, (void*)1);
-  lv_obj_add_event_cb(btn20, premiBanda, LV_EVENT_CLICKED, nullptr);
   const int passi[] = {-5, -1, 1, 5};
   const char* etichettePassi[] = {"−5", "−1", "+1", "+5"};
   for (int i = 0; i < 4; i++) {
     lv_obj_t* b = ui::pulsante(tasti, etichettePassi[i], &font_20, ui::Stile::SCHEDA);
-    lv_obj_set_size(b, 80, 62);
+    lv_obj_set_size(b, 80, pochi ? 62 : 54);
+    if (!pochi) lv_obj_set_flex_grow(b, 1);
     lv_obj_add_event_cb(b, premiPasso, LV_EVENT_CLICKED, (void*)(intptr_t)passi[i]);
   }
 

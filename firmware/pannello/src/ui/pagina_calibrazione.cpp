@@ -9,6 +9,7 @@
 #include <initializer_list>
 
 #include <Grafica.h>
+#include "../impostazioni.h"
 #include "../tema.h"
 #include "comuni.h"
 #include "pagine.h"
@@ -21,8 +22,9 @@ bande::Banda banda = bande::Banda::B40M;
 uint32_t versioneTabella = 0xFFFFFFFF;
 uint32_t ricaricaAlle = 0;  // millis() a cui rileggere la tabella (0 = no)
 
-lv_obj_t* btn40;
-lv_obj_t* btn20;
+lv_obj_t* btnBande[bande::NUMERO];  // solo le bande dell'antenna associata
+const bande::Info* bandeVis[bande::NUMERO];
+uint8_t nBande = 0;
 lv_obj_t* displayPos;
 lv_obj_t* testoMm;
 lv_obj_t* btnZero;
@@ -54,9 +56,14 @@ void formattaPassi(long p, char* out, size_t n) {
 
 void ricaricaPresto() { ricaricaAlle = millis() + 400; }
 
+// Relè dei condensatori in serie della banda (antenna RX, 17-10 m): JOG di 0 passi con la frequenza della banda
+void preparaRele() {
+  if (link_antenna::stato().collegato) link_antenna::invia(proto::Tipo::JOG, infoBanda()->proposta_hz, 0);
+}
+
 void evidenziaBanda() {
-  ui::stilePulsante(btn40, banda == bande::Banda::B40M ? ui::Stile::PRIMARIO : ui::Stile::NORMALE);
-  ui::stilePulsante(btn20, banda == bande::Banda::B20M ? ui::Stile::PRIMARIO : ui::Stile::NORMALE);
+  for (uint8_t i = 0; i < nBande; i++)
+    ui::stilePulsante(btnBande[i], bandeVis[i]->banda == banda ? ui::Stile::PRIMARIO : ui::Stile::NORMALE);
   char a[16], b[16];
   formattaKhz(infoBanda()->min_hz, a, sizeof(a));
   formattaKhz(infoBanda()->max_hz, b, sizeof(b));
@@ -71,15 +78,19 @@ void evidenziaBanda() {
 }
 
 void scegliBanda(lv_event_t* e) {
-  banda = lv_event_get_user_data(e) ? bande::Banda::B40M : bande::Banda::B20M;
+  uint8_t i = (uint8_t)(uintptr_t)lv_event_get_user_data(e);
+  if (i >= nBande) return;
+  banda = bandeVis[i]->banda;
   evidenziaBanda();
+  preparaRele();
   link_antenna::richiediTabella(banda);
 }
 
 void premiZero(lv_event_t*) { link_antenna::invia(proto::Tipo::ZERO); }
 
+// Con la frequenza della banda: l'antenna mette prima i relè di quella banda
 void premiJog(lv_event_t* e) {
-  link_antenna::invia(proto::Tipo::JOG, 0, (int32_t)(intptr_t)lv_event_get_user_data(e));
+  link_antenna::invia(proto::Tipo::JOG, infoBanda()->proposta_hz, (int32_t)(intptr_t)lv_event_get_user_data(e));
 }
 
 uint32_t freqCampo() {
@@ -210,13 +221,17 @@ void crea(lv_obj_t* c) {
   lv_obj_t* back = ui::pulsante(testa, LV_SYMBOL_LEFT " Impostazioni", &font_16, ui::Stile::NORMALE);
   lv_obj_set_size(back, 160, 44);
   lv_obj_add_event_cb(back, indietro, LV_EVENT_CLICKED, nullptr);
-  lv_obj_t* titolo = ui::etichetta(testa, "Calibrazione antenna", &font_22, t.text);
+  nBande = ui::bandeDisponibili(bandeVis);
+  bool pochi = nBande <= 2;
+  if (!bande::disponibile(banda, impostazioni::antennaTx())) banda = bande::Banda::B40M;
+  lv_obj_t* titolo = ui::etichetta(testa, pochi ? "Calibrazione antenna" : "Calibrazione", &font_22, t.text);
   lv_obj_set_flex_grow(titolo, 1);
-  btn40 = ui::pulsante(testa, "40 m", &font_18, ui::Stile::NORMALE);
-  btn20 = ui::pulsante(testa, "20 m", &font_18, ui::Stile::NORMALE);
-  for (lv_obj_t* b : {btn40, btn20}) lv_obj_set_size(b, 110, 44);
-  lv_obj_add_event_cb(btn40, scegliBanda, LV_EVENT_CLICKED, (void*)1);
-  lv_obj_add_event_cb(btn20, scegliBanda, LV_EVENT_CLICKED, nullptr);
+  for (uint8_t i = 0; i < nBande; i++) {
+    btnBande[i] = ui::pulsante(testa, bandeVis[i]->nome, pochi ? &font_18 : &font_16, ui::Stile::NORMALE);
+    lv_obj_set_size(btnBande[i], pochi ? 110 : 62, 44);
+    lv_obj_add_event_cb(btnBande[i], scegliBanda, LV_EVENT_CLICKED, (void*)(uintptr_t)i);
+  }
+  if (!pochi) lv_obj_set_style_pad_column(testa, 6, 0);
 
   lv_obj_t* corpo = ui::contenitore(c, LV_FLEX_FLOW_ROW, 16);
   lv_obj_set_width(corpo, LV_PCT(100));
@@ -310,7 +325,10 @@ void crea(lv_obj_t* c) {
   versioneTabella = 0xFFFFFFFF;
 }
 
-void mostrata() { link_antenna::richiediTabella(banda); }
+void mostrata() {
+  link_antenna::richiediTabella(banda);
+  preparaRele();
+}
 
 void aggiorna(const link_antenna::Stato& s) {
   char buf[16];

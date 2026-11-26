@@ -1,7 +1,8 @@
 # 01 — Obiettivo e principi
 
 ## Obiettivo
-- Antenna magnetic loop per **40 m e 20 m**, da usare su balcone (circa 4 m).
+- Antenna magnetic loop da balcone (circa 4 m): **RX dagli 80 ai 10 m**, **TX 40 e 20 m** (RX allargata dal
+  26/11/2026, decisione dell'utente; prima 40 e 20 m per entrambe).
 - **Due versioni**:
   1. **RX** (solo ricezione): anello 1 m, variabile a lamelle da 1000 pF già in possesso.
      Ricevitore: Malahit DSP2 (e in futuro Icom IC-7300 MK2).
@@ -25,7 +26,23 @@
 | 3/4" | 19 mm | circa 2,55 µH |
 
 ## Capacità richieste (stime, con circa 4 pF parassiti)
-- Anello **RX 1 m** (circa 2,6–2,8 µH): 40 m circa 180–195 pF, 20 m circa 45–50 pF.
+- Anello **RX 1 m** (circa 2,6–2,8 µH): 40 m circa 180–195 pF, 20 m circa 45–50 pF. Tutte le bande RX (stime del
+  26/11/2026, capacità totale con le parassite):
+
+  | Banda | Capacità | Come |
+  |---|---|---|
+  | 80 m (3,5–3,8 MHz) | 630–800 pF | variabile da solo |
+  | 60 m (5,35 MHz) | 315–340 pF | variabile da solo |
+  | 40 m | 180–195 pF | variabile da solo |
+  | 30 m (10,1 MHz) | 88–95 pF | variabile da solo |
+  | 20 m | 45–48 pF | variabile da solo |
+  | 17 m (18,1 MHz) | 28–30 pF | al limite del minimo del variabile: C1 in serie |
+  | 15 m (21,2 MHz) | 20–22 pF | C1 in serie |
+  | 12 m (24,9 MHz) | 15–16 pF | C1 e C2 in serie |
+  | 10 m (28–29,7 MHz) | 10–12,5 pF | C1 e C2 in serie |
+
+  Il variabile (20–1000 pF) arriva fino a circa 3 MHz; sotto il suo minimo servono i condensatori in serie
+  ([03](03-rx-condensatore-meccanica.md)). Sui 10 m l'anello è circa 0,3 λ: non è più un loop piccolo (da verificare).
 - Anello **TX 1,5 m, tubo 22 mm** (L circa 4 µH): 40 m circa 118–130 pF, 20 m circa 28–33 pF.
 - Per il TX serve una escursione di circa **100 pF**.
 

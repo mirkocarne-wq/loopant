@@ -1,6 +1,44 @@
 #include "comuni.h"
 
+#include <stdio.h>
+#include <string.h>
+
+#include "../impostazioni.h"
+
 namespace ui {
+
+uint8_t bandeDisponibili(const bande::Info* out[bande::NUMERO]) {
+  uint8_t n = 0;
+  bool tx = impostazioni::antennaTx();
+  for (const bande::Info& i : bande::ELENCO)
+    if (bande::disponibile(i.banda, tx)) out[n++] = &i;
+  return n;
+}
+
+bande::Banda bandaDi(uint32_t hz) { return bande::di(hz, impostazioni::antennaTx()); }
+
+const char* testoFuoriBanda() {
+  static char testo[96];
+  const bande::Info* b[bande::NUMERO];
+  uint8_t n = bandeDisponibili(b);
+  if (n <= 2) {  // TX: con i limiti in kHz
+    size_t k = (size_t)snprintf(testo, sizeof(testo), "Fuori banda:");
+    for (uint8_t i = 0; i < n && k < sizeof(testo); i++)
+      k += (size_t)snprintf(testo + k, sizeof(testo) - k, "%s %lu %03lu–%lu %03lu", i ? " o" : "",
+                            (unsigned long)(b[i]->min_hz / 1000000), (unsigned long)(b[i]->min_hz / 1000 % 1000),
+                            (unsigned long)(b[i]->max_hz / 1000000), (unsigned long)(b[i]->max_hz / 1000 % 1000));
+    if (k < sizeof(testo)) snprintf(testo + k, sizeof(testo) - k, " kHz");
+    return testo;
+  }
+  size_t k = (size_t)snprintf(testo, sizeof(testo), "Fuori banda: bande");
+  for (uint8_t i = 0; i < n && k < sizeof(testo); i++) {
+    const char* sep = i == 0 ? " " : (i + 1 == n ? " o " : ", ");
+    int metri = (int)b[i]->banda;
+    k += (size_t)snprintf(testo + k, sizeof(testo) - k, "%s%d", sep, metri);
+  }
+  if (k < sizeof(testo)) snprintf(testo + k, sizeof(testo) - k, " m");
+  return testo;
+}
 
 lv_obj_t* contenitore(lv_obj_t* parent, lv_flex_flow_t flusso, lv_coord_t spazio) {
   lv_obj_t* o = lv_obj_create(parent);

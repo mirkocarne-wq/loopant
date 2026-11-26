@@ -11,7 +11,7 @@ Codice: `firmware/pannello/src/server_web.*`, `pagina_web.h`, `tocco_remoto.*`.
 | Parte | Descrizione |
 |---|---|
 | Stato | Nominativo, stato dell'antenna, frequenza accordata, posizione, azzeramento (aggiornati ogni secondo) |
-| Comandi | **STOP** sempre in alto, TUNE con frequenza in kHz, 40 m / 20 m (ultima frequenza usata), ±1 / ±5 kHz, ZERO |
+| Comandi | **STOP** sempre in alto, TUNE con frequenza in kHz, pulsanti delle bande dell'antenna (ultima frequenza usata), ±1 / ±5 kHz, ZERO |
 | Schermo | Vista dello schermo del pannello; un clic sull'immagine **tocca** lo schermo in quel punto |
 
 ## Interfaccia HTTP
