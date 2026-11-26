@@ -33,6 +33,15 @@
 - Pulizia: lima, carta fine e alcol; nessuna sbavatura.
 - Il PTFE non si incolla: bloccarlo nel tubo esterno con anelli o spine in nylon.
 
+## Tavole per il tornitore
+[`hardware/condensatore-tx/tavole-condensatore-tx.pdf`](../../hardware/condensatore-tx/tavole-condensatore-tx.pdf)
+(script `tavole.py`, A4 orizzontale): distinta e montaggio, manicotto in PTFE, pistone, tubo esterno, disco della
+punta e tappo isolante in POM, collari in ottone. I diametri di accoppiamento sono scritti come formule sui tubi
+misurati (foro del manicotto = Ø esterno del pistone + 0,3; esterno = Ø interno del tubo esterno − 0,2).
+- **Proposta (da confermare)**: manicotto con uno **spallamento** Ø 32 × 3 che appoggia sulla bocca del tubo esterno:
+  lo tiene fermo e lo fa sporgere di 20 mm, al posto degli anelli in nylon; sotto appoggia sul fermo di rondelle.
+- Pistone fissato all'asta con un tappo isolante in POM (codolo Ø 20 nella coda, 2 viti M3; asta Ø 8 con spina Ø 3).
+
 ## Collegamenti all'anello
 Disegno in sezione con collegamenti e dettagli: [`hardware/condensatore-tx/disegno-condensatore-tx.png`](../../hardware/condensatore-tx/disegno-condensatore-tx.png)
 (script `disegno.py`, anche in SVG).
