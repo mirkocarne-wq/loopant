@@ -54,12 +54,13 @@ COLONNINE = [(22, 22), (LX - 22, 22), (22, LY - 22), (LX - 22, LY - 22)]
 
 # --- Gruppo motore (da misurare) ---
 Y_ASSE = LY / 2                  # motore sull'asse centrale della scatola
-H_ASSE = 30.0                    # altezza dell'asse sopra la base della squadra (dipende dalla squadra)
 # Dislivello tra variabile e motore appoggiati sullo stesso piano: l'asse del variabile è 20 mm più alto.
 # Il motore sale dello stesso tanto su un rialzo della piastra, così l'albero e il variabile restano concentrici
 # (con la scatola del variabile fatta allo stesso modo: stessa staffa, stesso fondo, stessa piastra).
 # Con un valore negativo il rialzo va sotto il variabile e qui resta 0.
 DISLIVELLO = 20.0
+H_ASSE_VARIABILE = 45.0          # dalla base del variabile al centro del perno (misura dell'utente)
+H_ASSE = H_ASSE_VARIABILE - DISLIVELLO  # asse del motore sopra la base della squadra: ricavato dalle due misure
 RIALZO_MOTORE = max(DISLIVELLO, 0.0)
 # La squadra sta tra riduttore e motore: il riduttore è avvitato davanti (verso la parete frontale), il motore
 # dietro, e l'albero del motore passa nel foro della squadra.

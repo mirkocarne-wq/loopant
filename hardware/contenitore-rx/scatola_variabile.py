@@ -31,7 +31,7 @@ QUI = os.path.dirname(os.path.abspath(__file__))
 
 # --- Variabile (da misurare) ---
 VAR_L, VAR_W, VAR_H = 135.0, 83.0, 95.0  # corpo: lunghezza, larghezza, altezza (misure dell'utente, circa)
-H_ASSE_VAR = c.H_ASSE + c.DISLIVELLO    # asse sopra la base del variabile: 20 mm più del motore sulla sua squadra
+H_ASSE_VAR = c.H_ASSE_VARIABILE        # asse sopra la base del variabile (misura dell'utente: 45 mm)
 VAR_ALBERO_D, VAR_ALBERO_L = 6.0, 29.0  # perno di comando ("maniglia" circa 29 mm); diametro da verificare
 VAR_PESO = 0.6                          # kg
 X_GIUNTO = 8.0                          # davanti del giunto dalla parete interna
@@ -51,7 +51,13 @@ VITE_CAPO_FILETTO = 3.3          # ...e oltre il tubo foro per filettare la plas
 LY = 105.0                       # più stretta di quella del motore (indicazione dell'utente): 11 mm per lato
 X_VAR = X_GIUNTO + c.GIUNTO_L / 2 + VAR_ALBERO_L   # faccia del variabile da cui esce l'albero
 LX = float(math.ceil(X_VAR + VAR_L + SPAZIO_DIETRO))
-GRIGLIA = 10.0                   # passo dei fori M3 della piastra per fissare il variabile (viti in nylon)
+# Fissaggio del variabile: 4 fori filettati M5 sulle linguette delle fiancate, 114 mm lungo l'asse e 97 mm tra le
+# linguette di sotto e quelle di sopra (misure dell'utente). Si usano le due di sotto: viti M5 dal basso attraverso la
+# piastra, testa nello spazio sotto la piastra.
+FORI_VAR = 114.0                 # interasse lungo l'asse tra le due linguette di sotto
+FORI_VAR_ALTEZZA = 97.0          # tra linguette di sotto e di sopra (non usate per il fissaggio)
+ASOLA_VAR = 6.0                  # gioco lungo l'asse delle asole M5
+ALZO_LINGUETTE = 0.0             # rialzo sotto le linguette, se i tiranti in basso sporgono più giù (da misurare)
 
 SCRITTA = "loopant C"
 
@@ -109,29 +115,31 @@ def scatola():
     return s
 
 
+def fori_variabile():
+    """Centri dei due fori M5 delle linguette di sotto (simmetrici rispetto al corpo, al centro della larghezza)."""
+    xm = X_VAR + VAR_L / 2
+    return [(xm - FORI_VAR / 2, LY / 2), (xm + FORI_VAR / 2, LY / 2)]
+
+
 def piastra():
-    """Piastra con griglia di fori M3 sotto il variabile (viti e dadi in nylon), su 4 colonnine come nel motore."""
+    """Piastra con due asole M5 per le linguette del variabile, su 4 colonnine come nel motore."""
     z0 = c.COLONNINA_H
-    p = c.scatola_arrotondata(c.BORDO + 1, c.BORDO + 1, z0, LX - c.BORDO - 1, LY - c.BORDO - 1, z0 + c.PIASTRA, 4.0)
+    zt = z0 + c.PIASTRA
+    p = c.scatola_arrotondata(c.BORDO + 1, c.BORDO + 1, z0, LX - c.BORDO - 1, LY - c.BORDO - 1, zt, 4.0)
     for x, y in c.COLONNINE:
         p = p.cut(c.cilindro_z(x, y, z0 - 1, c.PIASTRA + 2, 3.4))
-        p = p.cut(c.cilindro_z(x, y, z0 + c.PIASTRA - 2.0, 4, 6.2))
-    ya, yb = LY / 2 - VAR_W / 2 - 5, LY / 2 + VAR_W / 2 + 5
-    xa, xb = X_VAR - 5, X_VAR + VAR_L + 5
-    nx, ny = int((xb - xa) // GRIGLIA), int((yb - ya) // GRIGLIA)
-    x_ini = (xa + xb) / 2 - nx * GRIGLIA / 2
-    y_ini = (ya + yb) / 2 - ny * GRIGLIA / 2
-    ostacoli = c.COLONNINE + [(x, y) for x, y in c.VITI_STAFFA if x < LX]
-    for i in range(nx + 1):
-        for j in range(ny + 1):
-            x, y = x_ini + i * GRIGLIA, y_ini + j * GRIGLIA
-            if any(math.hypot(x - ox, y - oy) < 10 for ox, oy in ostacoli):
-                continue
-            p = p.cut(c.cilindro_z(x, y, z0 - 1, c.PIASTRA + 2, 3.4))
-    # fessure per fascette ai quattro angoli della zona del variabile
-    for x in (xa - 6, xb + 6):
-        for y in (ya + 4, yb - 4):
-            p = p.cut(cq.Workplane("XY").workplane(offset=z0 - 1).center(x, y).rect(2.2, 5).extrude(c.PIASTRA + 2))
+        p = p.cut(c.cilindro_z(x, y, zt - 2.0, 4, 6.2))
+    for x, y in fori_variabile():
+        if ALZO_LINGUETTE > 0:
+            p = p.union(cq.Workplane("XY").workplane(offset=zt - 0.1).center(x, y)
+                        .slot2D(ASOLA_VAR + 14, 14).extrude(ALZO_LINGUETTE + 0.1))
+        p = p.cut(cq.Workplane("XY").workplane(offset=z0 - 1).center(x, y).slot2D(ASOLA_VAR + 5.5, 5.5)
+                  .extrude(c.PIASTRA + ALZO_LINGUETTE + 2))
+    # fessure per fascette ai lati del variabile (cavetti, eventuale fermo in più)
+    ya, yb = LY / 2 - VAR_W / 2 - 1, LY / 2 + VAR_W / 2 + 1
+    for x in (X_VAR + 20, X_VAR + VAR_L - 20):
+        for y in (ya, yb):
+            p = p.cut(cq.Workplane("XY").workplane(offset=z0 - 1).center(x, y).rect(5, 2.2).extrude(c.PIASTRA + 2))
     return p
 
 
@@ -141,6 +149,11 @@ def ingombri():
     pezzi = {}
     pezzi["variabile"] = (c.scatola_arrotondata(X_VAR, LY / 2 - VAR_W / 2, zb, X_VAR + VAR_L, LY / 2 + VAR_W / 2,
                                                 zb + VAR_H, 2.0), "#b0bec5")
+    viti = None
+    for x, y in fori_variabile():
+        vt = c.cilindro_z(x, y, c.COLONNINA_H - 3.5, 3.5, 8.5).union(c.cilindro_z(x, y, c.COLONNINA_H, 12, 5))
+        viti = vt if viti is None else viti.union(vt)
+    pezzi["viti M5"] = (viti, "#5f6368")
     pezzi["albero variabile"] = (c.cilindro_x(X_VAR - VAR_ALBERO_L, LY / 2, za, VAR_ALBERO_L, VAR_ALBERO_D), "#bdc1c6")
     pezzi["giunto 8→6"] = (c.cilindro_x(X_GIUNTO, LY / 2, za, c.GIUNTO_L, c.GIUNTO_D), "#c5a572")
     pezzi["tubo isolante"] = (c.cilindro_x(-c.PARETE - c.BOSS_SPORGENZA - 25, LY / 2, za,

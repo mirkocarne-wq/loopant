@@ -100,13 +100,14 @@ Lo script controlla anche gli ingombri. Avvisa se motore, squadra o elettronica 
 altri componenti, e se la staffa entra nella scatola.
 
 ## Misure (stime da verificare)
-Scatola: circa **195 × 141 × 100 mm** più il coperchio (5,5 mm con la guarnizione); la borchia dell'albero sporge
-6 mm. La staffa aggiunge circa 32 mm verso il palo. Interno: 189 × 135 × 97 mm. La lunghezza si calcola dal gruppo motore (150 mm) e l'altezza dal motore:
-con il rialzo di 20 mm la scatola è più alta di 17 mm rispetto alla prima versione.
+Scatola: circa **195 × 141 × 95 mm** più il coperchio (5,5 mm con la guarnizione); la borchia dell'albero sporge
+6 mm. La staffa aggiunge circa 32 mm verso il palo. Interno: 189 × 135 × 92 mm. La lunghezza si calcola dal gruppo motore (150 mm) e l'altezza dal motore:
 
-**Concentricità con il variabile.** L'asse del motore sta 60 mm sopra il fondo interno (63 mm sopra quello
-esterno): piastra a 10 mm, rialzo di 20 mm, 30 mm della squadra. Il variabile, appoggiato sullo stesso piano, ha
-l'asse 20 mm più alto del motore (`DISLIVELLO`). Se la scatola del variabile ha lo stesso fondo, la stessa piastra
+
+**Concentricità con il variabile.** L'asse del motore sta 55 mm sopra il fondo interno (58 mm sopra quello
+esterno): piastra a 10 mm, rialzo di 20 mm, 25 mm della squadra. Il variabile ha l'asse 45 mm sopra la sua base
+(`H_ASSE_VARIABILE`, misura) e 20 mm più alto del motore appoggiato sullo stesso piano (`DISLIVELLO`, misura):
+l'altezza dell'asse del motore sulla squadra (`H_ASSE` = 25 mm) si ricava da queste due. Se la scatola del variabile ha lo stesso fondo, la stessa piastra
 e la stessa staffa, i due alberi sono allineati. Con `DISLIVELLO` negativo (motore più alto) il rialzo qui sparisce
 e va sotto il variabile.
 
@@ -115,7 +116,7 @@ Le misure dei componenti sono **stime da verificare con il calibro** prima di st
 
 | Variabile | Valore | Cosa misurare |
 |---|---|---|
-| `H_ASSE` | 30 | Altezza dell'asse sopra la base della squadra (il motore ci sta sopra se è almeno 24 mm) |
+| `H_ASSE_VARIABILE`, `DISLIVELLO` | 45; 20 (misure dell'utente) | Asse del variabile sopra la sua base; differenza con l'asse del motore sulla squadra. `H_ASSE` = 25 si ricava |
 | `SQUADRA_VERSO` | -1 | Da che parte va la base della squadra: -1 verso il riduttore (con l'appoggio sotto il motore), 1 sotto il motore |
 | `DISLIVELLO` | 20 | Di quanto l'asse del variabile è più alto di quello del motore, appoggiati sullo stesso piano |
 | `SQUADRA_BASE`, `INTERASSE_ASOLE` | 35; 30 (misura dell'utente) | Fori della base della squadra (le asole lunghe 20 mm danno margine lungo l'asse) |
@@ -217,11 +218,13 @@ Script: `scatola_variabile.py` (usa le parti comuni di `contenitore.py`). Pezzi:
 ![Sezione](anteprime/variabile-sezione.png)
 
 - **Variabile**: 1000 pF (20–1000 pF), corpo 135 × 83 × 95 mm, perno di comando di circa 29 mm, 600 g (misure
-  dell'utente). Si fissa con le due linguette sotto le fiancate a una **piastra con una griglia di fori M3** ogni
-  10 mm, con viti e dadi in nylon: si scelgono i fori che capitano sotto le linguette.
+  dell'utente). Ha 4 fori filettati **M5** sulle linguette delle fiancate: 114 mm lungo l'asse, 97 mm tra le linguette di sotto
+  e quelle di sopra. Si usano le **due di sotto**: due viti M5 dal basso attraverso le **asole** della piastra
+  (6 mm di gioco lungo l'asse), testa e rondella nello spazio di 6 mm sotto la piastra. Se i tiranti in basso del
+  variabile sporgono più giù delle linguette, si alza `ALZO_LINGUETTE` (rialzi sotto le linguette) o si mettono
+  rondelle.
 - **Concentricità**: stesso fondo, stessa piastra e stessa staffa della scatola del motore; l'asse del variabile
-  sta 50 mm sopra la sua base (20 mm più del motore sulla sua squadra), quindi a 60 mm dal fondo interno, come
-  il motore. Sul palo le due scatole hanno la borchia una verso l'altra; tra le due borchie circa 12 mm.
+  sta 45 mm sopra la sua base, quindi a 55 mm dal fondo interno, come il motore. Sul palo le due scatole hanno la borchia una verso l'altra; tra le due borchie circa 12 mm.
 - **Tubo isolante**: giunto 8→6 sul perno del variabile; il tubo isolante lungo circa 59 mm più lo spazio tra le
   borchie (circa 71 mm con 12 mm), con un paraolio 8×16×5 in ciascuna borchia.
 - **Anello**: i due capi del tubo di rame (1/2", parametro `TUBO_ANELLO`; 70 mm tra i capi, `INTERASSE_CAPI`)
@@ -260,8 +263,8 @@ Dentro la scatola ogni capo sporge solo 10 mm (subito dopo c'è il variabile): n
 
 Viti: 8 M3×12 per il coperchio (inserti M3 nel bordo), 4 M3×6 a testa bombata per la piastra (inserti nelle
 colonnine), 4 M4×8 a testa bombata per la staffa (inserti M4 nel fondo e nel blocco), 2 M4×40 inox o ottone per i
-capi dell'anello (dal fianco, attraverso il tubo), viti M3 in nylon per il variabile. Giunto 8→6, paraolio 8×16×5,
+capi dell'anello (dal fianco, attraverso il tubo), 2 viti M5×12 con rondella per il variabile (acciaio inox o nylon). Giunto 8→6, paraolio 8×16×5,
 valvola di sfiato M12, silicone neutro sui capi.
 
-Da verificare: diametro del perno del variabile (6 mm?), posizione dei fori delle linguette, morsetti degli
+Da verificare: diametro del perno del variabile (6 mm?), che i fori M5 di sotto siano al centro della larghezza, se i tiranti sporgono sotto le linguette, morsetti degli
 statori rispetto ai capi (piattine), peso reale dell'anello e tenuta delle viti nei capi.
