@@ -69,6 +69,9 @@ Segue il tipo di antenna (decisione del 21/11/2026): non c'è una scelta separat
   micropassi (MStep, 16) non la cambiano, cambiano solo gli impulsi per giro (e quindi `RX_PASSI_MOTORE`).
   Rampa: acc = 2, quasi la più dolce del SERVO42D (+1 giro/min ogni 12,7 ms, circa 80 giri/min al secondo).
   Lo zero del SERVO42D non ha rampa: parte a HmSpeed e si ferma di colpo sul finecorsa, per questo va piano.
+  Profilo misurato il 26/11/2026 (jog 1800 a 60 giri/min, posizione 0x33 ogni 67 ms): parte già a circa 15 giri/min,
+  sale a circa 80 giri/min al secondo fino a 51, frena fino a circa 30 e da lì si ferma di colpo. Se lo stop dà
+  fastidio: ultimo tratto più lento (F5 accetta nuovi comandi durante il movimento, manuale 11.4), da provare.
 - **Posizione dopo uno stop**: impulsi dallo zero con 0x33, le stesse unità di 0xFE. L'encoder 0x31 conta
   dall'accensione del driver e non va usato come posizione (il 25/11/2026 dava 31 919 contro 1230 reali).
 
