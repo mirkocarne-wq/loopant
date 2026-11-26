@@ -27,14 +27,14 @@
 - Modello parametrico in [`hardware/contenitore-rx/`](../../hardware/contenitore-rx/README.md) (CadQuery, STL e STEP).
 - Dentro: SERVO42D e riduttore fissati con la **squadra a 90°**, che sta tra i due (riduttore davanti, motore
   dietro), con la base verso il riduttore e il motore su un appoggio, a una piastra interna (asole per viti M4),
-  **sull'asse centrale** della scatola e su un rialzo di 20 mm (il variabile ha l'asse 20 mm più alto del motore:
+  **sull'asse centrale** della scatola e su un rialzo di 20 mm più 2 mm di spessore sotto la squadra (asse comune delle due scatole a 60 mm dal fondo interno:
   così i due alberi restano concentrici); due strisce di millefori 35×90 ai lati del motore (ESP32 DevKit da una
   parte, SN65HVD230 e convertitore 24→5 V dall'altra); OLED 0,96" sotto il coperchio, dietro un vetrino.
 - L'albero esce al centro della parete frontale: foro per il **tubo isolante da 8 mm**, con paraolio 8×16×5.
 - **Fissaggio al palo:** staffa stampata con due blocchi a V (pali da circa 20 a 50 mm) e due fascette stringitubo
   inox, avvitata al fondo con 4 inserti M4 ciechi. Palo verticale, parete frontale in alto verso il variabile,
   24 V e sfiato in basso.
-- Gruppo giunto, riduttore, squadra e motore lungo circa 150 mm (misura dell'utente). Ingombro di circa 195 × 141 × 95 mm più il coperchio e la staffa (32 mm); guarnizione piatta in TPU, 8 viti M3
+- Gruppo giunto, riduttore, squadra e motore lungo circa 150 mm (misura dell'utente). Ingombro di circa 195 × 141 × 100 mm più il coperchio e la staffa (32 mm); guarnizione piatta in TPU, 8 viti M3
   con inserti a caldo, 1 PG7 (24 V), valvola di sfiato M12.
 - **Finecorsa** (escursione del variabile 190° da fermo a fermo): due sensori ottici a forcella (schedina 35 × 11 mm, fori a 28 mm)
   su un supporto stampato sotto l'albero, a 50° l'uno dall'altro, e una ruota con due bandierine sull'albero
@@ -48,7 +48,7 @@
 - `hardware/contenitore-rx/scatola_variabile.py`: stessa costruzione della scatola del motore (fondo, staffa,
   coperchio, borchia con paraolio), interno 105 mm di larghezza; sul palo sta sopra la scatola del motore.
 - Variabile 20–1000 pF, 135 × 83 × 95 mm, 600 g, fissato alla piastra con 2 viti M5 dal basso
-  nelle linguette di sotto (fori filettati M5 a 114 mm); asse 45 mm sopra la base del variabile, a 55 mm dal fondo
+  nelle linguette di sotto (fori filettati M5 a 114 mm); asse 45 mm sopra la base del variabile, piastra su colonnine da 11 mm, a 60 mm dal fondo
   interno come il motore: alberi concentrici.
 - **Regge l'anello**: i capi del tubo di rame entrano dall'alto in un blocco pieno di 20 mm, bloccati da una vite M4
   di traverso per capo; la staffa del palo si allunga sotto il blocco con 2 viti in più.

@@ -66,6 +66,8 @@ def imposta():
     """Adatta i parametri condivisi di contenitore.py a questa scatola."""
     c.LX, c.LY = LX, LY
     c.Y_ASSE = LY / 2
+    # colonnine più alte: la base del variabile va dove il suo asse cade all'altezza comune (ASSE_Z)
+    c.COLONNINA_H = c.ASSE_Z - H_ASSE_VAR - c.PIASTRA - ALZO_LINGUETTE
     c.HZ = float(math.ceil(max(c.COLONNINA_H + c.PIASTRA + VAR_H, Z_CAPI + TUBO_ANELLO / 2 + 6)
                            + c.BORDO_H + c.BORDO + 2))
     c.COLONNINE = [(22, 22), (LX - 22, 22), (22, LY - 22), (LX - 22, LY - 22)]

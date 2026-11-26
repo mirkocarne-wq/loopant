@@ -54,14 +54,18 @@ COLONNINE = [(22, 22), (LX - 22, 22), (22, LY - 22), (LX - 22, LY - 22)]
 
 # --- Gruppo motore (da misurare) ---
 Y_ASSE = LY / 2                  # motore sull'asse centrale della scatola
-# Dislivello tra variabile e motore appoggiati sullo stesso piano: l'asse del variabile è 20 mm più alto.
-# Il motore sale dello stesso tanto su un rialzo della piastra, così l'albero e il variabile restano concentrici
-# (con la scatola del variabile fatta allo stesso modo: stessa staffa, stesso fondo, stessa piastra).
-# Con un valore negativo il rialzo va sotto il variabile e qui resta 0.
-DISLIVELLO = 20.0
+# Asse comune delle due scatole sopra il fondo interno: 60 mm, come nella scatola e nella piastra del motore già
+# stampate (rialzo di 20 mm). Misura dell'utente: dalla faccia di sotto della piastra al centro del perno del riduttore
+# 52 mm, quindi il perno sta a COLONNINA_H + 52 = 58 mm: sotto la base della squadra va uno spessore di 2 mm
+# (rondelle o lamierino) per portarlo al centro del foro della borchia. La scatola del variabile arriva a 60 mm con
+# colonnine più alte sotto la sua piastra (scatola_variabile.py).
+ASSE_Z = 60.0
+RIALZO_MOTORE = 20.0             # rialzo sotto la squadra, come nella piastra stampata
+QUOTA_PIASTRA_ASSE = 52.0        # dalla faccia di sotto della piastra al centro del perno, senza spessori (misura)
+SPESSORE_SQUADRA = ASSE_Z - COLONNINA_H - QUOTA_PIASTRA_ASSE  # 2 mm sotto la base della squadra
+H_ASSE = QUOTA_PIASTRA_ASSE - PIASTRA - RIALZO_MOTORE + SPESSORE_SQUADRA  # asse sopra il rialzo, con lo spessore
 H_ASSE_VARIABILE = 45.0          # dalla base del variabile al centro del perno (misura dell'utente)
-H_ASSE = H_ASSE_VARIABILE - DISLIVELLO  # asse del motore sopra la base della squadra: ricavato dalle due misure
-RIALZO_MOTORE = max(DISLIVELLO, 0.0)
+DISLIVELLO = H_ASSE_VARIABILE - (H_ASSE - SPESSORE_SQUADRA)  # solo informativo
 # La squadra sta tra riduttore e motore: il riduttore è avvitato davanti (verso la parete frontale), il motore
 # dietro, e l'albero del motore passa nel foro della squadra.
 SQUADRA_VERSO = -1               # base della squadra: -1 verso il riduttore (com'è la squadra), 1 sotto il motore
@@ -580,6 +584,7 @@ def controlla(sc, pi, pezzi):
         errori.append(f"tra motore e millefori solo {tra:.1f} mm")
     print(f"Spazio dietro il SERVO42D: {retro:.0f} mm; tra motore e millefori: {tra:.1f} mm")
     print(f"Gruppo {LUNGHEZZA_GRUPPO:.0f} mm: riduttore stimato {RIDUTTORE_L:.1f} mm; scatola lunga {LX:.0f} mm interni")
+    print(f"Spessore sotto la squadra: {SPESSORE_SQUADRA:.1f} mm")
     print(f"Asse del motore: {Z_ASSE:.1f} mm sopra il fondo interno, {Z_ASSE + FONDO:.1f} mm sopra il fondo esterno "
           f"(rialzo {RIALZO_MOTORE:.0f} mm); altezza interna {HZ:.0f} mm")
     if SQUADRA_VERSO > 0 and H_ASSE - NEMA / 2 < SQUADRA_S:
