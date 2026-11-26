@@ -34,6 +34,9 @@
 - Il PTFE non si incolla: bloccarlo nel tubo esterno con anelli o spine in nylon.
 
 ## Collegamenti all'anello
+Disegno in sezione con collegamenti e dettagli: [`hardware/condensatore-tx/disegno-condensatore-tx.png`](../../hardware/condensatore-tx/disegno-condensatore-tx.png)
+(script `disegno.py`, anche in SVG).
+
 - **Tubo esterno** (fisso): collare di rame o ottone stretto sul tubo, verso il fondo e lontano dalla bocca, oppure
   linguetta saldata; piattina di rame larga e corta (20–25 × 1 mm) fino al primo capo dell'anello.
   Corrente RF stimata 9–13 A a 100 W: niente filo sottile.
