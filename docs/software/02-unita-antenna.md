@@ -108,7 +108,10 @@ zero su **En**, limite CW su **Dir**, COM a un livello alto; IN_1 non conta più
    libero del ritocco fine della manopola (`JOG_LIBERO`), che va diretto; il GOTO successivo riallinea.
    Se il target è sotto la posizione attuale, il motore scende di `RECUPERO_GIOCO_PASSI`
    sotto il target e poi risale. Così il gioco è sempre preso dalla stessa parte.
-2. **Azzeramento sul finecorsa MIN a ogni cambio banda**, e all'accensione al primo comando. Dopo lo zero l'antenna
+2. **Azzeramento sul finecorsa MIN** al primo comando dopo l'accensione, dopo un errore o uno stop durante lo zero,
+   con ZERO e, **solo per il TX**, a ogni cambio banda (TMC2209 in ciclo aperto: i passi persi si accumulano).
+   L'RX non lo rifà al cambio banda: il SERVO42D è in ciclo chiuso, e lo zero costerebbe fino a circa 20 s
+   (corsa intera a 30 giri/min). Dopo lo zero l'antenna
    resta dove finisce l'azzeramento (sul finecorsa con il SERVO42D via CAN, allo stacco con STEP/DIR) fino al primo
    TUNE. **Quella posizione vale 0**: fuori dai driver (risposte al pannello, calibrazione, display) le posizioni
    contano da lì; i driver contano dal finecorsa (`movimento.cpp`). GOTO e jog normale stanno sopra `posMin`

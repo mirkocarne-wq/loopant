@@ -31,7 +31,7 @@ Versione 4 (21/11/2026): associazione con il pulsante BOOT (messaggi `ASSOCIA_*`
 
 | Tipo | Valore | Effetto |
 |---|---|---|
-| `GOTO` | 1 | Va alla frequenza `freq_hz` (azzera prima se cambia banda) |
+| `GOTO` | 1 | Va alla frequenza `freq_hz` (azzera prima se la posizione è sconosciuta; il TX anche se cambia banda) |
 | `STOP` | 2 | Ferma il movimento (con decelerazione) |
 | `ZERO` | 3 | Azzeramento sul finecorsa |
 | `STATO` | 4 | Chiede lo stato |

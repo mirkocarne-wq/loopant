@@ -7,7 +7,7 @@
 
 ## Ciclo aperto (senza encoder): mitigazioni
 1. Carico minimo (attrito del PTFE), corrente adeguata, rampe di accelerazione.
-2. **Zero a ogni cambio banda** con i finecorsa.
+2. **Zero a ogni cambio banda** con i finecorsa (solo TX: l'RX è in ciclo chiuso e lo rifà solo se la posizione è sconosciuta).
 3. **Ricerca del picco** sul segnale (S-meter in RX; ROS in TX).
 4. Rilevamento di blocco con StallGuard del TMC2209.
 5. Opzionale: sensore lineare (KTC-150) o encoder magnetico AS5600.

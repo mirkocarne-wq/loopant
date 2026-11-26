@@ -56,7 +56,8 @@ Schermo del pannello: clock dei pixel 21 MHz e bounce buffer da 15 righe; a 30 M
 - **Avvicinarsi alla posizione target sempre dallo stesso verso**: il gioco del riduttore
   (30 arc-min ≈ 2,7 pF) diventa un offset costante assorbito dalla tabella di calibrazione.
   Eccezione: il JOG libero della manopola (ritocco a orecchio) va diretto; il GOTO successivo riallinea.
-- **Zero sui finecorsa a ogni cambio banda** (il TX è in ciclo aperto, senza encoder).
+- **Zero sui finecorsa a ogni cambio banda solo per il TX** (in ciclo aperto, senza encoder). L'RX (SERVO42D in
+  ciclo chiuso) fa lo zero solo quando la posizione è sconosciuta: accensione, errore, stop durante lo zero, ZERO.
 - **Mai impulsi sotto lo zero** (dove finisce l'azzeramento), tranne durante l'azzeramento stesso: controllo
   nell'ultima funzione di movimento di ciascun driver (`avvia` STEP/DIR, `muoviA` CAN).
 - **Driver disabilitato dopo ogni movimento** (motore libero, niente rumore HF durante l'ascolto).

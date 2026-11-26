@@ -1,5 +1,5 @@
 // Unità antenna: riceve i comandi (ESP-NOW o console seriale), muove il condensatore,
-// gestisce calibrazione, azzeramento a ogni cambio banda e sicurezza dell'heartbeat.
+// gestisce calibrazione, azzeramento (TX a ogni cambio banda) e sicurezza dell'heartbeat.
 #include <Arduino.h>
 #include <Preferences.h>
 #include <esp_wifi.h>
@@ -95,8 +95,9 @@ void vaiAFrequenza(uint32_t f) {
     return;
   }
   freqCorrente = f;
-  if (!movimento::azzerato() || b != bandaAzzerata) {
-    // cambio banda (o posizione sconosciuta): prima l'azzeramento
+  // Prima l'azzeramento se la posizione è sconosciuta (accensione, errore, stop durante lo zero) e, solo per il TX,
+  // a ogni cambio banda: il TMC2209 è in ciclo aperto. Il SERVO42D dell'RX è in ciclo chiuso e non perde passi.
+  if (!movimento::azzerato() || (tipo_antenna::tx() && b != bandaAzzerata)) {
     bandaAzzerata = b;
     targetSospeso = pos;
     targetInSospeso = true;
