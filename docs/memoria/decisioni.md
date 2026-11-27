@@ -1,6 +1,6 @@
 # Decisioni di progetto
 
-Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiornato al 26/11/2026.
+Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiornato al 27/11/2026.
 
 ## Prese
 | Ambito | Decisione | Motivo |
@@ -10,7 +10,7 @@ Registro delle scelte fatte e delle alternative scartate, con il motivo. Aggiorn
 | Copia su microSD | Nel pannello: file di testo `/loopant/copia.txt` (più una copia con data) con impostazioni, ultime frequenze, memorie personali e tabelle di calibrazione; ripristino con nuovo comando `CAL_SCRIVI` verso l'antenna, rilettura di controllo e riavvio; password del WiFi e di QRZ escluse | Richiesta dell'utente (26/11/2026): la calibrazione costa molto lavoro; file leggibile e modificabile dal PC; le password non vanno su una scheda rimovibile |
 | Pulsanti delle bande sul pannello | Solo le bande dell'antenna associata; con l'RX una fila 80–10 m in Sintonia, filtri per banda in Memorie e QRZ, pulsanti piccoli in Calibrazione; interfaccia ricostruita quando cambia il tipo di antenna | Nove bande non stanno accanto ai passi come le due della TX |
 | Versioni | Due antenne: RX (1 m) e TX 100 W (1,5 m) | Il variabile a lamelle non regge il TX |
-| Anello RX | Ø 1 m, rame ricotto 1/2" (o 5/8"), circa 3,3 m di tubo | In ricezione la perdita in più del tubo sottile è trascurabile |
+| Anello RX | Ø 1 m, tubo di rame Ø 20 (circa 3,3 m); sedi della scatola del variabile e della cima per Ø 20 (`TUBO_ANELLO`) | Tubo già preso dall'utente (27/11/2026); prima era previsto 1/2" |
 | Anello TX | Ø 1,5 m, tubo 22 mm, rame | Corrente 9–13 A, serve bassa resistenza |
 | Condensatore RX | Variabile ad aria 1000 pF "1000V CC" già in possesso | Disponibile; solo RX o prove a 1–2 W |
 | Condensatore TX | Stantuffo tubo in tubo con manicotto PTFE | Nessun contatto strisciante; regge circa 4–5 kV di picco |

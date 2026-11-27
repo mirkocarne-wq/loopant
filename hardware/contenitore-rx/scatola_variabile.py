@@ -38,7 +38,7 @@ X_GIUNTO = 8.0                          # davanti del giunto dalla parete intern
 SPAZIO_DIETRO = 20.0                    # dietro il variabile: perni degli statori che sporgono, capi, piattine
 
 # --- Anello di rame ---
-TUBO_ANELLO = 12.7               # tubo dell'anello: 1/2" (12,7) o 5/8" (15,9)
+TUBO_ANELLO = 20.0               # tubo dell'anello: Ø 20 (quello dell'utente; misurare con il calibro)
 INTERASSE_CAPI = 70.0            # distanza tra i due capi del tubo (da verificare sull'anello)
 Z_CAPI = 85.0                    # distanza dei capi dal fondo interno, vicino ai morsetti in alto del variabile
 BLOCCO_S = 20.0                  # spessore del blocco che regge l'anello (oltre la parete)

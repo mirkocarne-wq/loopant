@@ -22,6 +22,7 @@
 | 3/8" | 9,5 mm | circa 3,0 µH |
 | 1/2" | 12,7 mm | circa 2,8 µH |
 | 5/8" | 15,9 mm | circa 2,65 µH |
+| Ø 20 (scelto, già preso) | 20 mm | circa 2,5 µH |
 | 18 mm | 18 mm | circa 2,6 µH |
 | 3/4" | 19 mm | circa 2,55 µH |
 

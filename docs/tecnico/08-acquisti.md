@@ -12,7 +12,7 @@
 ## Da acquistare
 
 ### Anello e condensatori
-- [ ] Rame 1/2" (o 5/8") in rotolo da 5 m (anello RX)
+- [x] Tubo di rame Ø 20 (anello RX), già preso
 - [ ] Rame 22×1 e 28×1 (oppure 18×1 e 22×1), disco/tappi, PTFE su misura
 - [ ] Asta isolante, giunti (8→6 mm, 5→8 mm)
 

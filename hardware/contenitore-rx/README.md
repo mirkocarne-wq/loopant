@@ -19,11 +19,11 @@ Altre viste: [di fronte](anteprime/assieme-fronte.png), [di lato](anteprime/assi
 - **Alimentazione**: il coassiale va solo al **loop di accoppiamento** (cerchio piccolo da 20 cm, circa 1/5 del
   diametro, in cima dentro l'anello). L'anello grande non ha collegamenti al cavo: con il variabile è un circuito
   risonante e scambia il segnale con il loop piccolo per accoppiamento magnetico, come un trasformatore.
-- **Cima** (proposta, `cima.py`): braccio in **PVC Ø 40** unito al palo in PVC da 40 con un **raccordo a T** da
-  incollare; in punta il **sostegno** stampato (bullone M5 di traverso nel braccio), con la sede della cima
+- **Cima** (proposta, `cima.py`): **raccordo stampato** in due metà (T, braccio Ø 40 e tappo in un pezzo solo) che
+  stringe la cima del palo in PVC da 40; in punta al braccio il **sostegno** stampato (bullone M5 di traverso nel braccio), con la sede della cima
   dell'anello chiusa dal **cappello** (4 viti M3 in inserti a caldo) e, dietro l'anello, la scatoletta con l'**SO-239**
   rivolto verso il palo; il **fondo** della scatoletta (4 viti M3) ha i due fori da 6,6 mm per i capi del loop
-  piccolo (tubetto di rame da 6 mm o RG-58), che sta 21 mm dietro il piano dell'anello. Coassiale lungo il palo;
+  piccolo (tubetto di rame da 6 mm o RG-58), che sta 30 mm (da asse ad asse) dietro il piano dell'anello. Coassiale lungo il palo;
   cavo dei 24 V dal PG7 in basso.
 
 ![Cima](anteprime/assieme-cima.png)
@@ -33,16 +33,26 @@ Altre viste: [di fronte](anteprime/assieme-fronte.png), [di lato](anteprime/assi
 | `cima-sostegno.stl` | ASA o PETG | Faccia verso il palo sul piatto (sede del braccio verticale) | 5 perimetri, 40 %; nessun supporto |
 | `cima-cappello.stl` | ASA o PETG | Sede verso l'alto | |
 | `cima-fondo.stl` | ASA o PETG | Piatto, stelo verso l'alto | Stelo con 2 asole verticali per regolare il loop piccolo |
+| `cima-raccordo-a.stl`, `cima-raccordo-b.stl` | **ASA** | Ognuna sulla faccia di taglio (piatta) | 179 × 103 × 33 mm; 6 perimetri, 40 % gyroid; nessun supporto (foro del palo a goccia) |
 | `cima-anello-accoppiamento.stl` | **ASA** o PETG | Piatto, gola verso l'alto | Ø 212 × 11 mm, piatto da almeno 225 mm; 4 perimetri, 40 %; nessun supporto |
 
-Viti: 1 bullone M5×60 con dado (sostegno e braccio, il PVC va forato da 5,5 mm), 4 M3×12 per il cappello, 4 M3×8
+**Raccordo stampato** (`cima-raccordo-a/b`, proposta): le due metà si chiudono attorno alla cima del palo (fessura
+di 0,6 mm tra le due: stringendo si serra il palo, anche se il diametro vero non è proprio 40). Il palo entra fino al
+tappo, 22 mm sopra l'asse del braccio. Viti M5 con rondelle, dadi nelle sedi esagonali della metà B: 2 × M5×25 nella
+pinna dietro, 1 × M5×70 attraverso il palo (forare palo e rinforzo da 5,5: niente rotazioni né sfilamenti),
+1 × M5×45 alla radice del braccio. Il sostegno si infila sulla punta del braccio come su un tubo in PVC (che resta
+un'alternativa: T a 90° da incollare, tubo e tappo).
+
+![Raccordo stampato](anteprime/cima-raccordo.png)
+
+Viti: 1 bullone M5×60 con dado (sostegno e braccio, forato da 5,5 mm), 4 M3×12 per il cappello, 4 M3×8
 per il fondo, 8 inserti a caldo M3, SO-239 con 4 viti M3×10 e dadi; silicone sui fori del fondo; 2 viti M3×20 con
 rondelle e dadi per la linguetta dell'anello di supporto sullo stelo; 7 fascette da 2,5 mm per il conduttore.
 
 **Loop piccolo** (`cima-anello-accoppiamento`): il conduttore (tubetto di rame Ø 6 o RG-58) entra a scatto nella gola
 sul davanti dell'anello di supporto ed è fermato con le fascette nelle 7 coppie di fessure; in cima i due capi salgono
 nei canali della linguetta e nei fori del fondo fino all'SO-239. La linguetta si avvita allo stelo del fondo con 2
-viti M3 nelle asole: nella posizione più alta il loop piccolo è a circa 35 mm dall'anello grande e si può abbassare
+viti M3 nelle asole: nella posizione più alta il loop piccolo è a circa 32 mm dall'anello grande e si può abbassare
 fino a 22 mm per cercare il ROS minimo (lasciare i capi un po' più lunghi dentro la scatoletta).
 
 ![Loop piccolo](anteprime/cima-accoppiamento.png)
@@ -50,15 +60,15 @@ fino a 22 mm per cercare il ROS minimo (lasciare i capi un po' più lunghi dentr
   di metallo parallelo all'anello e così vicino ne peggiora il rendimento e la sintonia (da verificare con il
   NanoVNA).
 
-## Gruppo palo e braccio in PVC Ø 40
+## Gruppo palo in PVC Ø 40 e raccordo stampato
 Tavola: [`gruppo-palo.pdf`](gruppo-palo.pdf) (script `gruppo_palo.py`, quote prese dall'assieme).
 
 ![Gruppo palo](anteprime/gruppo-palo.png)
 
-- Palo PVC Ø 40 × 3 (PN16) di circa 1845 mm fino all'asse del raccordo a T, braccio di 135 mm dall'asse del palo
-  (taglio circa 113, da adattare alla bicchieratura del T), raccordo a T a 90° da incollare, tappo in cima.
-- Centri delle fascette stringitubo, dall'asse del T verso il basso: 1133 e 1278 (scatola del variabile), 1401 e
-  1494 (scatola del motore); fondo della scatola del motore a 1545.
+- Palo PVC Ø 40 × 3 (PN16) tagliato a circa 1871 mm: la cima entra nel raccordo stampato fino al tappo (22 mm sopra
+  l'asse del braccio), il fondo è 1849 mm sotto l'asse del braccio; braccio stampato di 135 mm dall'asse del palo.
+- Centri delle fascette stringitubo, dall'asse del braccio verso il basso: 1137 e 1282 (scatola del variabile), 1405 e
+  1498 (scatola del motore); fondo della scatola del motore a 1549.
 - **Rigidità (stima da verificare)**: con circa 1,2 m di sbalzo e 25 N di vento sull'anello, il PVC 40×3 da solo
   flette di circa 80 mm in cima; con un tondino di legno Ø 32 dentro circa 21 mm. Rinforzo isolante dentro il palo
   (legno o vetroresina, mai metallo) e fissaggio al balcone in due punti distanti.
@@ -268,13 +278,13 @@ Script: `scatola_variabile.py` (usa le parti comuni di `contenitore.py`). Pezzi:
   sta 45 mm sopra la sua base e la piastra su colonnine da 11 mm, quindi a 60 mm dal fondo interno, come il motore. Sul palo le due scatole hanno la borchia una verso l'altra; tra le due borchie circa 12 mm.
 - **Tubo isolante**: giunto 8→6 sul perno del variabile; il tubo isolante lungo circa 59 mm più lo spazio tra le
   borchie (circa 71 mm con 12 mm), con un paraolio 8×16×5 in ciascuna borchia.
-- **Anello**: i due capi del tubo di rame (1/2", parametro `TUBO_ANELLO`; 70 mm tra i capi, `INTERASSE_CAPI`)
+- **Anello**: i due capi del tubo di rame (Ø 20, parametro `TUBO_ANELLO`, unico per scatola e cima; 70 mm tra i capi, `INTERASSE_CAPI`)
   entrano dall'alto in un **blocco pieno spesso 20 mm** che fa da parete superiore. Ogni capo ha un collare e una
   svasatura per il silicone, ed è bloccato da una **vite M4 di traverso** che entra dal fianco, attraversa il tubo
   forato da 4,2 mm e filetta la plastica oltre: una vite per capo, così i due capi restano isolati tra loro.
 - **Peso e vento**: la staffa del palo si allunga sotto il blocco e prende 2 viti M4 in più (inserti nel blocco),
   con un blocco a V vicino all'anello: il carico dell'anello va dritto al palo. Stima da verificare: anello 1 m
-  in tubo da 1/2" circa 1 kg, più la spinta del vento.
+  in tubo Ø 20 × 1 circa 1,8 kg (stima da verificare con la bilancia), più la spinta del vento.
 - **Sfiato**: valvola M12 sulla parete della borchia, che sul palo è in basso. Nessun pressacavo: dentro ci sono
   solo variabile e piattine.
 - **Ingombro**: circa 241 × 111 × 123 mm con la borchia e il blocco: serve un piatto da almeno 250 mm. Se non

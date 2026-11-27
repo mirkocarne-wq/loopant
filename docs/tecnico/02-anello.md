@@ -3,7 +3,8 @@
 ## Versione RX
 - **Diametro 1 m** (raggio 50 cm sull'asse del tubo), lunghezza di tubo circa **3,3 m**
   (3,14 m di circonferenza + margine per i capi e i tagli).
-- **Tubo di rame**: scelta tra **1/2" (12,7 mm)** e 5/8" (15,9 mm) di rame ricotto da frigorista.
+- **Tubo di rame**: **Ø 20 mm** (già preso dall'utente; prima si pensava a 1/2" o 5/8" da frigorista). Stima da
+  verificare: L circa 2,5 µH, quindi circa 820 pF a 3,5 MHz e circa 50 pF a 14 MHz; peso circa 1,8 kg con parete 1 mm.
   Rispetto ai 18 mm il 5/8" perde circa 0,5 dB in più, l'1/2" circa 1,5 dB, il 3/8" circa 2,8 dB.
   In ricezione la differenza è trascurabile.
 - Rotolo da 5 m. Curvatura con sagoma circolare (compensato, tavolo rotondo, hula hoop da 1 m), molla piegatubi o sabbia.

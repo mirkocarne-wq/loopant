@@ -22,7 +22,6 @@ COLLO = 60.0                     # tratto diritto dei capi sopra il blocco della
 ACCOPPIAMENTO_TUBO = 6.0         # coassiale o tubetto di rame
 SPAZIO_BORCHIE = 12.0            # tra le due borchie (tubo isolante)
 PALO_SOTTO = 300.0               # palo sotto la scatola del motore (nell'immagine)
-PALO_SOPRA = 35.0                # palo sopra il raccordo a T (tappo)
 
 
 def colorato(nome, oggetto, colore):
@@ -70,21 +69,15 @@ def costruisci():
     anello = anello.cut(cq.Workplane("XY").box(40, v.INTERASSE_CAPI, 80).translate((xa, yc, zc - r + 20)))
     parti.append(("anello", anello, "#b87333"))
 
-    # --- Cima (proposta): braccio in PVC Ø 40 con raccordo a T sul palo, sostegno stampato con la scatoletta
-    # dell'SO-239, loop di accoppiamento che esce dal fondo della scatoletta ---
+    # --- Cima (proposta): raccordo stampato (T + braccio Ø 40) sulla cima del palo, sostegno stampato con la
+    # scatoletta dell'SO-239, loop di accoppiamento che esce dal fondo della scatoletta ---
     import cima
     z_lt = zc + r
     g = cima.geometria(xa, yc, z_lt)
     z_braccio = g["z_a"]
-    for nome, o in cima.pezzi(xa, yc, z_lt).items():
-        parti.append((f"cima {nome}", o, {"cappello": "#cfd8dc", "anello accoppiamento": "#ffcc80"}.get(nome, "#eceff1")))
-    braccio = (cq.Workplane("YZ").workplane(offset=cp).center(yc, z_braccio).circle(cima.BRACCIO_D / 2)
-               .extrude(g["x_fine"] - cp))
-    raccordo = (cq.Workplane("XY").workplane(offset=z_braccio - 32).center(cp, yc).circle(c.PALO_D / 2 + 4).extrude(64)
-                .union(cq.Workplane("YZ").workplane(offset=cp).center(yc, z_braccio).circle(cima.BRACCIO_D / 2 + 4)
-                       .extrude(c.PALO_D / 2 + 30)))
-    parti.append(("braccio in PVC", braccio, "#b0bec5"))
-    parti.append(("raccordo a T", raccordo, "#90a4ae"))
+    colori = {"cappello": "#cfd8dc", "anello accoppiamento": "#ffcc80", "raccordo A": "#90a4ae", "raccordo B": "#b0bec5"}
+    for nome, o in cima.pezzi(xa, yc, z_lt, cp).items():
+        parti.append((f"cima {nome}", o, colori.get(nome, "#eceff1")))
     ga = cima.geometria_acc(g, yc)
     rc, xc, zcc = ga["r"], ga["xc"], ga["zc"]
     dy = cima.ACC_INTERASSE / 2
@@ -101,17 +94,20 @@ def costruisci():
     z_fondo = -lx_m - PALO_SOTTO + 40
     y_cavi = yc + c.PALO_D / 2 + 6
     zs = z_lt - 8
-    coax = (cq.Workplane("YZ").workplane(offset=cp + c.PALO_D / 2 + 4).center(yc, zs).circle(3.5)
-            .extrude(g["sc"]["x0"] - 20 - (cp + c.PALO_D / 2 + 4))
-            .union(cq.Workplane("XY").workplane(offset=z_fondo).center(cp + c.PALO_D / 2 + 4, yc).circle(3.5)
-                   .extrude(zs - z_fondo)))
+    # davanti al raccordo stampato scende un po' più lontano dal palo, poi si accosta
+    xc1, xc2 = cp + cima.RACC_D / 2 + 6, cp + c.PALO_D / 2 + 4
+    zg = z_braccio - cima.RACC_GIU - 15
+    coax = (c.cilindro_x(xc1 - 3.5, yc, zs, g["sc"]["x0"] - 20 - xc1 + 3.5, 7.0)
+            .union(c.cilindro_z(xc1, yc, zg, zs - zg, 7.0))
+            .union(c.cilindro_x(xc2 - 3.5, yc, zg, xc1 - xc2 + 7, 7.0))
+            .union(c.cilindro_z(xc2, yc, z_fondo, zg - z_fondo, 7.0)))
     parti.append(("coassiale", coax, "#212121"))
     x_pg, y_pg, z_pg = pg7[1], pg7[0], -lx_m - c.PARETE
     cavo24 = cq.Workplane("XY").workplane(offset=z_fondo).center(x_pg, y_pg).circle(3).extrude(z_pg - z_fondo)
     parti.append(("cavo 24 V", cavo24, "#37474f"))
 
     # Palo
-    z0, z1 = -lx_m - PALO_SOTTO, z_braccio + PALO_SOPRA
+    z0, z1 = -lx_m - PALO_SOTTO, z_braccio + cima.PALO_DENTRO
     palo = cq.Workplane("XY").workplane(offset=z0).center(cp, yc).circle(c.PALO_D / 2).extrude(z1 - z0)
     parti.append(("palo", palo, "#8d8d8d"))
     pos = {"xa": xa, "yc": yc, "z_lt": zc + r, "cp": cp}
@@ -148,13 +144,13 @@ def main():
     a.figura(tutto, os.path.join(cart, "assieme-lato.png"), 0, -90,
              "Assieme visto di lato: piano dell'anello, scatole e palo")
     vicino = [(tri(o, n), col) for n, o, col in parti
-              if n not in ("anello", "loop di accoppiamento", "braccio in PVC", "raccordo a T", "palo",
+              if n not in ("anello", "loop di accoppiamento", "palo",
                            "coassiale", "cavo 24 V") and not n.startswith("cima")]
     a.figura(vicino, os.path.join(cart, "assieme-scatole.png"), 18, -40,
              "Le due scatole: motore sotto, variabile sopra, tubo isolante tra le borchie, capi dell'anello")
     # Dettaglio della cima
     cima_parti = [(tri(o, n), col) for n, o, col in parti
-                  if n.startswith("cima") or n in ("braccio in PVC", "raccordo a T")]
+                  if n.startswith("cima")]
     # tratto dell'anello e del loop vicino alla cima (taglio con un box)
     xs = [p for p in parti if p[0] == "cima sostegno"][0][1].val().BoundingBox()
     finestra = cq.Workplane("XY").box(400, 300, 260).translate((xs.center.x - 60, xs.center.y, xs.zmax - 120))
@@ -162,7 +158,16 @@ def main():
         o = [p for p in parti if p[0] == n][0]
         cima_parti.append((a.triangoli(o[1].intersect(finestra), tol=0.4), o[2]))
     a.figura(cima_parti, os.path.join(cart, "assieme-cima.png"), 20, -50,
-             "Cima: braccio in PVC Ø 40 con raccordo a T, sostegno con la sede dell'anello e la scatoletta SO-239, loop piccolo")
+             "Cima: raccordo stampato (T e braccio) sul palo, sostegno con la sede dell'anello e la scatoletta SO-239, loop piccolo")
+    # Raccordo stampato esploso: metà B scostata, palo abbassato, sostegno spostato in avanti
+    d = {n: o for n, o, _ in parti}
+    bb = d["cima raccordo A"].val().BoundingBox()
+    fin = cq.Workplane("XY").box(260, 200, 260).translate((bb.center.x, bb.center.y, bb.zmin + 90))
+    esploso = [(tri(d["cima raccordo A"], "r"), "#90a4ae"), (tri(d["cima raccordo B"].translate((0, 45, 0)), "r"), "#b0bec5"),
+               (a.triangoli(d["palo"].intersect(fin).translate((0, 0, -60)), tol=0.5), "#8d8d8d"),
+               (tri(d["cima sostegno"].translate((60, 0, 0)), "s"), "#eceff1")]
+    a.figura(esploso, os.path.join(cart, "cima-raccordo.png"), 22, -55,
+             "Raccordo stampato: T, braccio Ø 40 e tappo in due metà che stringono il palo (sostegno in punta)")
     return 0
 
 

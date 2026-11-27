@@ -20,8 +20,8 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
   del variabile, scheda con transistor e diodi; poi prova con `serie` e calibrazione di 17–10 m.
 - [ ] Contenitore stampato RX (`hardware/contenitore-rx/`): misurare squadra, riduttore, SERVO42D, giunto, millefori
   e OLED, correggere i parametri e stampare la piastra di prova.
-- [ ] Assieme dell'antenna (`hardware/contenitore-rx/assieme.py`): confermare loop di accoppiamento (20 cm in cima, tubetto da 6 mm o RG-58, proposta), cima stampata (`cima.py`: sostegno, cappello, fondo con SO-239) su braccio in PVC Ø 40 con raccordo a T sul palo in PVC da 40; regolare il loop piccolo per il ROS minimo.
-- [ ] Gruppo palo in PVC Ø 40 (`hardware/contenitore-rx/gruppo-palo.pdf`): fissaggio al balcone (ringhiera, muro?) in due punti, rinforzo isolante dentro il palo (tondino di legno Ø 32 o vetroresina), misura della bicchieratura del raccordo a T per il taglio del braccio.
+- [ ] Assieme dell'antenna (`hardware/contenitore-rx/assieme.py`): confermare loop di accoppiamento (20 cm in cima, tubetto da 6 mm o RG-58, proposta), cima stampata (`cima.py`: sostegno, cappello, fondo con SO-239) con il raccordo stampato in due metà (T e braccio) sul palo in PVC da 40; regolare il loop piccolo per il ROS minimo.
+- [ ] Gruppo palo in PVC Ø 40 (`hardware/contenitore-rx/gruppo-palo.pdf`): fissaggio al balcone (ringhiera, muro?) in due punti, rinforzo isolante dentro il palo (tondino di legno Ø 32 o vetroresina), diametro vero del palo (raccordo stampato con fessura di serraggio, foro Ø 40,4).
 - [ ] Scatola del variabile: diametro del perno (6 mm?), fori M5 di sotto al centro della larghezza? tiranti più bassi delle linguette?, morsetti degli statori, interasse dei
   capi dell'anello, peso reale dell'anello; piatto da almeno 250 mm (o perno accorciato).
 

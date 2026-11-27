@@ -86,7 +86,7 @@ la capacità totale è C·Cv/(C + Cv): resta sotto C qualunque sia la posizione 
 - `hardware/contenitore-rx/assieme.py`: palo, scatola del motore, scatola del variabile sopra, anello da 1 m con i
   capi nel blocco della scatola del variabile; cima dell'anello a circa 1,52 m dal fondo della scatola del motore.
 - Alimentazione: coassiale solo sul loop di accoppiamento (20 cm, in cima dentro l'anello); l'anello grande è accoppiato magneticamente.
-- Proposta: cima stampata (`cima.py`) su braccio in PVC Ø 40 con raccordo a T sul palo in PVC da 40; SO-239 nella scatoletta del sostegno.
+- Proposta: cima stampata (`cima.py`): raccordo in due metà (T, braccio Ø 40 e tappo) che stringe la cima del palo in PVC da 40, con una vite M5 attraverso il palo; sostegno con la scatoletta dell'SO-239 in punta al braccio.
 
 ## Scatola stagna in plastica
 - IP65 o superiore, circa 25×15×10 cm (variabile, riduttore, motore, SERVO42D).
