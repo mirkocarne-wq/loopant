@@ -23,6 +23,7 @@ docs/memoria/      decisioni prese/scartate e punti aperti
 docs/archivio/     documento originale del 20/11/2026 (non aggiornato)
 hardware/contenitore-rx/  scatole stampabili in 3D dell'antenna RX (motore ed elettronica; variabile e anello): CadQuery, STL e STEP
 hardware/condensatore-tx/ condensatore a stantuffo TX: disegno con i collegamenti e tavole per il tornitore (matplotlib, PDF)
+hardware/collegamenti-rf/ schema dei collegamenti RF (coassiale, loop di accoppiamento, anello, condensatore)
 firmware/lib/Comune/   codice condiviso: protocollo ESP-NOW, bande, collegamento, chiavi
 firmware/antenna/      firmware unità antenna (ESP32 DevKit 30 pin, WROOM-32), arduino-cli, unico per TX e RX
 firmware/pannello/     firmware pannello in casa (Waveshare 7B), Arduino core 3.1.1 + LVGL 8.4

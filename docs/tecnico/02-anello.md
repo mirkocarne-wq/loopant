@@ -15,6 +15,11 @@
 
 ## Anello di accoppiamento
 - Circa 1/5 del diametro (circa 20 cm), in cavo coassiale RG58/RG213 (circa 70 cm), con ferriti sul coassiale.
+- **Il coassiale va solo al loop di accoppiamento**; l'anello grande non è collegato al cavo: con il condensatore è
+  un circuito risonante e scambia il segnale con il loop piccolo per accoppiamento magnetico. I due capi dell'anello
+  vanno ai due terminali del condensatore (RX: statore e telaio, o i due statori; TX: tubo esterno e pistone).
+- Schema dei collegamenti RF, circuito equivalente e cablaggio del loop piccolo (in tubetto o schermato in coassiale):
+  [`hardware/collegamenti-rf/schema-rf.png`](../../hardware/collegamenti-rf/schema-rf.png).
 
 ## Posizionamento sul balcone
 - Centro dell'anello ad almeno 1,2–1,5 m dal pavimento, ad almeno mezzo diametro da pareti e ringhiere metalliche.
