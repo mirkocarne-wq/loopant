@@ -50,6 +50,19 @@ fino a 22 mm per cercare il ROS minimo (lasciare i capi un po' più lunghi dentr
   di metallo parallelo all'anello e così vicino ne peggiora il rendimento e la sintonia (da verificare con il
   NanoVNA).
 
+## Gruppo palo e braccio in PVC Ø 40
+Tavola: [`gruppo-palo.pdf`](gruppo-palo.pdf) (script `gruppo_palo.py`, quote prese dall'assieme).
+
+![Gruppo palo](anteprime/gruppo-palo.png)
+
+- Palo PVC Ø 40 × 3 (PN16) di circa 1845 mm fino all'asse del raccordo a T, braccio di 135 mm dall'asse del palo
+  (taglio circa 113, da adattare alla bicchieratura del T), raccordo a T a 90° da incollare, tappo in cima.
+- Centri delle fascette stringitubo, dall'asse del T verso il basso: 1133 e 1278 (scatola del variabile), 1401 e
+  1494 (scatola del motore); fondo della scatola del motore a 1545.
+- **Rigidità (stima da verificare)**: con circa 1,2 m di sbalzo e 25 N di vento sull'anello, il PVC 40×3 da solo
+  flette di circa 80 mm in cima; con un tondino di legno Ø 32 dentro circa 21 mm. Rinforzo isolante dentro il palo
+  (legno o vetroresina, mai metallo) e fissaggio al balcone in due punti distanti.
+
 ## Scatola del motore
 
 Scatola stagna da stampare in 3D, da fissare al palo. Contiene:
