@@ -32,10 +32,20 @@ Altre viste: [di fronte](anteprime/assieme-fronte.png), [di lato](anteprime/assi
 |---|---|---|---|
 | `cima-sostegno.stl` | ASA o PETG | Faccia verso il palo sul piatto (sede del braccio verticale) | 5 perimetri, 40 %; nessun supporto |
 | `cima-cappello.stl` | ASA o PETG | Sede verso l'alto | |
-| `cima-fondo.stl` | ASA o PETG | Piatto | |
+| `cima-fondo.stl` | ASA o PETG | Piatto, stelo verso l'alto | Stelo con 2 asole verticali per regolare il loop piccolo |
+| `cima-anello-accoppiamento.stl` | **ASA** o PETG | Piatto, gola verso l'alto | Ø 212 × 11 mm, piatto da almeno 225 mm; 4 perimetri, 40 %; nessun supporto |
 
 Viti: 1 bullone M5×60 con dado (sostegno e braccio, il PVC va forato da 5,5 mm), 4 M3×12 per il cappello, 4 M3×8
-per il fondo, 8 inserti a caldo M3, SO-239 con 4 viti M3×10 e dadi; silicone sui fori del fondo.
+per il fondo, 8 inserti a caldo M3, SO-239 con 4 viti M3×10 e dadi; silicone sui fori del fondo; 2 viti M3×20 con
+rondelle e dadi per la linguetta dell'anello di supporto sullo stelo; 7 fascette da 2,5 mm per il conduttore.
+
+**Loop piccolo** (`cima-anello-accoppiamento`): il conduttore (tubetto di rame Ø 6 o RG-58) entra a scatto nella gola
+sul davanti dell'anello di supporto ed è fermato con le fascette nelle 7 coppie di fessure; in cima i due capi salgono
+nei canali della linguetta e nei fori del fondo fino all'SO-239. La linguetta si avvita allo stelo del fondo con 2
+viti M3 nelle asole: nella posizione più alta il loop piccolo è a circa 35 mm dall'anello grande e si può abbassare
+fino a 22 mm per cercare il ROS minimo (lasciare i capi un po' più lunghi dentro la scatoletta).
+
+![Loop piccolo](anteprime/cima-accoppiamento.png)
 - **Palo**: nel tratto che passa dietro l'anello conviene un palo **non metallico** (vetroresina o PVC): un tubo
   di metallo parallelo all'anello e così vicino ne peggiora il rendimento e la sintonia (da verificare con il
   NanoVNA).

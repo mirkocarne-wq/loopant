@@ -33,6 +33,14 @@ X_INDIETRO = 38.0                # faccia posteriore del sostegno (verso il palo
 SCATOLETTA = (24.0, 32.0, 43.0)  # scatoletta: profondità (X), larghezza (Y), altezza (Z)
 PARETE = 3.0
 
+# --- Supporto del loop di accoppiamento (anello di plastica con la gola per il conduttore) ---
+ACCOPPIAMENTO_D = 200.0          # diametro del loop piccolo (asse del conduttore), circa 1/5 dell'anello
+SUP_LARGO, SUP_SPESSO = 12.0, 8.0  # sezione dell'anello di supporto (radiale × assiale)
+LINGUETTA_SOPRA = 8.0            # linguetta sopra l'anello di supporto, fino al fondo della scatoletta
+STELO_L = 30.0                   # stelo sotto il fondo con le asole di regolazione
+CORSA_REGOLAZIONE = 22.0         # di quanto si può abbassare il loop piccolo (per il ROS minimo)
+ANGOLI_FASCETTE = [-90, -50, -10, 30, 150, 190, 230]  # gradi nel piano del loop (0 = +Y, 90 = in alto)
+
 
 def geometria(xa, yc, z_lt):
     """Posizioni principali: xa piano dell'anello, yc centro, z_lt asse del tubo in cima all'anello."""
@@ -60,6 +68,44 @@ def viti_fondo(g, yc):
     sc = g["sc"]
     return [(sc["x0"] + PARETE + 3.0, yc + dy) for dy in (-10.0, 10.0)] + \
            [(sc["x1"] - PARETE - 3.0, yc + dy) for dy in (-10.0, 10.0)]
+
+
+def geometria_acc(g, yc, abbassa=0.0):
+    """Loop di accoppiamento: centro, raggio, piano. abbassa = regolazione verso il basso (0 = più in alto)."""
+    zf = g["sc"]["z0"] - PARETE                       # faccia di sotto del fondo della scatoletta
+    r = ACCOPPIAMENTO_D / 2
+    cima_sup = zf - LINGUETTA_SOPRA - abbassa         # bordo esterno in cima all'anello di supporto
+    return dict(xc=g["x_acc"], yc=yc, zc=cima_sup - r - SUP_LARGO / 2, r=r, zf=zf, cima_sup=cima_sup)
+
+
+def anello_accoppiamento(xa, yc, z_lt, abbassa=0.0):
+    """Anello di supporto del loop piccolo: gola a scatto sul davanti, fessure per fascette, linguetta in cima."""
+    g = geometria(xa, yc, z_lt)
+    a = geometria_acc(g, yc, abbassa)
+    xc, zc, r = a["xc"], a["zc"], a["r"]
+    x0 = xc - 6.0                                     # faccia posteriore; davanti a xc + 2: la gola è a scatto
+    s = c.cilindro_x(x0, yc, zc, SUP_SPESSO, 2 * r + SUP_LARGO).cut(
+        c.cilindro_x(x0 - 1, yc, zc, SUP_SPESSO + 2, 2 * r - SUP_LARGO))
+    # linguetta in cima, più spessa davanti per contenere i canali dei capi
+    zt = a["cima_sup"] + LINGUETTA_SOPRA
+    s = s.union(_box(x0, xc + 5, yc - 16, yc + 16, zc + r - 4, zt, 1.5))
+    # tutti i tagli in una volta sola (tagli in sequenza lasciavano un canale chiuso a metà)
+    utensili = [cq.Workplane("XY").add(cq.Solid.makeTorus(r, ACC_FORO / 2, cq.Vector(xc, yc, zc), cq.Vector(1, 0, 0)))]
+    for dy in (-ACC_INTERASSE / 2, ACC_INTERASSE / 2):
+        # Ø 7: non tangente alla gola (Ø 6,6), che altrimenti dà una maglia aperta nello STL
+        utensili.append(c.cilindro_z(xc, yc + dy, zc + r - 6, zt - (zc + r - 6) + 1, ACC_FORO + 0.4))
+    for dy in (-12.0, 12.0):                          # 2 viti M3 verso lo stelo del fondo
+        utensili.append(cq.Workplane("YZ").workplane(offset=x0 - 1).center(yc + dy, a["cima_sup"] + 4).circle(1.7)
+                        .extrude(xc + 5 - x0 + 2))
+    for ang in ANGOLI_FASCETTE:                       # coppie di fessure per le fascette
+        for rr in (r - 4.6, r + 4.6):
+            utensili.append(cq.Workplane("XY").box(SUP_SPESSO + 2, 4.5, 2.0).translate((0, 0, rr))
+                            .rotate((0, 0, 0), (1, 0, 0), ang - 90).translate((x0 + SUP_SPESSO / 2, yc, zc)))
+    taglio = utensili[0]
+    for u in utensili[1:]:
+        taglio = taglio.union(u)
+    s = s.cut(taglio)
+    return s
 
 
 def sostegno(xa, yc, z_lt):
@@ -112,11 +158,21 @@ def fondo(xa, yc, z_lt):
     for dy in (-ACC_INTERASSE / 2, ACC_INTERASSE / 2):
         s = s.cut(c.cilindro_z(g["x_acc"], yc + dy, sc["z0"] - PARETE - 1, PARETE + 2, ACC_FORO))
     s = s.cut(c.cilindro_z(sc["x1"] - PARETE - 3.0, yc, sc["z0"] - PARETE - 1, PARETE + 2, 2.5))  # scolo
+    # stelo con due asole verticali per la linguetta dell'anello di supporto (regolazione verso il basso)
+    a = geometria_acc(g, yc)
+    xs = a["xc"] + 5.0
+    zf = a["zf"]
+    s = s.union(_box(xs, xs + 4, yc - 16, yc + 16, zf - STELO_L, zf + 0.1, 1.0))
+    for dy in (-12.0, 12.0):
+        zm = a["cima_sup"] + 4 - CORSA_REGOLAZIONE / 2
+        s = s.cut(cq.Workplane("YZ").workplane(offset=xs - 1).center(yc + dy, zm)
+                  .slot2D(CORSA_REGOLAZIONE + 3.4, 3.4, 90).extrude(6))
     return s
 
 
 def pezzi(xa, yc, z_lt):
-    return {"sostegno": sostegno(xa, yc, z_lt), "cappello": cappello(xa, yc, z_lt), "fondo": fondo(xa, yc, z_lt)}
+    return {"sostegno": sostegno(xa, yc, z_lt), "cappello": cappello(xa, yc, z_lt), "fondo": fondo(xa, yc, z_lt),
+            "anello accoppiamento": anello_accoppiamento(xa, yc, z_lt)}
 
 
 def main():
@@ -128,7 +184,9 @@ def main():
         # faccia posteriore (verso il palo) sul piatto: la sede del braccio resta verticale
         "cima-sostegno": c.sul_piatto(p["sostegno"].rotate((0, 0, 0), (0, 1, 0), -90)),
         "cima-cappello": c.sul_piatto(p["cappello"]),           # sede verso l'alto
-        "cima-fondo": c.sul_piatto(p["fondo"]),
+        "cima-fondo": c.sul_piatto(p["fondo"].rotate((0, 0, 0), (1, 0, 0), 180)),   # stelo verso l'alto
+        # anello di supporto piatto, gola verso l'alto
+        "cima-anello-accoppiamento": c.sul_piatto(p["anello accoppiamento"].rotate((0, 0, 0), (0, 1, 0), -90)),
     })
     return 0
 

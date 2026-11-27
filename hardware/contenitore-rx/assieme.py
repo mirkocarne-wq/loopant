@@ -19,7 +19,6 @@ QUI = os.path.dirname(os.path.abspath(__file__))
 # --- Anello e parti in cima (proposta) ---
 ANELLO_D = 1000.0                # diametro dell'anello (asse del tubo)
 COLLO = 60.0                     # tratto diritto dei capi sopra il blocco della scatola del variabile
-ACCOPPIAMENTO_D = 200.0          # loop di accoppiamento, circa 1/5 dell'anello (proposta, da provare)
 ACCOPPIAMENTO_TUBO = 6.0         # coassiale o tubetto di rame
 SPAZIO_BORCHIE = 12.0            # tra le due borchie (tubo isolante)
 PALO_SOTTO = 300.0               # palo sotto la scatola del motore (nell'immagine)
@@ -78,7 +77,7 @@ def costruisci():
     g = cima.geometria(xa, yc, z_lt)
     z_braccio = g["z_a"]
     for nome, o in cima.pezzi(xa, yc, z_lt).items():
-        parti.append((f"cima {nome}", o, "#eceff1" if nome != "cappello" else "#cfd8dc"))
+        parti.append((f"cima {nome}", o, {"cappello": "#cfd8dc", "anello accoppiamento": "#ffcc80"}.get(nome, "#eceff1")))
     braccio = (cq.Workplane("YZ").workplane(offset=cp).center(yc, z_braccio).circle(cima.BRACCIO_D / 2)
                .extrude(g["x_fine"] - cp))
     raccordo = (cq.Workplane("XY").workplane(offset=z_braccio - 32).center(cp, yc).circle(c.PALO_D / 2 + 4).extrude(64)
@@ -86,17 +85,16 @@ def costruisci():
                        .extrude(c.PALO_D / 2 + 30)))
     parti.append(("braccio in PVC", braccio, "#b0bec5"))
     parti.append(("raccordo a T", raccordo, "#90a4ae"))
-    rc = ACCOPPIAMENTO_D / 2
-    xc = g["x_acc"]
-    z_uscita = g["sc"]["z0"] - cima.PARETE - 10       # tratto diritto dei capi sotto il fondo
+    ga = cima.geometria_acc(g, yc)
+    rc, xc, zcc = ga["r"], ga["xc"], ga["zc"]
     dy = cima.ACC_INTERASSE / 2
-    zcc = z_uscita - math.sqrt(rc * rc - dy * dy)
     acc = cq.Workplane("XY").add(cq.Solid.makeTorus(rc, ACCOPPIAMENTO_TUBO / 2, cq.Vector(xc, yc, zcc),
                                                     cq.Vector(1, 0, 0)))
     acc = acc.cut(cq.Workplane("XY").box(20, 2 * dy, 30).translate((xc, yc, zcc + rc)))
+    z_cima = zcc + math.sqrt(rc * rc - dy * dy)
     for k in (-1, 1):
-        acc = acc.union(cq.Workplane("XY").workplane(offset=z_uscita - 2).center(xc, yc + k * dy)
-                        .circle(ACCOPPIAMENTO_TUBO / 2).extrude(g["sc"]["z0"] + 5 - z_uscita))
+        acc = acc.union(cq.Workplane("XY").workplane(offset=z_cima - 1).center(xc, yc + k * dy)
+                        .circle(ACCOPPIAMENTO_TUBO / 2).extrude(ga["zf"] + cima.PARETE + 5 - z_cima))
     parti.append(("loop di accoppiamento", acc, "#424242"))
 
     # Coassiale dall'SO-239 (parete verso il palo) al palo e giù; cavo dei 24 V dal PG7 della scatola del motore
