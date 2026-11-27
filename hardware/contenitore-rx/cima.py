@@ -43,6 +43,7 @@ ACCOPPIAMENTO_D = 200.0          # diametro del loop piccolo (asse del conduttor
 SUP_LARGO, SUP_SPESSO = 12.0, 8.0  # sezione dell'anello di supporto (radiale × assiale)
 LINGUETTA_SOPRA = 8.0            # linguetta sopra l'anello di supporto, fino al fondo della scatoletta
 STELO_L = 30.0                   # stelo sotto il fondo con le asole di regolazione
+STELO_SP = 4.0                   # spessore dello stelo, a filo della parete anteriore della scatoletta (fuori dalle viti)
 CORSA_REGOLAZIONE = 22.0         # di quanto si può abbassare il loop piccolo (per il ROS minimo)
 # --- Raccordo stampato (T + braccio + tappo), due metà divise sul piano verticale che contiene palo e braccio ---
 RACC_D = 56.0                    # diametro esterno della bicchieratura sul palo
@@ -103,7 +104,8 @@ def anello_accoppiamento(xa, yc, z_lt, abbassa=0.0):
         c.cilindro_x(x0 - 1, yc, zc, SUP_SPESSO + 2, 2 * r - SUP_LARGO))
     # linguetta in cima, più spessa davanti per contenere i canali dei capi
     zt = a["cima_sup"] + LINGUETTA_SOPRA
-    s = s.union(_box(x0, xc + 5, yc - 16, yc + 16, zc + r - 4, zt, 1.5))
+    xs = g["sc"]["x1"]                                # faccia posteriore dello stelo del fondo
+    s = s.union(_box(x0, xs, yc - 16, yc + 16, zc + r - 4, zt, 1.5))
     # tutti i tagli in una volta sola (tagli in sequenza lasciavano un canale chiuso a metà)
     utensili = [cq.Workplane("XY").add(cq.Solid.makeTorus(r, ACC_FORO / 2, cq.Vector(xc, yc, zc), cq.Vector(1, 0, 0)))]
     for dy in (-ACC_INTERASSE / 2, ACC_INTERASSE / 2):
@@ -111,7 +113,9 @@ def anello_accoppiamento(xa, yc, z_lt, abbassa=0.0):
         utensili.append(c.cilindro_z(xc, yc + dy, zc + r - 6, zt - (zc + r - 6) + 1, ACC_FORO + 0.4))
     for dy in (-12.0, 12.0):                          # 2 viti M3 verso lo stelo del fondo
         utensili.append(cq.Workplane("YZ").workplane(offset=x0 - 1).center(yc + dy, a["cima_sup"] + 4).circle(1.7)
-                        .extrude(xc + 5 - x0 + 2))
+                        .extrude(xs - x0 + 2))
+    # canaletta sopra la linguetta, sotto il foro di scolo del fondo
+    utensili.append(cq.Workplane("XY").box(xs - x0 + 2, 3.0, 3.0).translate(((x0 + xs) / 2, yc, zt)))
     for ang in ANGOLI_FASCETTE:                       # coppie di fessure per le fascette
         for rr in (r - 4.6, r + 4.6):
             utensili.append(cq.Workplane("XY").box(SUP_SPESSO + 2, 4.5, 2.0).translate((0, 0, rr))
@@ -167,17 +171,20 @@ def cappello(xa, yc, z_lt):
 def fondo(xa, yc, z_lt):
     g = geometria(xa, yc, z_lt)
     sc = g["sc"]
-    s = _box(sc["x0"], sc["x1"], sc["y0"], sc["y1"], sc["z0"] - PARETE, sc["z0"], 2.0)
+    s = _box(sc["x0"], sc["x1"] + STELO_SP, sc["y0"], sc["y1"], sc["z0"] - PARETE, sc["z0"], 2.0)
     for x, y in viti_fondo(g, yc):
         s = s.cut(c.cilindro_z(x, y, sc["z0"] - PARETE - 1, PARETE + 2, 3.4))
+        # svasatura per viti M3 a testa piatta: testa a filo, la linguetta dell'anello di supporto ci appoggia sotto
+        s = s.cut(cq.Workplane("XY").add(cq.Solid.makeCone(3.4, 1.7, 1.7, cq.Vector(x, y, sc["z0"] - PARETE - 0.3),
+                                                           cq.Vector(0, 0, 1))))
     for dy in (-ACC_INTERASSE / 2, ACC_INTERASSE / 2):
         s = s.cut(c.cilindro_z(g["x_acc"], yc + dy, sc["z0"] - PARETE - 1, PARETE + 2, ACC_FORO))
     s = s.cut(c.cilindro_z(sc["x1"] - PARETE - 3.0, yc, sc["z0"] - PARETE - 1, PARETE + 2, 2.5))  # scolo
     # stelo con due asole verticali per la linguetta dell'anello di supporto (regolazione verso il basso)
     a = geometria_acc(g, yc)
-    xs = a["xc"] + 5.0
+    xs = sc["x1"]                                     # a filo della parete anteriore, fuori dalle viti del fondo
     zf = a["zf"]
-    s = s.union(_box(xs, xs + 4, yc - 16, yc + 16, zf - STELO_L, zf + 0.1, 1.0))
+    s = s.union(_box(xs, xs + STELO_SP, yc - 16, yc + 16, zf - STELO_L, zf + 0.1, 1.0))
     for dy in (-12.0, 12.0):
         zm = a["cima_sup"] + 4 - CORSA_REGOLAZIONE / 2
         s = s.cut(cq.Workplane("YZ").workplane(offset=xs - 1).center(yc + dy, zm)

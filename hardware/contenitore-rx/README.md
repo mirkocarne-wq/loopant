@@ -32,9 +32,9 @@ Altre viste: [di fronte](anteprime/assieme-fronte.png), [di lato](anteprime/assi
 |---|---|---|---|
 | `cima-sostegno.stl` | ASA o PETG | Faccia verso il palo sul piatto (sede del braccio verticale) | 5 perimetri, 40 %; nessun supporto |
 | `cima-cappello.stl` | ASA o PETG | Sede verso l'alto | |
-| `cima-fondo.stl` | ASA o PETG | Piatto, stelo verso l'alto | Stelo con 2 asole verticali per regolare il loop piccolo |
+| `cima-fondo.stl` | ASA o PETG | Piatto, stelo verso l'alto | Stelo con 2 asole verticali, a filo della parete davanti (lascia liberi i 4 fori delle viti) |
 | `cima-raccordo-a.stl`, `cima-raccordo-b.stl` | **ASA** | Ognuna sulla faccia di taglio (piatta) | 179 × 103 × 33 mm; 6 perimetri, 40 % gyroid; nessun supporto (foro del palo a goccia) |
-| `cima-anello-accoppiamento.stl` | **ASA** o PETG | Piatto, gola verso l'alto | Ø 212 × 11 mm, piatto da almeno 225 mm; 4 perimetri, 40 %; nessun supporto |
+| `cima-anello-accoppiamento.stl` | **ASA** o PETG | Piatto, gola verso l'alto | Ø 212 × 18 mm (linguetta), piatto da almeno 225 mm; 4 perimetri, 40 %; nessun supporto |
 
 **Raccordo stampato** (`cima-raccordo-a/b`, proposta): le due metà si chiudono attorno alla cima del palo (fessura
 di 0,6 mm tra le due: stringendo si serra il palo, anche se il diametro vero non è proprio 40). Il palo entra fino al
@@ -45,8 +45,8 @@ un'alternativa: T a 90° da incollare, tubo e tappo).
 
 ![Raccordo stampato](anteprime/cima-raccordo.png)
 
-Viti: 1 bullone M5×60 con dado (sostegno e braccio, forato da 5,5 mm), 4 M3×12 per il cappello, 4 M3×8
-per il fondo, 8 inserti a caldo M3, SO-239 con 4 viti M3×10 e dadi; silicone sui fori del fondo; 2 viti M3×20 con
+Viti: 1 bullone M5×60 con dado (sostegno e braccio, forato da 5,5 mm), 4 M3×12 per il cappello, 4 M3×8 a testa
+svasata (piana) per il fondo, 8 inserti a caldo M3, SO-239 con 4 viti M3×10 e dadi; silicone sui fori del fondo; 2 viti M3×30 con
 rondelle e dadi per la linguetta dell'anello di supporto sullo stelo; 7 fascette da 2,5 mm per il conduttore.
 
 **Loop piccolo** (`cima-anello-accoppiamento`): il conduttore (tubetto di rame Ø 6 o RG-58) entra a scatto nella gola

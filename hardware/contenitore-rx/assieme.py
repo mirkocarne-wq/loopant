@@ -168,6 +168,13 @@ def main():
                (tri(d["cima sostegno"].translate((60, 0, 0)), "s"), "#eceff1")]
     a.figura(esploso, os.path.join(cart, "cima-raccordo.png"), 22, -55,
              "Raccordo stampato: T, braccio Ø 40 e tappo in due metà che stringono il palo (sostegno in punta)")
+    # Loop piccolo: fondo abbassato di 25 mm e anello di supporto altri 25 sotto (esploso), visti da sotto
+    fb = d["cima fondo"].val().BoundingBox()
+    fin2 = cq.Workplane("XY").box(120, 260, 120).translate((fb.center.x, fb.center.y, fb.zmin - 30))
+    det = [(tri(d["cima sostegno"], "s"), "#eceff1"), (tri(d["cima fondo"].translate((0, 0, -25)), "f"), "#cfd8dc"),
+           (a.triangoli(d["cima anello accoppiamento"].intersect(fin2).translate((0, 0, -50)), tol=0.3), "#ffcc80")]
+    a.figura(det, os.path.join(cart, "cima-accoppiamento.png"), -25, -40,
+             "Fondo con 4 fori svasati liberi e stelo a filo davanti; linguetta dell'anello di supporto (esploso)")
     return 0
 
 
