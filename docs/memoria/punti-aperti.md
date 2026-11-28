@@ -3,7 +3,9 @@
 Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria giusto e toglierlo da qui.
 
 ## Misure
-- [ ] Variabile 1000 pF: capacità minima e massima; continuità albero–telaio; uno o due statori isolati (decide dove vanno i capi dell'anello).
+- [x] Variabile 1000 pF: capacità misurata da 32,6 pF (zero) a circa 920 pF (2028 passi), tabella in `docs/tecnico/03-rx-condensatore-meccanica.md` (28/11/2026).
+- [ ] Variabile: continuità albero–telaio; uno o due statori isolati (decide dove vanno i capi dell'anello).
+- [ ] Anello RX: induttanza misurata 4,2 µH (la formula dà circa 2,6): ricontrollare con la risonanza; nessuna buca trovata finora con anello e variabile collegati (capi sulle armature giuste?).
 - [ ] Diametro dell'albero del variabile (giunto 8→6 mm?).
 - [ ] Riduttore: foro di ingresso da 5 mm (albero SERVO42D) e albero di uscita (8 mm?).
 - [ ] Tubi di rame/ottone e PTFE: disponibilità e misure reali con il calibro (diametro esterno e parete).
@@ -32,6 +34,7 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 ## Firmware
 - [x] Unità antenna: prima versione scritta (PlatformIO, compila TX e RX), da provare sul banco.
 - [ ] Taratura sul banco: corrente NEMA11, R_SENSE, soglia StallGuard, passi della versione RX.
+- [ ] SERVO42D: l'escursione del variabile è circa 2100 passi invece di circa 32000 (MStep a 1?): mettere MStep 16, misurare la corsa e correggere `config.h` (corsa, posMin); controllo di MStep all'avvio?
 - [x] Driver del motore che segue il tipo di antenna (TX STEP/DIR, RX CAN), firmware unico: provato sulle schede.
 - [x] Transceiver CAN SN65HVD230 su GPIO 17/16 (scheda di espansione S/V/G): provato con `prove/prova_can` il 21/11/2026, 10/10.
 - [x] SERVO42D via CAN con azzeramento sui suoi finecorsa: provato il 21/11/2026 (500 kbit/s, indirizzo 1; HmDir invertito nel menu).

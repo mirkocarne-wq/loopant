@@ -6,6 +6,20 @@
 - Bande 80–20 m con il variabile da solo (circa 45–800 pF, tabella in [01](01-obiettivo-principi.md)). Per i 20 m
   servono circa 50 pF: se il minimo vero, con le parassite, è più alto, serve C1 in serie anche lì.
 
+### Misure del variabile montato (NanoVNA, 28/11/2026)
+Posizioni in passi del pannello con il SERVO42D com'è oggi (MStep da controllare: circa 2100 passi per tutta
+l'escursione, il firmware ne prevede circa 32000 con 16 micropassi). Lo zero è dalla parte della capacità minima.
+
+| Passi | 0 | 50 | 500 | 600 | 700 | 1000 | 1500 | 1900 | 2028 |
+|---|---|---|---|---|---|---|---|---|---|
+| pF | 32,6 | 32,7 | 200 | 230 | 280 | 430 | 676 | 875 | 919 |
+
+- Minimo misurato 32,6 pF (non 20), massimo circa 920 pF vicino al finecorsa: con L tra 2,6 e 4,2 µH (anello
+  misurato 4,2 µH, da ricontrollare: la formula dà circa 2,6) l'anello va da circa 2,6–3,2 MHz a circa 12–15 MHz
+  (stime da verificare con la risonanza). Con 4,2 µH i 20 m non si raggiungono col solo variabile.
+- Circa 0,47 pF per passo nel tratto lineare: troppo grosso per centrare la risonanza sui 20 m (MStep 16 lo porta
+  a circa 0,03 pF per passo).
+
 ## Condensatori in serie per 17–10 m (proposta del 26/11/2026, da costruire)
 Sotto i circa 28 pF il variabile non scende (minimo circa 20 pF più le parassite). Con un condensatore fisso in serie
 la capacità totale è C·Cv/(C + Cv): resta sotto C qualunque sia la posizione del variabile.
