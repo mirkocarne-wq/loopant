@@ -17,6 +17,8 @@ l'escursione, il firmware ne prevede circa 32000 con 16 micropassi). Lo zero è 
 - Minimo misurato 32,6 pF (non 20), massimo circa 920 pF vicino al finecorsa: con L tra 2,6 e 4,2 µH (anello
   misurato 4,2 µH, da ricontrollare: la formula dà circa 2,6) l'anello va da circa 2,6–3,2 MHz a circa 12–15 MHz
   (stime da verificare con la risonanza). Con 4,2 µH i 20 m non si raggiungono col solo variabile.
+- Prima risonanza: 4,155 MHz a 1132 passi (circa 495 pF): L circa 2,9 µH compresi i collegamenti (stima, da
+  confermare con un secondo punto). Con poche parassite il variabile da solo copre circa 3,05–14,3 MHz.
 - Circa 0,47 pF per passo nel tratto lineare: troppo grosso per centrare la risonanza sui 20 m (MStep 16 lo porta
   a circa 0,03 pF per passo).
 

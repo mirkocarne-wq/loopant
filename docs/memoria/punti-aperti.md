@@ -5,7 +5,7 @@ Da chiudere. Quando uno è risolto, spostare il risultato nel file di memoria gi
 ## Misure
 - [x] Variabile 1000 pF: capacità misurata da 32,6 pF (zero) a circa 920 pF (2028 passi), tabella in `docs/tecnico/03-rx-condensatore-meccanica.md` (28/11/2026).
 - [ ] Variabile: continuità albero–telaio; uno o due statori isolati (decide dove vanno i capi dell'anello).
-- [ ] Anello RX: induttanza misurata 4,2 µH (la formula dà circa 2,6): ricontrollare con la risonanza; nessuna buca trovata finora con anello e variabile collegati (capi sulle armature giuste?).
+- [ ] Anello RX: prima risonanza 4,155 MHz a 1132 passi (circa 495 pF) il 28/11/2026, quindi L circa 2,9 µH con i fili gialli (la misura diretta di 4,2 µH era falsata); capacità parassite da ricavare con un secondo punto (minimo del variabile). Loop piccolo poco accoppiato (−4 dB, ROS 4,4): da avvicinare. Il loop in coassiale non funzionava finché non è stato corretto (calza continua: vedeva solo circa 180 nH).
 - [ ] Diametro dell'albero del variabile (giunto 8→6 mm?).
 - [ ] Riduttore: foro di ingresso da 5 mm (albero SERVO42D) e albero di uscita (8 mm?).
 - [ ] Tubi di rame/ottone e PTFE: disponibilità e misure reali con il calibro (diametro esterno e parete).
